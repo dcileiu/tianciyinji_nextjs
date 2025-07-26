@@ -1,0 +1,51 @@
+{
+  "name": "Tianci's Portfolio - 前端开发者个人网站",
+  "short_name": "Tianci's Portfolio",
+  "description": "欢迎来到Tianci的个人网站！这里分享前端开发技术、项目作品和技术博客。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#8A61B9",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "categories": ["portfolio", "blog", "technology", "development"],
+  "icons": [
+    {
+      "src": "/logo1.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/31.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "platform": "wide",
+      "label": "Portfolio Homepage"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "博客文章",
+      "short_name": "博客",
+      "description": "查看最新的技术博客文章",
+      "url": "/blog",
+      "icons": [
+        {
+          "src": "/logo1.svg",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

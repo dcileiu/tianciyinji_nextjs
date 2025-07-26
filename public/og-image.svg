@@ -1,0 +1,42 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#111111"/>
+  
+  <!-- Purple gradient background -->
+  <defs>
+    <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8A61B9;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#6B46C1;stop-opacity:0.1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#purpleGradient)"/>
+  
+  <!-- Main Title -->
+  <text x="600" y="250" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#FFFFFF" text-anchor="middle">
+    Tianci's Portfolio
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="320" font-family="Arial, sans-serif" font-size="32" fill="#CCCCCC" text-anchor="middle">
+    前端开发者个人网站
+  </text>
+  
+  <!-- Description -->
+  <text x="600" y="380" font-family="Arial, sans-serif" font-size="24" fill="#999999" text-anchor="middle">
+    分享前端开发技术、项目作品和技术博客
+  </text>
+  
+  <!-- Tech Stack -->
+  <text x="600" y="450" font-family="Arial, sans-serif" font-size="20" fill="#8A61B9" text-anchor="middle">
+    React • Next.js • TypeScript • CSS
+  </text>
+  
+  <!-- Decorative elements -->
+  <circle cx="150" cy="150" r="3" fill="#8A61B9" opacity="0.6"/>
+  <circle cx="1050" cy="480" r="4" fill="#8A61B9" opacity="0.4"/>
+  <circle cx="200" cy="500" r="2" fill="#6B46C1" opacity="0.8"/>
+  <circle cx="1000" cy="150" r="3" fill="#6B46C1" opacity="0.5"/>
+  
+  <!-- Bottom border -->
+  <rect x="0" y="620" width="1200" height="10" fill="#8A61B9"/>
+</svg>
