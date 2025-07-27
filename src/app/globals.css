@@ -1,8 +1,8 @@
 /*
  * @Author: tianci tianci1208@outlook.com
  * @Date: 2025-07-18 23:33:28
- * @LastEditors: tianci tianci1208@outlook.com
- * @LastEditTime: 2025-07-26 17:38:36
+ * @LastEditors: tianci dex_Liu@outlook.com
+ * @LastEditTime: 2025-07-27 18:33:32
  * @FilePath: \my-website\src\app\globals.css
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -129,8 +129,9 @@ header {
   display: flex;
   align-items: end;
   justify-content: center;
-  transition: background-color 0.3s ease, all 0.3s ease;
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   --reveal-color: #fff;
+  will-change: background-color;
 }
 
 .container {
@@ -139,7 +140,7 @@ header {
   align-items: center;
   transform: none;
   transform-origin: 50% 50% 0;
-  transition: all 0.35s linear;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
   /* 默认状态 */
   margin: 0 3%;
@@ -158,10 +159,12 @@ header {
   box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset,
     rgba(0, 0, 0, 0.16) 0px 2px 8px 0px,
     0px 0px 12px 0px rgba(138, 43, 226, 0.15);
+  transform: translateZ(0);
 }
 :has(.scrolled) header {
   background-color: transparent;
   --reveal-color: #111;
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 button {

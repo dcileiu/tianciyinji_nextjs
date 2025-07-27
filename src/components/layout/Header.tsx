@@ -1,8 +1,8 @@
 /*
  * @Author: tianci tianci1208@outlook.com
  * @Date: 2025-07-22 23:48:55
- * @LastEditors: tianci tianci1208@outlook.com
- * @LastEditTime: 2025-07-26 18:52:39
+ * @LastEditors: tianci dex_Liu@outlook.com
+ * @LastEditTime: 2025-07-27 18:42:40
  * @FilePath: \my-website\src\app\components\Header.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -49,18 +49,21 @@ export default function Header({ title }: HeaderProps) {
     const header = document.querySelector("header") as HTMLElement;
     if (!header) return;
 
-    let timeoutId: NodeJS.Timeout;
+    let ticking = false;
 
     const handleScroll = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        const scrollY = window.scrollY;
-        if (scrollY === 0) {
-          header.classList.remove("scrolled");
-        } else {
-          header.classList.add("scrolled");
-        }
-      }, 50);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          if (scrollY === 0) {
+            header.classList.remove("scrolled");
+          } else {
+            header.classList.add("scrolled");
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     // 初始化时检查当前滚动位置
@@ -71,11 +74,10 @@ export default function Header({ title }: HeaderProps) {
       header.classList.add("scrolled");
     }
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      clearTimeout(timeoutId);
     };
   }, []);
 
