@@ -20,8 +20,7 @@ const BlogSection: React.FC = () => {
   };
 
   const handlePortfolioClick = () => {
-    // 这里可以添加跳转到个人作品页面的逻辑
-    console.log("跳转到个人作品");
+    router.push('/portfolio');
   };
 
   return (

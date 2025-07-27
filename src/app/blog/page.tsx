@@ -186,29 +186,51 @@ export default function BlogPage() {
                 </h2>
 
                 {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {article.tags.slice(0, 3).map((tag) => (
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {article.tags.slice(0, 3).map((tag, index) => (
                     <span 
                       key={tag} 
-                      className="px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 hover:opacity-80"
+                      className="relative px-2 py-0.5 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer group overflow-hidden"
                       style={{ 
-                        color: 'var(--text-secondary)',
-                        backgroundColor: 'var(--section-bg)',
-                        border: '1px solid var(--text-secondary)'
+                        backgroundColor: 'rgba(156, 163, 175, 0.15)',
+                        color: 'var(--text-primary)',
+                        border: '1px solid rgba(156, 163, 175, 0.2)',
+                        backdropFilter: 'blur(10px)',
+                        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
                       }}
                     >
-                      #{tag}
+                      <span className="relative z-10 flex items-center gap-1">
+                        <span 
+                          className="w-1.5 h-1.5 rounded-full" 
+                          style={{
+                            background: `linear-gradient(135deg, 
+                              hsl(${(index * 137 + 180) % 360}, 65%, 60%) 0%, 
+                              hsl(${(index * 137 + 240) % 360}, 70%, 70%) 100%)`
+                          }}
+                        ></span>
+                        {tag}
+                      </span>
+                      {/* Hover effect overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </span>
                   ))}
                   {article.tags.length > 3 && (
-                    <span className="text-xs px-2 py-1" style={{ color: 'var(--text-secondary)' }}>
-                      +{article.tags.length - 3}
+                    <span 
+                      className="text-xs px-2 py-0.5 rounded-full font-medium transition-all duration-200 hover:scale-105" 
+                      style={{ 
+                        color: 'var(--text-secondary)',
+                        backgroundColor: 'rgba(156, 163, 175, 0.1)',
+                        border: '1px dashed rgba(156, 163, 175, 0.3)',
+                        opacity: 0.8
+                      }}
+                    >
+                      +{article.tags.length - 3} 更多
                     </span>
                   )}
                 </div>
 
                 {/* Meta Info */}
-                <div className="flex items-center justify-between pt-4">
+                <div className="flex items-center justify-between pt-2">
                   <div className="flex items-center gap-4 text-sm" style={{ color: "var(--text-secondary)" }}>
                     <div className="flex items-center gap-1.5">
                       <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
