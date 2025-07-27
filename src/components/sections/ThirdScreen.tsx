@@ -1,8 +1,8 @@
 /*
  * @Author: tianci tianci1208@outlook.com
  * @Date: 2025-07-22 20:42:49
- * @LastEditors: tianci tianci1208@outlook.com
- * @LastEditTime: 2025-07-25 22:03:41
+ * @LastEditors: tianci dex_Liu@outlook.com
+ * @LastEditTime: 2025-07-27 20:21:00
  * @FilePath: \my-website\src\components\sections\ThirdScreen.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -74,7 +74,7 @@ const ThirdScreen: React.FC = () => {
       />
       
       {/* 内容区域 */}
-       <h2 className="font-bold absolute Tianci" style={{ fontSize: '20vw', color: '#ffffff', letterSpacing: '0.1em' }}>
+       <h2 className="font-bold absolute Tianci" style={{ fontSize: '30vh', color: '#ffffff', letterSpacing: '0.1em' }}>
           TianCi
         </h2>
     </section>

@@ -79,7 +79,7 @@ export default function Home() {
                       className="draw"
                       d="M336.2,130.05C261.69,118,16.52,122,20.65,244.29c4.17,123,484.3,299.8,734.57,108.37,244-186.65-337.91-311-546.54-268.47"
                       fill="none"
-                      stroke="#8486aa"
+                      stroke="#8A61B9"
                       strokeMiterlimit="10"
                       strokeWidth="8"
                     />

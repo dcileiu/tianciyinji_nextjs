@@ -2,7 +2,7 @@
  * @Author: tianci tianci1208@outlook.com
  * @Date: 2025-07-18 23:33:28
  * @LastEditors: tianci dex_Liu@outlook.com
- * @LastEditTime: 2025-07-27 18:33:32
+ * @LastEditTime: 2025-07-27 20:42:52
  * @FilePath: \my-website\src\app\globals.css
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -118,54 +118,47 @@ body {
 }
 
 /* 以下是第一屏的样式 */
-header {
+.header {
   position: fixed;
   top: 0;
   left: 0;
-  height: 72px;
+  height: 80px;
   width: 100%;
   z-index: 99999;
   background-color: var(--header-bg);
   display: flex;
   align-items: end;
   justify-content: center;
-  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  --reveal-color: #fff;
+  transition: background-color 0.35s ease-in-out;
   will-change: background-color;
 }
 
-.container {
+:has(.scrolled) .header{
+  background-color: transparent;
+}
+
+.header-content {
+  width: 90%;
   height: 70px;
   display: flex;
   align-items: center;
-  transform: none;
   transform-origin: 50% 50% 0;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* 默认状态 */
-  margin: 0 3%;
-  backdrop-filter: blur(0);
-  background-color: transparent;
-  border-radius: 0;
-  box-shadow: none;
+  transition: width 0.35s ease-in-out, box-shadow 0.35s ease-in-out, background-color 0.35s ease-in-out, backdrop-filter 0.35s ease-in-out;
+  padding: 0 24px;
+  border-radius: 99px;
+  will-change: background-color, width, box-shadow, backdrop-filter;
 }
 
-.scrolled .container {
-  margin: 0 15%;
-  padding: 0 2rem;
-  backdrop-filter: blur(50px);
-  background-color: rgba(0, 0, 0, 0.1);
-  border-radius: 40px;
-  box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset,
-    rgba(0, 0, 0, 0.16) 0px 2px 8px 0px,
-    0px 0px 12px 0px rgba(138, 43, 226, 0.15);
-  transform: translateZ(0);
+/* 滚动时的样式 */
+.header-content.scrolled {
+  width: 75%;
+  background-color: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(100px);
+  -webkit-backdrop-filter: blur(100px);
+  box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 2px 0px inset, rgba(0, 0, 0, 0.16) 0px 2px 8px 0px;
 }
-:has(.scrolled) header {
-  background-color: transparent;
-  --reveal-color: #111;
-  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
+
+
 
 button {
   cursor: pointer;
@@ -526,7 +519,7 @@ body {
 
   /* Third screen height */
   .third-screen {
-    height: 25vh;
+    height: 30vh;
   }
 }
 
