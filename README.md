@@ -1,3 +1,15 @@
+<!--
+ * @Author: tianci tianci1208@outlook.com
+ * @Date: 2025-07-26 20:17:03
+ * @LastEditors: tianci tianci1208@outlook.com
+ * @LastEditTime: 2025-07-27 13:35:35
+ * @FilePath: \tianciyinji_nextjs\README.md
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
+# 天赐印记
+
+博客前端
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
