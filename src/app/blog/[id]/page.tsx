@@ -36,7 +36,7 @@ export default function ArticleDetailPage() {
     return (
       <div className="min-h-screen pt-24 flex items-center justify-center" style={{ backgroundColor: "var(--background)" }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{borderBottomColor: 'var(--purple)'}}></div>
           <p style={{ color: "var(--text-secondary)" }}>加载文章中...</p>
         </div>
       </div>

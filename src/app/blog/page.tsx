@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Calendar, Clock, User, AlertCircle } from "lucide-react";
+import { motion } from "framer-motion";
 import { useArticleStore } from "@/store/articleStore";
 
 // 辅助函数：格式化日期
@@ -45,6 +46,8 @@ export default function BlogPage() {
     // 页面加载时获取已发布的文章和分类列表
     fetchPublishedArticles(1);
     fetchCategories();
+    // 重置滚动位置到顶部
+    window.scrollTo(0, 0);
   }, [fetchPublishedArticles, fetchCategories]);
 
   // 处理分类切换
@@ -71,7 +74,7 @@ export default function BlogPage() {
       <div className="min-h-screen" style={{ backgroundColor: "var(--background)" }}>
         <div className="flex items-center justify-center pt-24 min-h-[50vh]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{borderBottomColor: 'var(--purple)'}}></div>
             <p style={{ color: "var(--text-secondary)" }}>加载文章中...</p>
           </div>
         </div>
@@ -105,13 +108,17 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "var(--background)" }}>
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
         {/* Category Filter */}
-        <div className="mb-8">
+        <motion.div 
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
           {categoriesLoading ? (
             <div className="flex items-center gap-2 mb-4">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2" style={{borderBottomColor: 'var(--purple)'}}></div>
               <span style={{ color: "var(--text-secondary)" }} className="text-sm">加载分类中...</span>
             </div>
           ) : (
@@ -137,18 +144,21 @@ export default function BlogPage() {
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Blog Posts Masonry Layout */}
         <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
-          {displayedArticles.map((article) => (
+          {displayedArticles.map((article, index) => (
             <Link href={`/blog/${article.id}`} key={article.id}>
-              <article 
+              <motion.article 
                 className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 cursor-pointer break-inside-avoid md:mb-8 sm:mb-1"
                 style={{ 
                   backgroundColor: 'var(--article-bg)',
                   boxShadow: 'var(--card-shadow)'
                 }}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
               >
               {/* Cover Image with Overlay */}
               <div className="relative h-56 overflow-hidden">
@@ -157,10 +167,11 @@ export default function BlogPage() {
                   alt={article.title}
                   width={400}
                   height={224}
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = "/default-cover.jpg";
+                    target.src = "/8.jpg";
                   }}
                 />
                 {/* Gradient Overlay */}
@@ -245,7 +256,7 @@ export default function BlogPage() {
                   </div>
                 </div>
               </div>
-            </article>
+            </motion.article>
             </Link>
           ))}
         </div>

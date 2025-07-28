@@ -294,7 +294,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 
 /* Slide animation styles */
@@ -331,12 +331,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: var(--purple);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #7a51a9;
 }
 
 @keyframes textclip {
@@ -500,10 +500,21 @@ body {
   }
 
   /* Blog cards mobile optimization */
+  .columns-1 {
+    width: 100% !important;
+    column-gap: 0 !important;
+  }
+  
   .columns-1 article {
     width: 100% !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .columns-1 a {
+    display: block;
+    width: 100% !important;
   }
 }
 

@@ -2,13 +2,13 @@
  * @Author: tianci tianci1208@outlook.com
  * @Date: 2025-01-27 10:00:00
  * @LastEditors: tianci dex_Liu@outlook.com
- * @LastEditTime: 2025-07-28 22:22:34
+ * @LastEditTime: 2025-07-28 22:53:24
  * @FilePath: \my-website\src\app\portfolio\page.tsx
  * @Description: 个人作品展示页面
  */
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { ExternalLink, Github, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
@@ -105,6 +105,11 @@ const categories = ["全部", "全栈开发","前端架构", "前端组件", "�
 const PortfolioPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = React.useState("全部");
   const [hoveredProject, setHoveredProject] = React.useState<number | null>(null);
+
+  // 页面进入时重置滚动条位置
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const filteredProjects = selectedCategory === "全部" 
     ? projects 
