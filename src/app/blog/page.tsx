@@ -121,7 +121,7 @@ export default function BlogPage() {
                   key={category.key}
                   onClick={() => handleCategoryChange(category.key)}
                   disabled={loading}
-                  className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
                     selectedCategory === category.key
                       ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
                       : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
@@ -144,7 +144,7 @@ export default function BlogPage() {
           {displayedArticles.map((article) => (
             <Link href={`/blog/${article.id}`} key={article.id}>
               <article 
-                className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 cursor-pointer break-inside-avoid mb-8"
+                className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 cursor-pointer break-inside-avoid md:mb-8 sm:mb-1"
                 style={{ 
                   backgroundColor: 'var(--article-bg)',
                   boxShadow: 'var(--card-shadow)'
@@ -172,10 +172,6 @@ export default function BlogPage() {
                     {categories.find(cat => cat.key === article.category)?.name || article.category}
                   </span>
                 </div>
-                
-
-                
-
               </div>
 
               {/* Content */}

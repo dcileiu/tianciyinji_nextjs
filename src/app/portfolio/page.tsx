@@ -1,8 +1,8 @@
 /*
  * @Author: tianci tianci1208@outlook.com
  * @Date: 2025-01-27 10:00:00
- * @LastEditors: tianci tianci1208@outlook.com
- * @LastEditTime: 2025-07-27 14:44:57
+ * @LastEditors: tianci dex_Liu@outlook.com
+ * @LastEditTime: 2025-07-28 22:22:34
  * @FilePath: \my-website\src\app\portfolio\page.tsx
  * @Description: 个人作品展示页面
  */
@@ -52,11 +52,11 @@ const projects: Project[] = [
   },
   {
     id: 3,
-    title: "React组件库",
-    description: "企业级React UI组件库",
-    longDescription: "一套完整的企业级React UI组件库，包含常用的表单、表格、导航等组件，支持主题定制，提供完整的TypeScript类型定义和详细的文档。",
+    title: "Vue组件库",
+    description: "企业级Vue UI组件库",
+    longDescription: "一套完整的企业级Vue UI组件库，包含常用的表单、表格、导航等组件，支持主题定制，提供完整的TypeScript类型定义和详细的文档。",
     image: "/32.jpg",
-    technologies: ["React", "TypeScript", "Storybook", "Jest", "Rollup"],
+    technologies: ["Vue3", "TypeScript", "Jest", "Rollup"],
     githubUrl: "https://github.com/tianci",
     liveUrl: "/",
     date: "2024-10",
