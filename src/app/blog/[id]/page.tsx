@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import { useArticleStore } from '@/store/articleStore';
 import { MdPreview, MdCatalog } from 'md-editor-rt';
 import 'md-editor-rt/lib/preview.css';
+import Loading from '@/components/common/Loading';
 
 export default function ArticleDetailPage() {
   const params = useParams();
@@ -35,10 +36,11 @@ export default function ArticleDetailPage() {
   if (articleLoading) {
     return (
       <div className="min-h-screen pt-24 flex items-center justify-center" style={{ backgroundColor: "var(--background)" }}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{borderBottomColor: 'var(--purple)'}}></div>
-          <p style={{ color: "var(--text-secondary)" }}>加载文章中...</p>
-        </div>
+        <Loading 
+          visible={true} 
+          text="加载文章中..." 
+          size="small"
+        />
       </div>
     );
   }

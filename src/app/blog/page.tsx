@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Calendar, Clock, User, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useArticleStore } from "@/store/articleStore";
+import Loading from "@/components/common/Loading";
 
 // 辅助函数：格式化日期
 const formatDate = (dateString: string) => {
@@ -73,10 +74,11 @@ export default function BlogPage() {
     return (
       <div className="min-h-screen" style={{ backgroundColor: "var(--background)" }}>
         <div className="flex items-center justify-center pt-24 min-h-[50vh]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{borderBottomColor: 'var(--purple)'}}></div>
-            <p style={{ color: "var(--text-secondary)" }}>加载文章中...</p>
-          </div>
+          <Loading 
+            visible={true} 
+            text="加载文章中..." 
+            size="small"
+          />
         </div>
       </div>
     );
@@ -118,8 +120,11 @@ export default function BlogPage() {
         >
           {categoriesLoading ? (
             <div className="flex items-center gap-2 mb-4">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2" style={{borderBottomColor: 'var(--purple)'}}></div>
-              <span style={{ color: "var(--text-secondary)" }} className="text-sm">加载分类中...</span>
+              <Loading 
+                visible={true} 
+                text="加载分类中..." 
+                size="small"
+              />
             </div>
           ) : (
             <div className="flex flex-wrap gap-2 sm:gap-4">
