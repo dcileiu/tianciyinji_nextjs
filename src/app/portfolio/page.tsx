@@ -2,7 +2,7 @@
  * @Author: tianci tianci1208@outlook.com
  * @Date: 2025-01-27 10:00:00
  * @LastEditors: tianci dex_Liu@outlook.com
- * @LastEditTime: 2025-07-28 22:53:24
+ * @LastEditTime: 2025-08-02 22:17:12
  * @FilePath: \my-website\src\app\portfolio\page.tsx
  * @Description: 个人作品展示页面
  */
@@ -27,8 +27,33 @@ interface Project {
 }
 
 const projects: Project[] = [
+  
   {
     id: 1,
+    title: "VCC卡系统",
+    description: "虚拟信用卡管理系统",
+    longDescription: "一套完整的虚拟信用卡管理系统，包括客户端、运营端、风控端，支持卡片申请、额度管理、交易记录、风控监控等功能，提供安全可靠的虚拟支付解决方案。",
+    image: "/35.jpg",
+    technologies: ["Vue3", "Vite", "TypeScript", "Pinia", "Ant-design-vue", "class-transformer", "Eslint"],
+    githubUrl: "https://github.com/tianci",
+    liveUrl: "/",
+    date: "2024-04",
+    category: "前端架构"
+  },
+  {
+    id: 2,
+    title: "API文档多人协同编辑系统",
+    description: "基于Vue的API文档多人协同编辑系统",
+    longDescription: "这是一个基于Vue的API文档多人协同编辑系统，支持多人同时编辑、版本控制、权限管理等功能，提供完善的文档编写和发布机制。",
+    image: "/32.jpg",
+    technologies: ["Vue3", "Vite","TypeScript", "shareDB", "WebSocket","Node.js","MongoDB"],
+    githubUrl: "https://github.com/tianci",
+    liveUrl: "https://apidocs.aletaplanet.com/web/login",
+    date: "2023-10",
+    category: "全栈开发"
+  },
+  {
+    id: 3,
     title: "天赐印记博客系统",
     description: "基于Next.js和Node.js的全栈博客系统",
     longDescription: "这是一个现代化的全栈博客系统，采用Next.js作为前端框架，Node.js作为后端，支持文章管理、分类标签、主题切换等功能。界面设计简洁优雅，用户体验流畅。",
@@ -40,29 +65,6 @@ const projects: Project[] = [
     category: "全栈开发"
   },
   {
-    id: 2,
-    title: "VCC卡系统",
-    description: "虚拟信用卡管理系统",
-    longDescription: "一套完整的虚拟信用卡管理系统，支持卡片申请、额度管理、交易记录、风控监控等功能，提供安全可靠的虚拟支付解决方案。",
-    image: "/35.jpg",
-    technologies: ["Vue3", "Vite", "TypeScript", "Pinia", "Ant-design-vue", "class-transformer", "Eslint"],
-    githubUrl: "https://github.com/tianci",
-    date: "2024-04",
-    category: "前端架构"
-  },
-  {
-    id: 3,
-    title: "Vue组件库",
-    description: "企业级Vue UI组件库",
-    longDescription: "一套完整的企业级Vue UI组件库，包含常用的表单、表格、导航等组件，支持主题定制，提供完整的TypeScript类型定义和详细的文档。",
-    image: "/32.jpg",
-    technologies: ["Vue3", "TypeScript", "Jest", "Rollup"],
-    githubUrl: "https://github.com/tianci",
-    liveUrl: "/",
-    date: "2024-10",
-    category: "前端组件"
-  },
-  {
     id: 4,
     title: "数据可视化大屏",
     description: "基于ECharts的数据可视化展示系统",
@@ -71,33 +73,33 @@ const projects: Project[] = [
     technologies: ["Vue.js", "ECharts", "WebSocket", "Element Plus"],
     githubUrl: "https://github.com/tianci",
     liveUrl: "/",
-    date: "2024-08",
+    date: "2024-12",
     category: "数据可视化"
   },
   {
     id: 5,
-    title: "移动端商城应用",
-    description: "基于React Native的跨平台电商应用",
-    longDescription: "一款功能完整的移动端电商应用，支持商品浏览、购物车、订单管理、支付等核心功能，采用React Native开发，同时支持iOS和Android平台。",
-    image: "/34.jpg",
-    technologies: ["React Native", "Redux", "TypeScript", "Expo"],
+    title: "电商达人CRM系统",
+    description: "基于Next.js的电商达人CRM系统",
+    longDescription: "这是一个基于Next.js的电商达人CRM系统，支持客户管理、订单管理、库存管理等功能，提供完善的客户关系管理机制。",
+    image: "/36.jpg",
+    technologies: ["Next.js","Shadcn-ui", "Turbopack","TypeScript","Supabase"],
     githubUrl: "https://github.com/tianci",
     liveUrl: "/",
-    date: "2024-06",
-    category: "移动开发"
+    date: "2025-07",
+    category: "全栈开发"
   },
   {
     id: 6,
-    title: "AI智能助手",
-    description: "基于GPT的智能对话助手",
-    longDescription: "集成了最新AI技术的智能对话助手，支持多轮对话、上下文理解、知识问答等功能，可以帮助用户解决各种问题。",
-    image: "/36.jpg",
-    technologies: ["Python", "FastAPI", "OpenAI API", "React", "WebSocket"],
+    title: "惠买小程序",
+    description: "基于uni-app的跨平台电商应用",
+    longDescription: "一款功能完整的移动端电商应用，支持商品浏览、购物车、订单管理、支付等核心功能，采用uni-app开发，同时支持iOS和Android平台。",
+    image: "/34.jpg",
+    technologies: ["uni-app", "Vue.js", "TypeScript", "uni-ui"],
     githubUrl: "https://github.com/tianci",
     liveUrl: "/",
-    date: "2024-02",
-    category: "人工智能"
-  }
+    date: "2022-12",
+    category: "移动开发"
+  },
 ];
 
 const categories = ["全部", "全栈开发","前端架构", "前端组件", "数据可视化", "移动开发",  "人工智能"];

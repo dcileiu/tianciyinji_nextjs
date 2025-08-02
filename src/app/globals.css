@@ -2,7 +2,7 @@
  * @Author: tianci tianci1208@outlook.com
  * @Date: 2025-07-18 23:33:28
  * @LastEditors: tianci dex_Liu@outlook.com
- * @LastEditTime: 2025-07-28 22:21:23
+ * @LastEditTime: 2025-08-02 22:21:17
  * @FilePath: \my-website\src\app\globals.css
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -154,7 +154,7 @@ body {
   background-color: #0000001a;
   backdrop-filter: blur(100px);
   -webkit-backdrop-filter: blur(100px);
-  box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 4px 0px inset, rgba(0, 0, 0, 0.16) 0px 2px 8px 0px;
+  box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 5px 0px inset, rgba(0, 0, 0, 0.16) 0px 2px 8px 0px;
 }
 
 
