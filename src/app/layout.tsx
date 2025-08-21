@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "zh_CN",
-    url: "https://your-domain.com",
+    url: "https://itianci.cn",
     title: "天赐印记 - 前端开发者个人网站",
     description: "欢迎来到Tianci的个人网站！这里分享前端开发技术、项目作品和技术博客。",
     siteName: "天赐印记",
@@ -107,7 +107,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning>
       <head>
         {/* Fix for markdown-it isSpace error with Next.js 15 + Turbopack */}
         <Script id="markdown-it-fix" strategy="beforeInteractive">

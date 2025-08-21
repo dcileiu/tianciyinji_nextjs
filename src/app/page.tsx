@@ -94,7 +94,7 @@ export default function Home() {
             <Image
               data-speed="clamp(2.4)"
               src="/31.jpg"
-              alt="Hero image 1"
+              alt="前端开发者工作场景 - 专注编程的程序员"
               width={400}
               height={300}
               priority
@@ -102,7 +102,7 @@ export default function Home() {
             <Image
               data-speed="clamp(1.8)"
               src="/35.jpg"
-              alt="Hero image 2"
+              alt="现代Web开发技术栈 - React Next.js TypeScript"
               width={400}
               height={300}
               priority
@@ -110,7 +110,7 @@ export default function Home() {
             <Image
               data-speed="clamp(2.2)"
               src="/36.jpg"
-              alt="Hero image 3"
+              alt="技术博客写作 - 分享前端开发经验"
               width={400}
               height={300}
               priority
@@ -118,7 +118,7 @@ export default function Home() {
             <Image
               data-speed="clamp(1.5)"
               src="/37.jpg"
-              alt="Hero image 4"
+              alt="个人项目作品展示 - 创新的Web应用"
               width={400}
               height={300}
               priority

@@ -12,6 +12,7 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import { ExternalLink, Github, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
+import Breadcrumb from "@/components/common/Breadcrumb";
 
 interface Project {
   id: number;
@@ -120,6 +121,13 @@ const PortfolioPage: React.FC = () => {
   return (
     <div className="min-h-screen pt-24" style={{ backgroundColor: "var(--background)" }}>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* 面包屑导航 */}
+        <Breadcrumb
+          items={[
+            { label: "个人作品集" }
+          ]}
+          className="mb-6"
+        />
         {/* Header */}
         <div className="text-center mb-12">
           <motion.h1 
@@ -191,10 +199,11 @@ const PortfolioPage: React.FC = () => {
               <div className="relative h-48 overflow-hidden">
                 <Image
                   src={project.image}
-                  alt={project.title}
+                  alt={`${project.title} - ${project.description} - 使用${project.technologies.slice(0, 3).join('、')}等技术开发`}
                   width={400}
                   height={192}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  loading={index < 6 ? "eager" : "lazy"}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = "/default-cover.jpg";

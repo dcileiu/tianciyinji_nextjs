@@ -7,6 +7,7 @@ import { Calendar, Clock, User, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useArticleStore } from "@/store/articleStore";
 import Loading from "@/components/common/Loading";
+import Breadcrumb from "@/components/common/Breadcrumb";
 
 // 辅助函数：格式化日期
 const formatDate = (dateString: string) => {
@@ -111,6 +112,13 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "var(--background)" }}>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
+        {/* 面包屑导航 */}
+        <Breadcrumb
+          items={[
+            { label: "技术博客" }
+          ]}
+          className="mb-6"
+        />
         {/* Category Filter */}
         <motion.div 
           className="mb-8"
