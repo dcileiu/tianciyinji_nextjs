@@ -132,6 +132,9 @@ body {
 }
 
 .header-effect {
+
+  --frost: 0.05;
+
   position: relative;
   width: 100%;
   height: 60px;
@@ -141,10 +144,7 @@ body {
   /* 边缘色散效果 */
   -webkit-backdrop-filter: url(#displacementFilter);
   backdrop-filter: url(#displacementFilter);
-  background: light-dark(
-    rgba(255, 255, 255, 0.1),
-    rgba(0, 0, 0, 0.4)
-  );
+  background: light-dark(hsl(0 0% 100% / var(--frost, 0)), hsl(0 0% 0% / var(--frost, 0)));
   border: 1px solid light-dark(
     rgba(255, 255, 255, 0.2),
     rgba(255, 255, 255, 0.1)
@@ -426,7 +426,6 @@ body {
 
   .header-effect {
     height: 56px;
-    border-radius: 9999px;
   }
 
   .header-content {
