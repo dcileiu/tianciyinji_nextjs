@@ -8,49 +8,12 @@
  */
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import React from 'react';
 import DotGrid from '../ui/DotGrid';
 
-gsap.registerPlugin(ScrollTrigger);
-
 const ThirdScreen: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!containerRef.current || !contentRef.current) return;
-
-    // 内容区域动画
-    gsap.fromTo(
-      contentRef.current,
-      {
-        y: 100,
-        opacity: 0,
-      },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1.2,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top 80%',
-          end: 'top 50%',
-          toggleActions: 'play none none reverse',
-        },
-      }
-    );
-
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
-  }, []);
-
   return (
     <section
-      ref={containerRef}
       className="relative flex items-center justify-center overflow-hidden third-screen"
       style={{
         backgroundColor: 'var(--third-section-bg)'
@@ -72,13 +35,8 @@ const ThirdScreen: React.FC = () => {
         resistance={750}
         returnDuration={1.5}
       />
-      
-      {/* 内容区域 */}
-       <h2 className="font-bold absolute Tianci" style={{ fontSize: '22vw', color: '#ffffff', letterSpacing: '1vw' }}>
-          TIANCI
-        </h2>
     </section>
-  ); 
+  );
 };
 
 export default ThirdScreen;
