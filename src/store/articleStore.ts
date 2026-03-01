@@ -113,7 +113,7 @@ export const useArticleStore = create<ArticleState>()(devtools(
     fetchArticles: async (page = 1) => {
       set({ loading: true, error: null });
       try {
-        const response = await apiCall(`/articles?page=${page}`);
+        const response = await apiCall(`/api/articles?page=${page}`);
         console.log('response：',response)
         set({
           articles: response.data.data,
@@ -132,7 +132,7 @@ export const useArticleStore = create<ArticleState>()(devtools(
     fetchPublishedArticles: async (page = 1) => {
       set({ loading: true, error: null });
       try {
-        const response = await apiCall(`/articles/published?page=${page}`);
+        const response = await apiCall(`/api/articles/published?page=${page}`);
         console.log('1：',response)
         set({
           articles: response.data.data,
@@ -151,7 +151,7 @@ export const useArticleStore = create<ArticleState>()(devtools(
     fetchArticlesByCategory: async (category: string, page = 1) => {
       set({ loading: true, error: null });
       try {
-        const response = await apiCall(`/articles/category/${category}?page=${page}`);
+        const response = await apiCall(`/api/articles/category/${category}?page=${page}`);
         set({
           articles: response.data.data,
           pagination: response.data.pagination,
@@ -169,7 +169,7 @@ export const useArticleStore = create<ArticleState>()(devtools(
     fetchArticlesByTag: async (tag: string, page = 1) => {
       set({ loading: true, error: null });
       try {
-        const response = await apiCall(`/articles/tag/${tag}?page=${page}`);
+        const response = await apiCall(`/api/articles/tag/${tag}?page=${page}`);
         set({
           articles: response.data.data,
           pagination: response.data.pagination,
@@ -187,7 +187,7 @@ export const useArticleStore = create<ArticleState>()(devtools(
     fetchArticleById: async (id: number) => {
       set({ articleLoading: true, error: null });
       try {
-        const response = await fetch(`${API_BASE_URL}/articles/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/articles/${id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
