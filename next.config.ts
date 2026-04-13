@@ -103,6 +103,16 @@ const nextConfig: NextConfig = {
       // },
     ];
   },
+
+  /** 与 Nitro `advertisements/position-[position].get.ts` 路径一致：`/api/advertisements/position-<slot>` */
+  async rewrites() {
+    return [
+      {
+        source: "/api/advertisements/position-:position",
+        destination: "/api/advertisements/position/:position",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

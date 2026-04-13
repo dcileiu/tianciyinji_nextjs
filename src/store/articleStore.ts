@@ -1,5 +1,6 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { apiUrl } from "@/lib/api-url";
 
 // 文章数据类型（基于API接口定义）
 export interface Article {
@@ -74,22 +75,18 @@ interface ArticleState {
   reset: () => void;
 }
 
-// API基础URL（可以从环境变量获取）
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-
-// API调用函数
 const apiCall = async (endpoint: string): Promise<ArticleResponse> => {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    method: 'GET',
+  const response = await fetch(apiUrl(endpoint), {
+    method: "GET",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
-  
+
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
-  
+
   return response.json();
 };
 
@@ -114,7 +111,6 @@ export const useArticleStore = create<ArticleState>()(devtools(
       set({ loading: true, error: null });
       try {
         const response = await apiCall(`/api/articles?page=${page}`);
-        console.log('response：',response)
         set({
           articles: response.data.data,
           pagination: response.data.pagination,
@@ -133,7 +129,6 @@ export const useArticleStore = create<ArticleState>()(devtools(
       set({ loading: true, error: null });
       try {
         const response = await apiCall(`/api/articles/published?page=${page}`);
-        console.log('1：',response)
         set({
           articles: response.data.data,
           pagination: response.data.pagination,
@@ -151,7 +146,9 @@ export const useArticleStore = create<ArticleState>()(devtools(
     fetchArticlesByCategory: async (category: string, page = 1) => {
       set({ loading: true, error: null });
       try {
-        const response = await apiCall(`/api/articles/category/${category}?page=${page}`);
+        const response = await apiCall(
+          `/api/articles/category/${encodeURIComponent(category)}?page=${page}`,
+        );
         set({
           articles: response.data.data,
           pagination: response.data.pagination,
@@ -169,7 +166,9 @@ export const useArticleStore = create<ArticleState>()(devtools(
     fetchArticlesByTag: async (tag: string, page = 1) => {
       set({ loading: true, error: null });
       try {
-        const response = await apiCall(`/api/articles/tag/${tag}?page=${page}`);
+        const response = await apiCall(
+          `/api/articles/tag/${encodeURIComponent(tag)}?page=${page}`,
+        );
         set({
           articles: response.data.data,
           pagination: response.data.pagination,
@@ -187,25 +186,36 @@ export const useArticleStore = create<ArticleState>()(devtools(
     fetchArticleById: async (id: number) => {
       set({ articleLoading: true, error: null });
       try {
-        const response = await fetch(`${API_BASE_URL}/api/articles/${id}`, {
-          method: 'GET',
+        const response = await fetch(apiUrl(`/api/articles/${id}`), {
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         });
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
-        const data = await response.json();
+
+        const data = (await response.json()) as {
+          error?: string;
+          data?: Article;
+        };
+        if (data.error) {
+          set({
+            currentArticle: null,
+            articleLoading: false,
+            error: data.error,
+          });
+          return;
+        }
         set({
-          currentArticle: data.data || data,
+          currentArticle: data.data ?? null,
           articleLoading: false,
         });
       } catch (error) {
         set({
-          error: error instanceof Error ? error.message : '获取文章详情失败',
+          error: error instanceof Error ? error.message : "获取文章详情失败",
           articleLoading: false,
         });
       }
@@ -247,10 +257,10 @@ export const useArticleStore = create<ArticleState>()(devtools(
     fetchCategories: async () => {
       set({ categoriesLoading: true, error: null });
       try {
-        const response = await fetch(`${API_BASE_URL}/categories`, {
-          method: 'GET',
+        const response = await fetch(apiUrl("/api/categories"), {
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         });
         

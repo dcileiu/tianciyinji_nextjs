@@ -1,0 +1,33 @@
+{
+  "name": "nuxt-admin-backend",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "drizzle-orm": "^0.45.1",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.18.2",
+    "nuxt": "^4.3.1",
+    "vue": "^3.5.28",
+    "vue-router": "^5.0.3",
+    "@ant-design/icons-vue": "^7.0.1",
+    "ant-design-vue": "^4.2.6",
+    "pinia": "^3.0.4",
+    "@pinia/colada": "^0.21.6",
+    "ofetch": "^1.4.0",
+    "dayjs": "^1.11.19",
+    "md-editor-v3": "^4.21.3",
+    "echarts": "^5.5.1"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.9",
+    "@pinia/nuxt": "^0.11.3"
+  }
+}

@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# 旧 Nuxt 后台归档，不参与 Next 构建与版本管理
+/tianciyinji-admin-backend-master/
+
 # dependencies
 /node_modules
 package-lock.json

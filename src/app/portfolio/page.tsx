@@ -10,7 +10,7 @@
 
 import React, { useEffect } from "react";
 import Image from "next/image";
-import { ExternalLink, Github, Calendar } from "lucide-react";
+import { ExternalLink, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import Breadcrumb from "@/components/common/Breadcrumb";
 

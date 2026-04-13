@@ -1,42 +1,42 @@
-import { MetadataRoute } from 'next'
+import { MetadataRoute } from "next";
+import { getPublishedArticlesForSitemap } from "@/server/queries/blog";
+
+const baseUrl = "https://itianci.cn";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://itianci.cn'
-  
-  // Static pages
-  const staticPages = [
+  const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
+      changeFrequency: "weekly",
       priority: 1,
     },
     {
       url: `${baseUrl}/blog`,
       lastModified: new Date(),
-      changeFrequency: 'daily' as const,
+      changeFrequency: "daily",
       priority: 0.8,
     },
     {
       url: `${baseUrl}/portfolio`,
       lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
+      changeFrequency: "monthly",
       priority: 0.7,
     },
-  ]
-  
-  // TODO: When you have a blog API, add dynamic blog posts here
-  // Example:
-  // const blogPosts = await fetch(`${baseUrl}/api/articles`).then(res => res.json())
-  // const blogSitemapEntries = blogPosts.map((post: any) => ({
-  //   url: `${baseUrl}/blog/${post.id}`,
-  //   lastModified: new Date(post.updatedAt),
-  //   changeFrequency: 'monthly' as const,
-  //   priority: 0.6,
-  // }))
-  
-  return [
-    ...staticPages,
-    // ...blogSitemapEntries, // Uncomment when you have blog API
-  ]
-} 
+  ];
+
+  let blogEntries: MetadataRoute.Sitemap = [];
+  try {
+    const rows = await getPublishedArticlesForSitemap();
+    blogEntries = rows.map((row) => ({
+      url: `${baseUrl}/blog/${row.id}`,
+      lastModified: row.updatedAt ? new Date(row.updatedAt) : new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    }));
+  } catch {
+    /* 数据库未配置或不可用时仅返回静态页 */
+  }
+
+  return [...staticPages, ...blogEntries];
+}

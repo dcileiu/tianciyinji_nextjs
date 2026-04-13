@@ -14,6 +14,7 @@ import { ThemeProvider } from "next-themes";
 import DynamicHeader from "../components/layout/DynamicHeader";
 import StructuredData from "@/components/StructuredData";
 import PageTransition from "../components/layout/PageTransition";
+import PublicVisitTracker from "@/components/analytics/PublicVisitTracker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -135,6 +136,7 @@ export default function RootLayout({
           <PageTransition>
             {children}
           </PageTransition>
+          <PublicVisitTracker />
         </ThemeProvider>
       </body>
     </html>
