@@ -67,9 +67,10 @@
   --md-editor-catalog-color: #3f4a54;
   --shadow-primary: rgba(0, 0, 0, 0.1);
   --shadow-secondary: rgba(255, 255, 255, 0.1);
-  --button-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1);
-
+  --button-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  --card-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1);
 
   --f-5-min: 30;
   --f-5-max: 120;
@@ -100,8 +101,10 @@
   --md-editor-catalog-color: #8a61b9;
   --shadow-primary: rgba(255, 255, 255, 0.1);
   --shadow-secondary: rgba(0, 0, 0, 0.3);
-  --button-shadow: 0 2px 8px rgba(255, 255, 255, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.3);
-  --card-shadow: 0 4px 16px rgba(255, 255, 255, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.3);
+  --button-shadow:
+    0 2px 8px rgba(255, 255, 255, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.3);
+  --card-shadow:
+    0 4px 16px rgba(255, 255, 255, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.3);
 }
 
 body {
@@ -132,7 +135,6 @@ body {
 }
 
 .header-effect {
-
   --frost: 0.05;
 
   position: relative;
@@ -144,17 +146,17 @@ body {
   /* 边缘色散效果 */
   -webkit-backdrop-filter: url(#displacementFilter);
   backdrop-filter: url(#displacementFilter);
-  background: light-dark(hsl(0 0% 100% / var(--frost, 0)), hsl(0 0% 0% / var(--frost, 0)));
-  border: 1px solid light-dark(
-    rgba(255, 255, 255, 0.2),
-    rgba(255, 255, 255, 0.1)
+  background: light-dark(
+    hsl(0 0% 100% / var(--frost, 0)),
+    hsl(0 0% 0% / var(--frost, 0))
   );
+  border: 1px solid
+    light-dark(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
   box-shadow: 
     /* 外部主阴影 */
     0 4px 24px rgba(0, 0, 0, 0.15),
     0 8px 48px rgba(0, 0, 0, 0.1),
-    /* 内部高光 */
-    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    /* 内部高光 */ inset 0 0 0 1px rgba(255, 255, 255, 0.1),
     inset 0 1px 2px rgba(255, 255, 255, 0.2);
   display: block;
   opacity: 1;
@@ -180,9 +182,6 @@ body {
   overflow: hidden;
   z-index: 1;
 }
-
-
-
 
 button {
   cursor: pointer;
@@ -376,7 +375,6 @@ body {
   }
 }
 
-
 .tianci {
   background: linear-gradient(
     45deg,
@@ -503,14 +501,14 @@ body {
     width: 100% !important;
     column-gap: 0 !important;
   }
-  
+
   .columns-1 article {
     width: 100% !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
     margin-bottom: 1rem !important;
   }
-  
+
   .columns-1 a {
     display: block;
     width: 100% !important;
@@ -530,10 +528,10 @@ body {
   color: var(--purple) !important;
 }
 
-.md-editor-preview a:hover{
+.md-editor-preview a:hover {
   color: var(--purple) !important;
 }
 
-.md-editor-preview *{
+.md-editor-preview * {
   font-family: "HanChanBanYuanTi", sans-serif !important;
 }
