@@ -19,7 +19,33 @@ function shouldSend(path: string): boolean {
 function isPublicPath(pathname: string): boolean {
   if (!pathname) return false;
   if (pathname.startsWith("/admin")) return false;
+  if (pathname.startsWith("/api")) return false;
+  if (pathname.startsWith("/_next")) return false;
   return true;
+}
+
+/** 优先使用 sendBeacon（页面卸载/切路由时不会被中断），不可用时回退 keepalive fetch */
+function postBeacon(url: string, body?: BodyInit | null): void {
+  try {
+    if (
+      typeof navigator !== "undefined" &&
+      typeof navigator.sendBeacon === "function"
+    ) {
+      const blob =
+        typeof body === "string"
+          ? new Blob([body], { type: "application/json" })
+          : body ?? undefined;
+      if (navigator.sendBeacon(url, blob)) return;
+    }
+  } catch {
+    /* fallthrough */
+  }
+  void fetch(url, {
+    method: "POST",
+    headers: body ? { "Content-Type": "application/json" } : undefined,
+    body: body ?? undefined,
+    keepalive: true,
+  }).catch(() => {});
 }
 
 export default function PublicVisitTracker() {
@@ -37,22 +63,8 @@ export default function PublicVisitTracker() {
           : undefined,
     });
 
-    const initVisits: RequestInit = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: payload,
-      keepalive: true,
-    };
-
-    const initStats: RequestInit = {
-      method: "POST",
-      keepalive: true,
-    };
-
-    void Promise.all([
-      fetch(apiUrl("/api/visits"), initVisits).catch(() => {}),
-      fetch(apiUrl("/api/statistics/visit"), initStats).catch(() => {}),
-    ]);
+    postBeacon(apiUrl("/api/visits"), payload);
+    postBeacon(apiUrl("/api/statistics/visit"));
   }, [pathname]);
 
   return null;

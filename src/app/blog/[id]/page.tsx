@@ -4,7 +4,7 @@ import ArticleDetailClient from "./ArticleDetailClient";
 import { getArticleByIdForPublic } from "@/server/queries/blog";
 import type { Article } from "@/store/articleStore";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -97,8 +97,21 @@ export default async function ArticleDetailPage({ params }: PageProps) {
 
   const canonical = `https://itianci.cn/blog/${id}`;
 
+  const plainText = (article?.content || "").replace(/[#*`>\s\n]+/g, " ").trim();
+  const wordCount = plainText ? plainText.length : undefined;
+
   return (
     <>
+      <StructuredData
+        type="breadcrumb"
+        data={{
+          items: [
+            { name: "首页", url: "https://itianci.cn" },
+            { name: "博客", url: "https://itianci.cn/blog" },
+            { name: article?.title ?? "文章", url: canonical },
+          ],
+        }}
+      />
       <StructuredData
         type="article"
         data={{
@@ -114,6 +127,9 @@ export default async function ArticleDetailPage({ params }: PageProps) {
             : new Date().toISOString(),
           url: canonical,
           image: ogImageUrl(article),
+          keywords: article?.tags?.length ? article.tags.join(",") : undefined,
+          articleSection: article?.category || "前端开发",
+          wordCount,
         }}
       />
       <ArticleDetailClient id={id} initialArticle={article} />

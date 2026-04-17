@@ -35,15 +35,24 @@ export default function PortfolioLayout({
 }) {
   return (
     <>
-      <StructuredData 
-        type="website" 
+      <StructuredData
+        type="website"
         data={{
           name: "个人作品集 | 天赐印记",
           description: "展示Tianci在全栈开发、前端架构、数据可视化等领域的项目作品集",
           url: "https://itianci.cn/portfolio",
-        }} 
+        }}
+      />
+      <StructuredData
+        type="breadcrumb"
+        data={{
+          items: [
+            { name: "首页", url: "https://itianci.cn" },
+            { name: "个人作品集", url: "https://itianci.cn/portfolio" },
+          ],
+        }}
       />
       {children}
     </>
   );
-} 
+}

@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=18.18"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.1",

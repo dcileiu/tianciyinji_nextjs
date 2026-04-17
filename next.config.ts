@@ -3,10 +3,19 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
 
-  // Enable experimental features for better performance
-  // experimental: {
-  //   optimizeCss: true,
-  // },
+  /** 优化大型第三方库的 tree-shaking / 按需加载 */
+  experimental: {
+    optimizePackageImports: [
+      "antd",
+      "@ant-design/icons",
+      "lucide-react",
+      "dayjs",
+      "echarts",
+    ],
+  },
+
+  poweredByHeader: false,
+  reactStrictMode: true,
 
   // Compress responses
   compress: true,
@@ -88,6 +97,15 @@ const nextConfig: NextConfig = {
             value: "public, max-age=86400, s-maxage=86400",
           },
         ],
+      },
+      /** 双保险：让管理后台 & API 永远不被搜索引擎索引 */
+      {
+        source: "/admin/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" }],
+      },
+      {
+        source: "/api/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
       },
     ];
   },

@@ -74,7 +74,7 @@ export default function Home() {
               <h1>
                 <span className="clamp">
                   你好！
-                  <svg data-name="Layer 1" viewBox="0 0 842.14 500">
+                  <svg data-name="Layer 1" viewBox="0 0 842.14 500" aria-hidden="true" focusable="false">
                     <path
                       className="draw"
                       d="M336.2,130.05C261.69,118,16.52,122,20.65,244.29c4.17,123,484.3,299.8,734.57,108.37,244-186.65-337.91-311-546.54-268.47"
@@ -86,6 +86,9 @@ export default function Home() {
                   </svg>
                 </span>
                 <span className="yt">这位朋友.</span>
+                <span className="sr-only">
+                  天赐印记 - Tianci 的前端开发者个人网站，分享 React、Next.js、TypeScript 等现代 Web 开发技术文章与项目作品。
+                </span>
               </h1>
             </div>
           </div>

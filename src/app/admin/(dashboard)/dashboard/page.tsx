@@ -2,10 +2,30 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Card, Col, List, Row, Statistic, Tag } from "antd";
+import { Card, Col, List, Row, Spin, Statistic, Tag } from "antd";
 import dayjs from "dayjs";
+import dynamic from "next/dynamic";
 import { adminFetch } from "@/lib/admin-fetch";
-import VisitTrendChart from "@/components/admin/VisitTrendChart";
+
+const VisitTrendChart = dynamic(
+  () => import("@/components/admin/VisitTrendChart"),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        style={{
+          width: "100%",
+          height: 360,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Spin />
+      </div>
+    ),
+  },
+);
 
 interface TagItem {
   id: number;

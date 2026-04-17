@@ -94,8 +94,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#111111" },
@@ -110,6 +108,10 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
+        {/* 远程图片 CDN 预连接，降低首屏图片 TTFB */}
+        <link rel="dns-prefetch" href="//s2.loli.net" />
+        <link rel="preconnect" href="https://s2.loli.net" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="//p1.qhimg.com" />
         {/* Fix for markdown-it isSpace error with Next.js 15 + Turbopack */}
         <Script id="markdown-it-fix" strategy="beforeInteractive">
           {`
