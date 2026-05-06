@@ -1,0 +1,190 @@
+/* 
+ * Luoxiaohei / Code Theme
+ * Version: 0.02
+ * Release Date: 2025/11/26
+ * Author: Shuakami
+ */
+
+:root {
+  /* 亮色主题变量 */
+  --code-text: #383a42;
+  --code-keyword: #aa25a8;
+  --code-type: #c18401;
+  --code-string: #50a14f;
+  --code-number: #a77a19;
+  --code-function: #4078f2;
+  --code-class: #4078f2;
+  --code-variable: #383a42;
+  --code-attr: #986801;
+  --code-comment: #a0a1a7;
+  --code-operator: #515254;
+  --code-tag: #383a42;
+  --code-tag-name: #e45649;
+  --code-tag-attr: #986801;
+}
+
+html.christmas :root {
+  --code-text: #2a2f2a;
+  --code-keyword: #c41e3a; /* Red for keywords */
+  --code-string: #1a472a; /* Forest Green for strings */
+  --code-function: #d4af37; /* Gold for functions */
+  --code-comment: #9ca3af;
+  --code-tag-name: #c41e3a;
+  --code-type: #b58603;
+}
+
+:root[data-theme="dark"] /* 支持 data-theme 属性 */,
+:root[class~="dark"] /* 支持 class="dark" */,
+[data-theme="dark"] /* 支持任意元素的 data-theme */,
+.dark {
+  /* 保留原有的 .dark */
+  --code-text: #e6e6e6;
+  --code-keyword: #c678dd;
+  --code-type: #e5c07b;
+  --code-string: #98c379;
+  --code-number: #e5c07b;
+  --code-function: #61afef;
+  --code-class: #e5c07b;
+  --code-variable: #abb2bf;
+  --code-attr: #d19a66;
+  --code-comment: #7f848e;
+  --code-operator: #7a7c7f;
+  --code-tag: #abb2bf;
+  --code-tag-name: #e06c75;
+  --code-tag-attr: #d19a66;
+}
+
+html.christmas.dark :root {
+  --code-text: #e8ebe8;
+  --code-keyword: #ff6b6b; /* Soft Red */
+  --code-string: #7ee081; /* Soft Green */
+  --code-function: #f1d302; /* Bright Gold */
+  --code-comment: #52665b;
+  --code-type: #d4af37;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --code-text: #e6e6e6;
+    --code-keyword: #c678dd;
+    --code-type: #e5c07b;
+    --code-string: #98c379;
+    --code-number: #e5c07b;
+    --code-function: #61afef;
+    --code-class: #e5c07b;
+    --code-variable: #abb2bf;
+    --code-attr: #d19a66;
+    --code-comment: #7f848e;
+    --code-operator: #7a7c7f;
+    --code-tag: #abb2bf;
+    --code-tag-name: #e06c75;
+    --code-tag-attr: #d19a66;
+  }
+}
+
+/* 代码块基础样式 */
+.markdown-body pre > code {
+  color: var(--code-text);
+  font-size: 0.895rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: auto;
+  font-weight: 350;
+  font-family:
+    "JetBrains Mono", "Fira Code", "SF Mono", ui-monospace, "Cascadia Code", Menlo, Monaco, Consolas, monospace;
+  font-feature-settings:
+    "liga" 1,
+    "calt" 1;
+  text-rendering: optimizeLegibility;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Prism.js 语法高亮 */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: var(--code-comment);
+  font-style: italic;
+  font-weight: 350;
+}
+
+.token.keyword {
+  color: var(--code-keyword);
+  font-weight: 350;
+}
+
+.token.builtin,
+.token.class-name {
+  color: var(--code-type);
+  font-weight: 350;
+}
+
+.token.string {
+  color: var(--code-string);
+}
+
+.token.number {
+  color: var(--code-number);
+}
+
+.token.function {
+  color: var(--code-function);
+  font-weight: 350;
+}
+
+.token.property,
+.token.variable {
+  color: var(--code-variable);
+}
+
+.token.attr-name {
+  color: var(--code-attr);
+}
+
+.token.operator,
+.token.punctuation {
+  color: var(--code-operator);
+}
+
+.token.tag {
+  color: var(--code-tag);
+}
+
+.token.tag .token.tag {
+  color: var(--code-tag-name);
+}
+
+.token.tag .token.attr-name {
+  color: var(--code-tag-attr);
+}
+
+/* 其他语法元素 */
+.token.boolean,
+.token.constant {
+  color: var(--code-keyword);
+}
+
+.token.selector,
+.token.important,
+.token.atrule,
+.token.regex {
+  color: var(--code-function);
+}
+
+.token.deleted {
+  color: var(--code-tag-name);
+}
+
+.token.inserted {
+  color: var(--code-string);
+}
+
+html.christmas .markdown-body pre {
+  border-color: rgba(26, 71, 42, 0.1);
+  background-color: rgba(26, 71, 42, 0.02);
+}
+html.christmas.dark .markdown-body pre {
+  border-color: rgba(212, 175, 55, 0.1);
+  background-color: rgba(10, 20, 15, 0.5);
+}
