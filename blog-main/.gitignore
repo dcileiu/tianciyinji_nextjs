@@ -1,5 +1,6 @@
-﻿# dependencies
+# dependencies
 /node_modules
+pnpm-lock.yaml
 /.pnp
 .pnp.js
 
