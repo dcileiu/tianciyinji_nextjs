@@ -1,13 +1,7 @@
 {
-  "version": 2,
-  "buildCommand": "CI=false next build",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./*",
-  "builds": [
-    {
-      "src": "next.config.js",
-      "use": "@vercel/next"
-    }
-  ],
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm build",
   "github": {
     "silent": true
   }

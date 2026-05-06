@@ -29,7 +29,8 @@ export const siteConfig = {
   home: {
     eyebrow: '个人网站',
     title: '记录博客、作品、资源与一些长期主义的尝试。',
-    intro: '这里是我的个人站，用来发布文章、整理作品、沉淀资源，也公开一些正在进行中的想法与实验。欢迎访问，也欢迎留言。',
+    intro:
+      '这里是我的个人站，用来发布文章、整理作品、沉淀资源，也公开一些正在进行中的想法与实验。欢迎访问，也欢迎留言。',
   },
   about: {
     intro:
@@ -67,7 +68,18 @@ export const siteConfig = {
   },
 } as const;
 
-export const siteKeywords = ['天赐印记','个人站', '博客', '作品集', 'Next.js', 'Markdown', 'Vue', 'uni-app', 'Python', 'AI Tools'];
+export const siteKeywords = [
+  '天赐印记',
+  '个人站',
+  '博客',
+  '作品集',
+  'Next.js',
+  'Markdown',
+  'Vue',
+  'uni-app',
+  'Python',
+  'AI Tools',
+];
 
 export const primaryNavItems: NavItem[] = [
   { label: '首页', href: '/', enabled: true },

@@ -2,20 +2,21 @@
   "name": "blog",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.22.0",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "oxlint .",
     "lint:fix": "oxlint . --fix",
-    "typecheck": "pnpm exec tsc --noEmit",
-    "format": "pnpm exec biome check --write .",
-    "format:check": "pnpm exec biome check ."
+    "typecheck": "tsc --noEmit",
+    "format": "biome check --write .",
+    "format:check": "biome check ."
   },
   "dependencies": {
-    "@blocknote/core": "^0.37.0",
-    "@blocknote/react": "^0.37.0",
-    "@blocknote/shadcn": "^0.37.0",
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-dialog": "^1.1.5",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
