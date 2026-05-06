@@ -13,7 +13,7 @@ interface ChristmasEffectProps {
    */
   zIndex?: number;
   /**
-   * Whether to show the cursor Santa hat. Default true.
+   * Whether to show the cursor Santa hat. Default false.
    */
   showCursorHat?: boolean;
 }
@@ -49,7 +49,7 @@ const setCookie = (name: string, value: string, days: number = 365) => {
   document.cookie = `${name}=${value};${expires};path=/`;
 };
 
-export const ChristmasEffect: React.FC<ChristmasEffectProps> = ({ zIndex = 50, showCursorHat = true }) => {
+export const ChristmasEffect: React.FC<ChristmasEffectProps> = ({ zIndex = 50, showCursorHat = false }) => {
   const [shouldShow, setShouldShow] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hatCanvasRef = useRef<HTMLCanvasElement>(null);

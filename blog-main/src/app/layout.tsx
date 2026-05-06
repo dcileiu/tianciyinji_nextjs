@@ -122,7 +122,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {children}
             </LayoutClient>
             <GlobalMusicPlayer />
-            <ChristmasEffect zIndex={0} showCursorHat={true} />
+            <ChristmasEffect zIndex={0} showCursorHat={false} />
           </MusicPlayerProvider>
         </ThemeProvider>
       </body>
