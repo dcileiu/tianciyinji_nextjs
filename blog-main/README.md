@@ -1,4 +1,4 @@
-# Blog Starter
+# Blog Starter 
 
 这个版本已经切成了“本地内容 + 本地图片”的简单工作流：
 
