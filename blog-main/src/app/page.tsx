@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import HomeTitleSvg from '@/components/HomeTitleSvg';
 import { siteConfig } from '@/lib/site-config';
 import type { Post } from '@/types/post';
 import { getBlogPosts } from '@/utils/posts';
@@ -42,6 +43,11 @@ function PostItem({ post }: { post: Post }) {
 
 export default async function Page() {
   const { posts, total } = await getBlogPosts(1);
+  const homeTitleLines: [string, string, string] = [
+    '欢迎来打我的个人主页',
+    '记录博客、作品、资源与一些长期主义的尝试。',
+    '全栈开发一枚',
+  ];
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:py-24">
@@ -49,8 +55,9 @@ export default async function Page() {
         <p className="mb-4 text-xs uppercase tracking-[0.24em] text-black/35 sm:mb-5 sm:text-sm dark:text-white/35">
           {siteConfig.home.eyebrow}
         </p>
-        <h1 className="mb-4 text-3xl font-medium tracking-tight text-black sm:mb-5 sm:text-4xl md:mb-6 md:text-5xl lg:text-6xl xl:text-7xl dark:text-white">
-          {siteConfig.home.title}
+        <h1 className="mb-4 sm:mb-5 md:mb-6">
+          <span className="sr-only">{homeTitleLines.join(' / ')}</span>
+          <HomeTitleSvg className="w-full max-w-[860px]" lines={homeTitleLines} />
         </h1>
         <p className="mb-6 max-w-2xl text-sm leading-relaxed text-black/55 sm:mb-8 sm:text-base md:text-lg dark:text-white/55">
           {siteConfig.home.intro}
