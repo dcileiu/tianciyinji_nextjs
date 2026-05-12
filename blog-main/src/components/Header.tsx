@@ -4,6 +4,7 @@ import { Route } from 'next';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { NAV_ITEMS_LEGACY as NAV_ITEMS } from '@/lib/navigation';
+import { siteConfig } from '@/lib/site-config';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
 const HEADER_CLASS =
@@ -31,7 +32,7 @@ export default function Header() {
       <header className={HEADER_CLASS}>
         <div className="mx-0 px-6 h-16 flex items-center justify-between relative z-50">
           <Link href="/" className={LINK_CLASS} prefetch={true}>
-            Shuakami
+            {siteConfig.name}
           </Link>
 
           {/* 移动端菜单按钮 */}

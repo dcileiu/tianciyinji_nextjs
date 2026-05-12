@@ -2,6 +2,7 @@ import { Route } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { NAV_ITEMS_LEGACY as NAV_ITEMS } from '@/lib/navigation';
+import { siteConfig } from '@/lib/site-config';
 
 export default function SideNav() {
   return (
@@ -16,20 +17,20 @@ export default function SideNav() {
         <div className="flex flex-col items-center text-center">
           <div className="w-24 h-24 rounded-full overflow-hidden mb-4 bg-black/5 dark:bg-white/5">
             <Image
-              src="/friends/assets/avatars/shuakami.jpg"
-              alt="Shuakami"
+              src={siteConfig.avatar}
+              alt={siteConfig.name}
               width={96}
               height={96}
               className="object-cover"
             />
           </div>
-          <h1 className="text-xl font-medium mb-2 text-black dark:text-white">Shuakami</h1>
+          <h1 className="text-xl font-medium mb-2 text-black dark:text-white">{siteConfig.name}</h1>
           <p className="text-sm text-black/60 dark:text-white/60 mb-4">Full-stack developer & designer</p>
 
           {/* 社交链接 */}
           <div className="flex space-x-4">
             <a
-              href="https://github.com/shuakami"
+              href={siteConfig.socials.github || `https://github.com/${siteConfig.githubUsername}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-black/40 dark:text-white/40 hover:text-black/60 dark:hover:text-white/60 transition-colors"
@@ -39,7 +40,7 @@ export default function SideNav() {
               </svg>
             </a>
             <a
-              href="mailto:12519212@qq.com"
+              href={siteConfig.socials.email}
               className="text-black/40 dark:text-white/40 hover:text-black/60 dark:hover:text-white/60 transition-colors"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -47,7 +48,7 @@ export default function SideNav() {
               </svg>
             </a>
             <a
-              href="/rss"
+              href={siteConfig.socials.rss}
               target="_blank"
               rel="noopener noreferrer"
               className="text-black/40 dark:text-white/40 hover:text-black/60 dark:hover:text-white/60 transition-colors"

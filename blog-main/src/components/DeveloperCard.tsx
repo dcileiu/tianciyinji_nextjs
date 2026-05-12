@@ -33,10 +33,10 @@ export default function DeveloperCard({ developer }: DeveloperCardProps) {
           CARD_STYLES.ring,
           CARD_STYLES.hover,
           'group relative p-6 h-[200px] transition-all duration-300 ease-out',
-          developer.name === 'Shuakami' ? 'dark:group-hover:shadow-[0_0_30px_rgba(120,119,198,0.5)]' : ''
+          developer.name === 'Dci' ? 'dark:group-hover:shadow-[0_0_30px_rgba(120,119,198,0.5)]' : ''
         )}
       >
-        {developer.name === 'Shuakami' && (
+        {developer.name === 'Dci' && (
           <>
             {/* RGB光效 */}
             <div

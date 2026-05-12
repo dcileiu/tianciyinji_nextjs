@@ -1,5 +1,5 @@
 // MusicPlayerProvider
-// Powered by Shuakami<shuakami@sdjz.wiki>
+// Powered by Dci
 
 'use client';
 

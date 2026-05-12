@@ -11,18 +11,18 @@ type StarterWork = {
 
 // Edit this file first when you want to customize the site's identity.
 export const siteConfig = {
-  name: '天赐',
-  title: '天赐印记',
+  name: 'Dci',
+  title: 'Dci',
   description: '记录博客、作品、资源与一些长期主义的尝试。',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-  avatar: '/content/site/avatar.svg',
+  avatar: '/avatar.webp',
   email: 'dcileiu@outlook.com',
-  tagline: '写作、项目与一些正在发生的事',
+  tagline: '写作、项目与一些正在发生的事。',
   role: '全栈开发者 / 写作者',
   location: '广东深圳',
   githubUsername: 'tianci',
   socials: {
-    github: '',
+    github: 'https://github.com/tianci',
     email: 'mailto:dcileiu@outlook.com',
     rss: '/rss',
   },
@@ -30,7 +30,7 @@ export const siteConfig = {
     eyebrow: '个人网站',
     title: '记录博客、作品、资源与一些长期主义的尝试。',
     intro:
-      '这里是我的个人站，用来发布文章、整理作品、沉淀资源，也公开一些正在进行中的想法与实验。欢迎访问，也欢迎留言。',
+      '这里是我的个人站点，用来发布文章、整理作品、沉淀资源，也公开一些正在进行中的想法与实验。欢迎访问，也欢迎留言。',
   },
   about: {
     intro:
@@ -40,7 +40,8 @@ export const siteConfig = {
     contactText: '如果你想聊合作、交流技术，或者只是打个招呼，都可以通过邮箱或 GitHub 找到我。',
   },
   works: {
-    intro: '这里先保留一个轻量作品陈列模板。你后面只需要替换成自己的项目、链接和图片，就能很快整理出一页像样的作品集。',
+    intro:
+      '这里先保留一个轻量作品陈列模板。你后面只需要替换成自己的项目、链接和图片，就能很快整理出一页像样的作品集。',
     items: [
       {
         title: '个人博客',
@@ -68,18 +69,7 @@ export const siteConfig = {
   },
 } as const;
 
-export const siteKeywords = [
-  '天赐印记',
-  '个人站',
-  '博客',
-  '作品集',
-  'Next.js',
-  'Markdown',
-  'Vue',
-  'uni-app',
-  'Python',
-  'AI Tools',
-];
+export const siteKeywords = ['Dci', '个人站', '博客', '作品集', 'Next.js', 'Markdown', 'Vue', 'uni-app', 'Python', 'AI Tools'];
 
 export const primaryNavItems: NavItem[] = [
   { label: '首页', href: '/', enabled: true },
