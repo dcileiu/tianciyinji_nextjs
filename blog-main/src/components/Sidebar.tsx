@@ -57,7 +57,7 @@ export function Sidebar({ isOpen, width = 192, navItems, onClose }: SidebarProps
         className={cn(
           'hidden md:block',
           'fixed top-0 left-0 z-40 h-screen pt-16',
-          'bg-gray-50 dark:bg-[#121212]',
+          'bg-[#fbf8ff] dark:bg-[#120f1f]',
           'transition-transform duration-300 ease-out will-change-transform',
           isOpen ? 'translate-x-0' : '-translate-x-full',
           // 初始加载时的淡入动画
@@ -76,9 +76,9 @@ export function Sidebar({ isOpen, width = 192, navItems, onClose }: SidebarProps
                     href={item.href as any}
                     className={cn(
                       'group flex h-9 w-full items-center justify-between rounded-md px-3 text-sm',
-                      'text-black/90 dark:text-white/90',
-                      'hover:bg-black/5 dark:hover:bg-white/5',
-                      'hover:text-black dark:hover:text-white',
+                      'text-[#34265d] dark:text-[#efeaff]',
+                      'hover:bg-[#eee7ff] dark:hover:bg-[#221b37]',
+                      'hover:text-[#4f31d7] dark:hover:text-[#ffffff]',
                       'transition-colors duration-200'
                     )}
                   >
@@ -106,7 +106,7 @@ export function Sidebar({ isOpen, width = 192, navItems, onClose }: SidebarProps
             }}
             onAnimationComplete={handleAnimationComplete}
             // @ts-ignore - framer-motion type issue
-            className={cn('md:hidden', 'fixed inset-0 z-50', 'bg-white/95 dark:bg-black/95', 'backdrop-blur-3xl')}
+            className={cn('md:hidden', 'fixed inset-0 z-50', 'bg-[#fbf8ff]/95 dark:bg-[#120f1f]/96', 'backdrop-blur-3xl')}
             onMouseDown={handleClose}
           >
             {/* 侧边栏内容区域 */}
@@ -117,8 +117,8 @@ export function Sidebar({ isOpen, width = 192, navItems, onClose }: SidebarProps
                   onClick={handleClose}
                   className={cn(
                     'p-2 rounded-full',
-                    'text-black/60 dark:text-white/60',
-                    'hover:bg-black/5 dark:hover:bg-white/5',
+                    'text-[#75689e] dark:text-[#b8a9e4]',
+                    'hover:bg-[#ece5ff] dark:hover:bg-[#231c38]',
                     'transition-colors duration-200'
                   )}
                   aria-label="关闭菜单"
@@ -143,9 +143,9 @@ export function Sidebar({ isOpen, width = 192, navItems, onClose }: SidebarProps
                           className={cn(
                             'block w-full py-3 px-4',
                             'text-3xl font-bold text-left',
-                            'text-black dark:text-white',
+                            'text-[#2f2154] dark:text-[#f1ebff]',
                             'rounded-lg',
-                            'hover:bg-black/5 dark:hover:bg-white/5',
+                            'hover:bg-[#eee7ff] dark:hover:bg-[#221b37]',
                             'transition-all duration-200'
                           )}
                         >

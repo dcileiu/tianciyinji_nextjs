@@ -131,7 +131,7 @@ export default function AppearanceSettings() {
           triggerHaptic(HapticFeedback.Light);
           setIsOpen(!isOpen);
         }}
-        className="w-8 h-8 rounded-full flex items-center justify-center text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-all"
+        className="w-8 h-8 rounded-full flex items-center justify-center text-[#75689e] dark:text-[#b3a4de] hover:text-[#4f31d7] dark:hover:text-[#f0ebff] hover:bg-[#ece5ff] dark:hover:bg-[#231c38] transition-all"
         aria-label="外观设置"
       >
         <Settings className="h-4 w-4" />
@@ -145,12 +145,12 @@ export default function AppearanceSettings() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-[#1a1a1a] rounded-xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] overflow-hidden z-50"
+            className="absolute top-full right-0 mt-2 w-72 bg-[#fffbff] dark:bg-[#171125] rounded-xl border border-[#ddd3fb]/70 dark:border-[#2a2140]/90 shadow-[0_18px_48px_rgba(91,61,245,0.14)] dark:shadow-[0_18px_48px_rgba(0,0,0,0.45)] overflow-hidden z-50"
           >
             <div className="p-5 space-y-5">
               {/* 主题切换 */}
               <div>
-                <div className="text-[11px] font-semibold text-black/40 dark:text-white/40 mb-3 uppercase tracking-wider">
+                <div className="text-[11px] font-semibold text-[#8677b2] dark:text-[#b4a7db] mb-3 uppercase tracking-wider">
                   主题
                 </div>
                 <div className="grid grid-cols-3 gap-2">
@@ -167,18 +167,18 @@ export default function AppearanceSettings() {
                       }}
                       className={`group relative p-3 rounded-xl transition-all ${
                         theme === item.value
-                          ? 'bg-black/[0.06] dark:bg-white/[0.06]'
-                          : 'hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'
+                          ? 'bg-[#efe8ff] dark:bg-[#241c38]'
+                          : 'hover:bg-[#f5f0ff] dark:hover:bg-[#1d162f]'
                       }`}
                     >
                       <item.Icon
                         className={`w-5 h-5 mx-auto mb-1.5 transition-colors ${
-                          theme === item.value ? 'text-black dark:text-white' : 'text-black/50 dark:text-white/50'
+                          theme === item.value ? 'text-[#4f31d7] dark:text-[#f0ebff]' : 'text-[#7c6daa] dark:text-[#ac9cd8]'
                         }`}
                       />
                       <div
                         className={`text-[11px] font-medium transition-colors ${
-                          theme === item.value ? 'text-black dark:text-white' : 'text-black/60 dark:text-white/60'
+                          theme === item.value ? 'text-[#3d2b82] dark:text-[#f0ebff]' : 'text-[#716397] dark:text-[#ac9cd8]'
                         }`}
                       >
                         {item.label}
@@ -186,7 +186,7 @@ export default function AppearanceSettings() {
                       {theme === item.value && (
                         <motion.div
                           layoutId="activeTheme"
-                          className="absolute inset-0 border-2 border-black/[0.12] dark:border-white/[0.12] rounded-xl"
+                          className="absolute inset-0 border-2 border-[#c4b6ff] dark:border-[#5b4694] rounded-xl"
                           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                         />
                       )}
@@ -196,11 +196,11 @@ export default function AppearanceSettings() {
               </div>
 
               {/* 分隔线 */}
-              <div className="h-px bg-black/[0.06] dark:bg-white/[0.06]" />
+              <div className="h-px bg-[#e5ddfb] dark:bg-[#2a2140]" />
 
               {/* 背景设置 */}
               <div>
-                <div className="text-[11px] font-semibold text-black/40 dark:text-white/40 mb-3 uppercase tracking-wider">
+                <div className="text-[11px] font-semibold text-[#8677b2] dark:text-[#b4a7db] mb-3 uppercase tracking-wider">
                   背景
                 </div>
                 {shouldDisableBackground && (
@@ -229,22 +229,22 @@ export default function AppearanceSettings() {
                         shouldDisableBackground
                           ? 'opacity-40 cursor-not-allowed'
                           : config.backgroundStyle === item.value
-                            ? 'bg-black/[0.06] dark:bg-white/[0.06]'
-                            : 'hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'
+                            ? 'bg-[#efe8ff] dark:bg-[#241c38]'
+                            : 'hover:bg-[#f5f0ff] dark:hover:bg-[#1d162f]'
                       }`}
                     >
                       <item.Icon
                         className={`w-5 h-5 mx-auto mb-1.5 transition-colors ${
                           !shouldDisableBackground && config.backgroundStyle === item.value
-                            ? 'text-black dark:text-white'
-                            : 'text-black/50 dark:text-white/50'
+                            ? 'text-[#4f31d7] dark:text-[#f0ebff]'
+                            : 'text-[#7c6daa] dark:text-[#ac9cd8]'
                         }`}
                       />
                       <div
                         className={`text-[11px] font-medium transition-colors ${
                           !shouldDisableBackground && config.backgroundStyle === item.value
-                            ? 'text-black dark:text-white'
-                            : 'text-black/60 dark:text-white/60'
+                            ? 'text-[#3d2b82] dark:text-[#f0ebff]'
+                            : 'text-[#716397] dark:text-[#ac9cd8]'
                         }`}
                       >
                         {item.label}
@@ -252,7 +252,7 @@ export default function AppearanceSettings() {
                       {config.backgroundStyle === item.value && !shouldDisableBackground && (
                         <motion.div
                           layoutId="activeBackground"
-                          className="absolute inset-0 border-2 border-black/[0.12] dark:border-white/[0.12] rounded-xl"
+                          className="absolute inset-0 border-2 border-[#c4b6ff] dark:border-[#5b4694] rounded-xl"
                           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                         />
                       )}
@@ -262,11 +262,11 @@ export default function AppearanceSettings() {
               </div>
 
               {/* 分隔线 */}
-              <div className="h-px bg-black/[0.06] dark:bg-white/[0.06]" />
+              <div className="h-px bg-[#e5ddfb] dark:bg-[#2a2140]" />
 
               {/* 页面布局 */}
               <div>
-                <div className="text-[11px] font-semibold text-black/40 dark:text-white/40 mb-3 uppercase tracking-wider">
+                <div className="text-[11px] font-semibold text-[#8677b2] dark:text-[#b4a7db] mb-3 uppercase tracking-wider">
                   布局
                 </div>
                 {shouldForceLayout && (
@@ -299,33 +299,33 @@ export default function AppearanceSettings() {
                         className={`group relative p-3 rounded-xl transition-all ${
                           shouldForceLayout
                             ? isForced
-                              ? 'bg-black/[0.06] dark:bg-white/[0.06] cursor-not-allowed'
+                              ? 'bg-[#efe8ff] dark:bg-[#241c38] cursor-not-allowed'
                               : 'opacity-40 cursor-not-allowed'
                             : config.layoutMode === item.value
-                              ? 'bg-black/[0.06] dark:bg-white/[0.06]'
-                              : 'hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'
+                              ? 'bg-[#efe8ff] dark:bg-[#241c38]'
+                              : 'hover:bg-[#f5f0ff] dark:hover:bg-[#1d162f]'
                         }`}
                       >
                         <item.Icon
                           className={`w-5 h-5 mx-auto mb-1.5 transition-colors ${
                             shouldForceLayout
                               ? isForced
-                                ? 'text-black dark:text-white'
-                                : 'text-black/50 dark:text-white/50'
+                                ? 'text-[#4f31d7] dark:text-[#f0ebff]'
+                                : 'text-[#7c6daa] dark:text-[#ac9cd8]'
                               : config.layoutMode === item.value
-                                ? 'text-black dark:text-white'
-                                : 'text-black/50 dark:text-white/50'
+                                ? 'text-[#4f31d7] dark:text-[#f0ebff]'
+                                : 'text-[#7c6daa] dark:text-[#ac9cd8]'
                           }`}
                         />
                         <div
                           className={`text-[11px] font-medium transition-colors ${
                             shouldForceLayout
                               ? isForced
-                                ? 'text-black dark:text-white'
-                                : 'text-black/60 dark:text-white/60'
+                                ? 'text-[#3d2b82] dark:text-[#f0ebff]'
+                                : 'text-[#716397] dark:text-[#ac9cd8]'
                               : config.layoutMode === item.value
-                                ? 'text-black dark:text-white'
-                                : 'text-black/60 dark:text-white/60'
+                                ? 'text-[#3d2b82] dark:text-[#f0ebff]'
+                                : 'text-[#716397] dark:text-[#ac9cd8]'
                           }`}
                         >
                           {item.label}
@@ -334,7 +334,7 @@ export default function AppearanceSettings() {
                           (!shouldForceLayout && config.layoutMode === item.value)) && (
                           <motion.div
                             layoutId="activeLayout"
-                            className="absolute inset-0 border-2 border-black/[0.12] dark:border-white/[0.12] rounded-xl"
+                            className="absolute inset-0 border-2 border-[#c4b6ff] dark:border-[#5b4694] rounded-xl"
                             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                           />
                         )}

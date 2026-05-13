@@ -22,7 +22,7 @@ export default function Footer() {
                 href={social.href}
                 target={social.href.startsWith('mailto:') ? undefined : '_blank'}
                 rel={social.href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
-                className="text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white transition-colors duration-200"
+                className="text-[#7f71ab] dark:text-[#b3a3df] hover:text-[#5b3df5] dark:hover:text-[#ece7ff] transition-colors duration-200"
                 aria-label={social.name}
               >
                 <social.icon className="w-5 h-5" />
@@ -30,9 +30,9 @@ export default function Footer() {
             ))}
           </div>
 
-          <div className="text-black/60 dark:text-white/60 text-base">{siteConfig.tagline}</div>
+          <div className="text-[#615488] dark:text-[#c7baf1] text-base">{siteConfig.tagline}</div>
 
-          <div className="text-xs text-black/40 dark:text-white/40">
+          <div className="text-xs text-[#8779b3] dark:text-[#9e8eca]">
             © {currentYear} {siteConfig.name}
           </div>
         </div>

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import HomeTitleSvg from '@/components/HomeTitleSvg';
+import HomeTitleTyper from '@/components/HomeTitleTyper';
 import { siteConfig } from '@/lib/site-config';
 import type { Post } from '@/types/post';
 import { getBlogPosts } from '@/utils/posts';
@@ -55,25 +55,25 @@ export default async function Page() {
         <p className="mb-4 text-xs uppercase tracking-[0.24em] text-black/35 sm:mb-5 sm:text-sm dark:text-white/35">
           {siteConfig.home.eyebrow}
         </p>
-        <h1 className="mb-4 sm:mb-5 md:mb-6">
+        <h1 className="mb-6 sm:mb-8 md:mb-10">
           <span className="sr-only">{homeTitleLines.join(' / ')}</span>
-          <HomeTitleSvg className="w-full max-w-[860px]" lines={homeTitleLines} />
+          <HomeTitleTyper className="w-full max-w-[960px]" lines={homeTitleLines} />
         </h1>
         <p className="mb-6 max-w-2xl text-sm leading-relaxed text-black/55 sm:mb-8 sm:text-base md:text-lg dark:text-white/55">
           {siteConfig.home.intro}
         </p>
         <div className="mb-6 flex flex-wrap items-center gap-4 text-sm text-black/50 sm:mb-8 dark:text-white/50">
-          <Link href="/about" className="transition-colors hover:text-black dark:hover:text-white">
+          <Link href="/about" className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]">
             了解我
           </Link>
-          <Link href="/works" className="transition-colors hover:text-black dark:hover:text-white">
+          <Link href="/works" className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]">
             查看作品
           </Link>
-          <Link href="/resources" className="transition-colors hover:text-black dark:hover:text-white">
+          <Link href="/resources" className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]">
             浏览资源
           </Link>
         </div>
-        <div className="h-[2px] w-12 bg-black sm:w-14 md:w-16 dark:bg-white" />
+        <div className="h-[2px] w-12 bg-[#5b3df5] sm:w-14 md:w-16 dark:bg-[#d8cdff]" />
       </header>
 
       <section>

@@ -62,13 +62,13 @@ export const ChristmasEffect: React.FC<ChristmasEffectProps> = ({ zIndex = 50, s
 
   // Colors for the theme (Hardcoded to ensure consistency across projects)
   const COLORS = {
-    SNOW_START: '#E8DCC8', // Warm Beige (Deeper cream for visibility)
-    SNOW_END: '#F5E6D3', // Light Wheat (Softer beige)
-    SNOW_PILE: '#F0E5D8', // Pale Sand (Visible cream pile)
-    SNOW_DEBRIS: '#D4C5B0', // Darker beige for chunks
-    RED: '#C41E3A',
+    SNOW_START: '#F0E7FF', // Soft Lilac
+    SNOW_END: '#FBF7FF', // Bright Lavender White
+    SNOW_PILE: '#F4ECFF', // Pale Violet Pile
+    SNOW_DEBRIS: '#D8CBF4', // Muted Lavender Debris
+    RED: '#6B4EFF',
     WHITE: '#FFFFFF',
-    GOLD: '#D4AF37',
+    GOLD: '#C9BCFF',
   };
 
   // Check cookie on mount
