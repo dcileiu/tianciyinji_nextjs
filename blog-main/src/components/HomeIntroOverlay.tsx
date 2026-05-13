@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import BrandLogo from '@/components/BrandLogo';
 
 const INTRO_DURATION_MS = 3200;
@@ -22,10 +23,15 @@ function easeOutCubic(t: number) {
 }
 
 export default function HomeIntroOverlay({ enabled = true }: HomeIntroOverlayProps) {
+  const [mounted, setMounted] = useState(false);
   const [state, setState] = useState<IntroState>(enabled ? 'playing' : 'hidden');
   const [progress, setProgress] = useState(0);
   const rafRef = useRef<number | null>(null);
   const hideTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -77,11 +83,9 @@ export default function HomeIntroOverlay({ enabled = true }: HomeIntroOverlayPro
     };
   }, [state]);
 
-  if (!enabled || state === 'hidden') return null;
+  if (!mounted || !enabled || state === 'hidden') return null;
 
   const isLeaving = state === 'leaving';
-  const barReveal = clamp(progress / 48, 0, 1);
-  const barOpacity = 1 - clamp((progress - 46) / 18, 0, 1);
   const logoOpacity = clamp((progress - 24) / 22, 0, 1);
   const logoEntrance = clamp((progress - 30) / 30, 0, 1);
   const logoLateScale = clamp((progress - 82) / 18, 0, 1);
@@ -102,7 +106,7 @@ export default function HomeIntroOverlay({ enabled = true }: HomeIntroOverlayPro
     maskSize: 'contain',
   } as const;
 
-  return (
+  return createPortal(
     <motion.div
       initial={{ opacity: 1 }}
       animate={{
@@ -110,7 +114,7 @@ export default function HomeIntroOverlay({ enabled = true }: HomeIntroOverlayPro
         filter: isLeaving ? 'blur(8px)' : 'blur(0px)',
       }}
       transition={{ duration: isLeaving ? 1.05 : 0.24, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed inset-0 z-[140] overflow-hidden bg-black"
+      className="fixed inset-0 left-0 top-0 z-[2147483647] h-screen w-screen overflow-hidden bg-black"
       aria-hidden="true"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_42%)]" />
@@ -146,19 +150,6 @@ export default function HomeIntroOverlay({ enabled = true }: HomeIntroOverlayPro
             />
             <BrandLogo className="h-full w-full text-white" decorative />
           </motion.div>
-
-          <motion.div
-            animate={{
-              opacity: isLeaving ? 0 : barOpacity,
-              scaleX: 0.24 + barReveal * 0.76,
-              x: isLeaving ? 36 : 0,
-            }}
-            transition={{ duration: isLeaving ? 0.34 : 0.16, ease: 'easeOut' }}
-            className="absolute left-1/2 top-1/2 h-4 w-[160px] -translate-x-1/2 -translate-y-1/2 origin-left sm:h-5 sm:w-[212px]"
-          >
-            <div className="absolute inset-0 bg-white" />
-            <div className="absolute inset-y-0 right-0 w-[18px] bg-white/22" />
-          </motion.div>
         </div>
       </div>
 
@@ -177,6 +168,7 @@ export default function HomeIntroOverlay({ enabled = true }: HomeIntroOverlayPro
           <span className="pb-[0.18em] text-[26px] tracking-[-0.08em] sm:text-[38px] md:text-[44px]">%</span>
         </div>
       </motion.div>
-    </motion.div>
+    </motion.div>,
+    document.body
   );
 }
