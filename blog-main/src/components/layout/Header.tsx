@@ -3,6 +3,7 @@
 import { PanelLeftClose, PanelLeftOpen, Search } from 'lucide-react';
 import Link from 'next/link';
 import AppearanceSettings from '@/components/AppearanceSettings';
+import BrandLogo from '@/components/BrandLogo';
 import { NowPlaying } from '@/components/music/now-playing';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -31,9 +32,12 @@ export function Header({ isSidebarOpen, onToggleSidebar, title, showSidebarToggl
         <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
           <Link
             href="/"
-            className="font-semibold tracking-tight text-[#2e2150] transition-colors hover:text-[#5b3df5] dark:text-[#f3efff] dark:hover:text-[#cdc1ff] text-sm md:text-base"
+            className="inline-flex items-center gap-2.5 font-semibold tracking-tight text-[#2e2150] transition-colors hover:text-[#5b3df5] dark:text-[#f3efff] dark:hover:text-[#cdc1ff] text-sm md:text-base"
           >
-            {title}
+            <span className="flex h-8 w-8 items-center justify-center rounded-2xl border border-[#e4d8ff] bg-[#f6f1ff] shadow-[0_8px_24px_rgba(91,61,245,0.12)] dark:border-white/10 dark:bg-white/[0.04]">
+              <BrandLogo className="h-[22px] w-[22px]" decorative />
+            </span>
+            <span>{title}</span>
           </Link>
 
           {showSidebarToggle && (

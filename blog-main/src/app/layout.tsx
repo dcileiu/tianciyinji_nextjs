@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     description: siteConfig.description,
   },
   icons: {
-    icon: siteConfig.avatar,
+    icon: '/logo-mark.svg',
     apple: siteConfig.avatar,
   },
 };
