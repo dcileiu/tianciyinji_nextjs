@@ -1,4 +1,3 @@
-import { cookies } from 'next/headers';
 import Link from 'next/link';
 import HomeIntroOverlay from '@/components/HomeIntroOverlay';
 import HomeRepulsionField from '@/components/HomeRepulsionField';
@@ -43,8 +42,6 @@ function PostItem({ post }: { post: Post }) {
 }
 
 export default async function Page() {
-  const cookieStore = await cookies();
-  const shouldShowIntro = cookieStore.get('home-intro-seen')?.value !== '1';
   const { posts, total } = await getBlogPosts(1);
   const homeTitleLines: [string, string, string] = [
     '欢迎来打我的个人主页',
@@ -54,7 +51,7 @@ export default async function Page() {
 
   return (
     <>
-      <HomeIntroOverlay enabled={shouldShowIntro} />
+      <HomeIntroOverlay />
 
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:py-24">
         <header className="relative mb-16 overflow-hidden rounded-[32px] border border-[#e5dbff] bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(244,237,255,0.92))] px-6 py-8 shadow-[0_24px_80px_rgba(91,61,245,0.09)] sm:mb-20 sm:px-8 sm:py-10 md:mb-24 md:px-10 md:py-12 lg:mb-28 dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.88),rgba(15,11,27,0.94))]">

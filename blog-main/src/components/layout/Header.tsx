@@ -34,7 +34,7 @@ export function Header({ isSidebarOpen, onToggleSidebar, title, showSidebarToggl
             href="/"
             className="inline-flex items-center gap-2.5 font-semibold tracking-tight text-[#2e2150] transition-colors hover:text-[#5b3df5] dark:text-[#f3efff] dark:hover:text-[#cdc1ff] text-sm md:text-base"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-2xl border border-[#e4d8ff] bg-[#f6f1ff] shadow-[0_8px_24px_rgba(91,61,245,0.12)] dark:border-white/10 dark:bg-white/[0.04]">
+            <span className="flex h-8 w-8 items-center justify-center rounded-2xl border border-[#e4d8ff] bg-[#f6f1ff] text-[#3f2a8f] shadow-[0_8px_24px_rgba(91,61,245,0.12)] dark:border-white/10 dark:bg-white/[0.04] dark:text-[#f4efff]">
               <BrandLogo className="h-[22px] w-[22px]" decorative />
             </span>
             <span>{title}</span>
