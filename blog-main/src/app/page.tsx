@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import HomeIntroOverlay from '@/components/HomeIntroOverlay';
-import HomeRepulsionField from '@/components/HomeRepulsionField';
+// import HomeRepulsionField from '@/components/HomeRepulsionField';
 import HomeTitleTyper from '@/components/HomeTitleTyper';
 import { siteConfig } from '@/lib/site-config';
 import type { Post } from '@/types/post';
@@ -44,7 +44,7 @@ function PostItem({ post }: { post: Post }) {
 export default async function Page() {
   const { posts, total } = await getBlogPosts(1);
   const homeTitleLines: [string, string, string] = [
-    '欢迎来打我的个人主页',
+    '欢迎来到我的个人主页',
     '记录博客、作品、资源与一些长期主义的尝试。',
     '全栈开发一枚',
   ];
@@ -108,7 +108,7 @@ export default async function Page() {
           </div>
         )}
 
-        <HomeRepulsionField />
+        {/* <HomeRepulsionField /> */}
       </div>
     </>
   );

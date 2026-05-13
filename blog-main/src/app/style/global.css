@@ -15,6 +15,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -61,6 +62,7 @@ html {
 html.dark-scrollbar ::-webkit-scrollbar {
   display: none;
 }
+
 html.dark-scrollbar {
   scrollbar-width: none;
 }
@@ -68,9 +70,11 @@ html.dark-scrollbar {
 html.christmas ::-webkit-scrollbar-thumb {
   background-color: rgba(91, 61, 245, 0.3);
 }
+
 html.christmas ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(91, 61, 245, 0.58);
 }
+
 html.christmas.dark ::-webkit-scrollbar-thumb {
   background-color: rgba(198, 184, 255, 0.35);
 }
@@ -103,6 +107,7 @@ html.christmas.dark ::-webkit-scrollbar-thumb {
     --chart-5: 18 82% 66%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 258 24% 9%;
     --foreground: 260 32% 96%;
@@ -139,6 +144,7 @@ html.christmas.dark ::-webkit-scrollbar-thumb {
     --card: 0 0% 100%;
     --accent: 272 45% 94%;
   }
+
   html.christmas.dark {
     --background: 258 30% 8%;
     --foreground: 265 34% 90%;
@@ -149,10 +155,12 @@ html.christmas.dark ::-webkit-scrollbar-thumb {
     --accent: 262 22% 18%;
   }
 }
+
 @layer base {
   * {
     @apply border-border;
   }
+
   :root {
     --sidebar-padding: 24px;
   }
@@ -182,15 +190,7 @@ html.christmas.dark ::-webkit-scrollbar-thumb {
     transition: padding-left 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
-  body.background-character {
-    background-image: url("/friends/assets/avatars/background_character_2.png");
-  }
-
-  .dark body.background-character {
-    background-image: url("/friends/assets/avatars/background_character_dark.png");
-  }
-
-  body:not(.background-character):not(.background-luoxiaohei) {
+  body:not(.background-fabric) {
     background-image: none;
   }
 
@@ -201,18 +201,17 @@ html.christmas.dark ::-webkit-scrollbar-thumb {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url("/friends/assets/avatars/luoxiaohei_background.jpg");
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background:
+      radial-gradient(circle at 18% 18%, rgba(88, 56, 168, 0.07), transparent 28%),
+      radial-gradient(circle at 82% 12%, rgba(180, 58, 125, 0.05), transparent 30%),
+      linear-gradient(135deg, rgba(76, 54, 132, 0.04), transparent 45%);
     opacity: 0;
     z-index: -2;
     pointer-events: none;
     transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  body.background-luoxiaohei::after {
+  body.background-fabric::after {
     opacity: 1;
   }
 
@@ -236,11 +235,12 @@ html.christmas.dark ::-webkit-scrollbar-thumb {
   html.christmas body::before {
     background-color: rgba(248, 242, 255, 0.94);
   }
+
   html.christmas.dark body::before {
     background-color: rgba(15, 10, 26, 0.96);
   }
 
-  body > * {
+  body>* {
     position: relative;
     z-index: 1;
   }
@@ -253,52 +253,52 @@ html.christmas.dark ::-webkit-scrollbar-thumb {
     background-color: rgba(16, 10, 28, 0.96) !important;
   }
 
-  .dark body.background-luoxiaohei header {
+  .dark body.background-fabric header {
     background-color: transparent !important;
     backdrop-filter: blur(20px) !important;
   }
 
-  .dark body.background-luoxiaohei aside {
+  .dark body.background-fabric aside {
     background-color: transparent !important;
     backdrop-filter: blur(20px) !important;
   }
 
-  main > div,
+  main>div,
   .article-content-width {
     transition: max-width 0.5s cubic-bezier(0.32, 0.72, 0, 1);
   }
 
-  main > div {
+  main>div {
     max-width: 1280px !important;
   }
 
   /* 全屏页面不限制宽度 */
-  main > div.fullscreen-page {
+  main>div.fullscreen-page {
     max-width: none !important;
   }
 
-  html.layout-compact main > div,
-  body.layout-compact main > div {
+  html.layout-compact main>div,
+  body.layout-compact main>div {
     max-width: 960px !important;
   }
 
-  html.layout-default main > div,
-  body.layout-default main > div {
+  html.layout-default main>div,
+  body.layout-default main>div {
     max-width: 1280px !important;
   }
 
-  html.layout-wide main > div,
-  body.layout-wide main > div {
+  html.layout-wide main>div,
+  body.layout-wide main>div {
     max-width: 1536px !important;
   }
 
   /* 全屏页面覆盖所有布局模式 */
-  html.layout-compact main > div.fullscreen-page,
-  html.layout-default main > div.fullscreen-page,
-  html.layout-wide main > div.fullscreen-page,
-  body.layout-compact main > div.fullscreen-page,
-  body.layout-default main > div.fullscreen-page,
-  body.layout-wide main > div.fullscreen-page {
+  html.layout-compact main>div.fullscreen-page,
+  html.layout-default main>div.fullscreen-page,
+  html.layout-wide main>div.fullscreen-page,
+  body.layout-compact main>div.fullscreen-page,
+  body.layout-default main>div.fullscreen-page,
+  body.layout-wide main>div.fullscreen-page {
     max-width: none !important;
   }
 
@@ -330,39 +330,38 @@ html.christmas::before {
   width: 100%;
   height: 4px;
   z-index: 9999;
-  background: repeating-linear-gradient(
-    45deg,
-    #4f31d7,
-    #4f31d7 10px,
-    #efe9ff 10px,
-    #efe9ff 14px,
-    #8b6eff,
-    #8b6eff 24px,
-    #efe9ff 24px,
-    #efe9ff 28px
-  );
+  background: repeating-linear-gradient(45deg,
+      #4f31d7,
+      #4f31d7 10px,
+      #efe9ff 10px,
+      #efe9ff 14px,
+      #8b6eff,
+      #8b6eff 24px,
+      #efe9ff 24px,
+      #efe9ff 28px);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   pointer-events: none;
 }
+
 html.christmas.hide-top-bar::before {
   display: none;
 }
+
 html.christmas.dark::before {
-  background: repeating-linear-gradient(
-    45deg,
-    #2a1f4e,
-    #2a1f4e 10px,
-    #c6baff 10px,
-    #c6baff 14px,
-    #120f1f 14px,
-    #120f1f 24px
-  );
+  background: repeating-linear-gradient(45deg,
+      #2a1f4e,
+      #2a1f4e 10px,
+      #c6baff 10px,
+      #c6baff 14px,
+      #120f1f 14px,
+      #120f1f 24px);
 }
 
 html.christmas ::selection {
   background-color: #5b3df5;
   color: #ffffff;
 }
+
 html.christmas.dark ::selection {
   background-color: #c6baff;
   color: #120f1f;
@@ -380,7 +379,7 @@ html.christmas.dark ::selection {
     scroll-snap-type: y proximity;
   }
 
-  .fullscreen-page > section {
+  .fullscreen-page>section {
     scroll-snap-align: start;
     scroll-snap-stop: normal;
   }

@@ -4,7 +4,6 @@ import { PanelLeftClose, PanelLeftOpen, Search } from 'lucide-react';
 import Link from 'next/link';
 import AppearanceSettings from '@/components/AppearanceSettings';
 import BrandLogo from '@/components/BrandLogo';
-import { NowPlaying } from '@/components/music/now-playing';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
@@ -59,12 +58,7 @@ export function Header({ isSidebarOpen, onToggleSidebar, title, showSidebarToggl
           )}
         </div>
 
-        {/* 中间区域 - 自动居中的NowPlaying */}
-        <div className="flex-1 flex justify-center items-center min-w-0">
-          <div className="transition-all duration-300 ease-in-out">
-            <NowPlaying isSidebarOpen={isSidebarOpen} />
-          </div>
-        </div>
+        <div className="flex-1" />
 
         {/* 右侧区域 - 固定宽度 */}
         <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">

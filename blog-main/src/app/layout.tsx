@@ -3,9 +3,9 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Noto_Sans_SC } from 'next/font/google';
 import { ThemeProvider } from 'next-themes';
 import { ChristmasEffect } from '@/components/ChristmasEffect';
+import { FabricBackground } from '@/components/FabricBackground';
 import { LayoutClient } from '@/components/LayoutClient';
-import { GlobalMusicPlayer } from '@/components/music/global-music-player';
-import { MusicPlayerProvider } from '@/hooks/use-music-player';
+import { MusicRuntime } from '@/components/music/music-runtime';
 import { NAV_ITEMS } from '@/lib/navigation';
 import { absoluteUrl, siteConfig, siteKeywords } from '@/lib/site-config';
 
@@ -72,12 +72,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   var path = window.location.pathname;
                   var rawConfig = localStorage.getItem('appearance-config');
                   var layout = 'default';
-                  var backgroundStyle = '';
+                  var backgroundStyle = 'fabric';
 
                   if (rawConfig) {
                     var parsed = JSON.parse(rawConfig);
                     layout = parsed.layoutMode || 'default';
-                    backgroundStyle = parsed.backgroundStyle || '';
+                    backgroundStyle = parsed.backgroundStyle === 'none' ? 'none' : 'fabric';
                   }
 
                   if (path.startsWith('/music') || path.startsWith('/games')) {
@@ -93,8 +93,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     return path.startsWith(page);
                   });
 
-                  if (!shouldDisableBackground && backgroundStyle && backgroundStyle !== 'none' && document.body) {
-                    document.body.classList.add('background-' + backgroundStyle);
+                  if (!shouldDisableBackground && backgroundStyle && backgroundStyle !== 'none') {
+                    var applyBackground = function () {
+                      document.body.classList.add('background-' + backgroundStyle);
+                    };
+
+                    if (document.body) {
+                      applyBackground();
+                    } else {
+                      document.addEventListener('DOMContentLoaded', applyBackground, { once: true });
+                    }
                   }
 
                   var sidebarOpen = localStorage.getItem('sidebar-open');
@@ -115,15 +123,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansSC.variable} font-sans antialiased`}>
+      <body
+        suppressHydrationWarning
+        className={`${geistSans.variable} ${geistMono.variable} ${notoSansSC.variable} font-sans antialiased`}
+      >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <MusicPlayerProvider>
+          <MusicRuntime>
             <LayoutClient navItems={navItems} siteName={siteConfig.name}>
               {children}
             </LayoutClient>
-            <GlobalMusicPlayer />
+            <FabricBackground />
             <ChristmasEffect zIndex={0} showCursorHat={false} />
-          </MusicPlayerProvider>
+          </MusicRuntime>
         </ThemeProvider>
       </body>
     </html>

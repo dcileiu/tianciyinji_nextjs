@@ -1,13 +1,13 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { Image as ImageIcon, Maximize2, Minimize2, Monitor, Moon, Palette, Settings, Square, Sun } from 'lucide-react';
+import { Grid3x3, Maximize2, Minimize2, Monitor, Moon, Settings, Square, Sun } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
-export type BackgroundOption = 'none' | 'character' | 'luoxiaohei';
+export type BackgroundOption = 'none' | 'fabric';
 export type LayoutMode = 'default' | 'wide' | 'compact';
 
 interface AppearanceConfig {
@@ -30,7 +30,7 @@ export default function AppearanceSettings() {
   const { theme, setTheme } = useTheme();
   const pathname = usePathname();
   const [config, setConfig] = useState<AppearanceConfig>({
-    backgroundStyle: 'character',
+    backgroundStyle: 'fabric',
     layoutMode: 'default',
   });
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -53,7 +53,11 @@ export default function AppearanceSettings() {
     const saved = localStorage.getItem('appearance-config');
     if (saved) {
       try {
-        setConfig(JSON.parse(saved));
+        const parsed = JSON.parse(saved) as Partial<AppearanceConfig>;
+        setConfig({
+          backgroundStyle: parsed.backgroundStyle === 'none' ? 'none' : 'fabric',
+          layoutMode: parsed.layoutMode || 'default',
+        });
       } catch (e) {
         console.error('Failed to parse appearance config:', e);
       }
@@ -68,14 +72,12 @@ export default function AppearanceSettings() {
 
     // 应用背景样式（特定页面强制禁用背景）
     if (document.body) {
-      document.body.classList.remove('background-character', 'background-luoxiaohei');
+      document.body.classList.remove('background-character', 'background-luoxiaohei', 'background-fabric');
 
       if (shouldDisableBackground || config.backgroundStyle === 'none') {
         // 不添加任何背景 class，保持纯净
-      } else if (config.backgroundStyle === 'luoxiaohei') {
-        document.body.classList.add('background-luoxiaohei');
-      } else if (config.backgroundStyle === 'character') {
-        document.body.classList.add('background-character');
+      } else if (config.backgroundStyle === 'fabric') {
+        document.body.classList.add('background-fabric');
       }
     }
 
@@ -210,10 +212,9 @@ export default function AppearanceSettings() {
                     </p>
                   </div>
                 )}
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {[
-                    { value: 'character' as const, label: '角色', Icon: ImageIcon },
-                    { value: 'luoxiaohei' as const, label: '彩绘', Icon: Palette },
+                    { value: 'fabric' as const, label: '织物', Icon: Grid3x3 },
                     { value: 'none' as const, label: '纯净', Icon: Square },
                   ].map((item) => (
                     <button
