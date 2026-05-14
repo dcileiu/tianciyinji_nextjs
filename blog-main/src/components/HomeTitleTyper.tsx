@@ -16,7 +16,7 @@ const RESET_MS = 380;
 
 const LINE_STYLES = [
   'min-h-[1.6rem] text-sm font-medium tracking-[0.18em] text-[#5f4aa8] dark:text-[#cfc4ff] sm:min-h-[2rem] sm:text-base md:text-lg',
-  'min-h-[3.1rem] text-[2.4rem] font-semibold leading-[0.96] tracking-tight text-[#3f2a8f] dark:text-[#f1ebff] sm:min-h-[3.9rem] sm:text-[3rem] md:min-h-[4.6rem] md:text-[3.9rem] lg:min-h-[5.15rem] lg:text-[4.7rem]',
+  'min-h-[3.35rem] text-[2.1rem] font-semibold leading-[1.08] tracking-tight text-[#3f2a8f] dark:text-[#f1ebff] sm:min-h-[4.1rem] sm:text-[2.7rem] md:min-h-[4.8rem] md:text-[3.35rem] lg:min-h-[5.4rem] lg:text-[4rem]',
   'min-h-[1.8rem] text-base font-medium tracking-[0.06em] text-[#7660c8] dark:text-[#ded5ff] sm:min-h-[2.2rem] sm:text-lg md:text-2xl',
 ] as const;
 
