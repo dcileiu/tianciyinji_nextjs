@@ -3,11 +3,14 @@
 import QRCode from 'qrcode';
 import {
   BookOpenText,
+  Check,
+  ChevronDown,
   Clock3,
   DatabaseZap,
   ExternalLink,
   FileCode2,
   FileJson2,
+  Filter,
   Globe,
   Hash,
   ImageIcon,
@@ -27,9 +30,11 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useDeferredValue, useEffect, useRef, useState } from 'react';
+import { SimpleDropdown, SimpleDropdownItem } from '@/components/ui/simple-dropdown';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SENSITIVE_WORDS } from '@/lib/tools/content';
+import { cn } from '@/lib/utils';
 
 type ServerResultMap = Record<string, any>;
 type ServerErrorMap = Record<string, string>;
@@ -39,28 +44,71 @@ const sectionMeta = [
   {
     id: 'local-tools',
     title: '纯本地工具',
-    count: 8,
     description: '不依赖外部网络，浏览器或本站服务端本地就能完成的算法和文本处理工具。',
   },
   {
     id: 'image-tools',
     title: '图片处理',
-    count: 5,
     description: '二维码、Base64、SVG、压缩和简版摸头 GIF，都可以直接在页面里处理。',
   },
   {
     id: 'network-tools',
     title: '网络基础',
-    count: 7,
     description: '面向 URL、域名、端口和网页内容的基础观测与分析能力。',
   },
   {
     id: 'public-data-tools',
     title: '公开数据',
-    count: 8,
     description: '基于公开协议或免费数据源组合出来的实用信息查询工具。',
   },
 ] as const;
+
+type SectionId = (typeof sectionMeta)[number]['id'];
+
+const toolCatalog = [
+  { id: 'aes', title: 'AES 加解密', sectionId: 'local-tools' },
+  { id: 'base64', title: 'Base64 编解码', sectionId: 'local-tools' },
+  { id: 'md5', title: 'MD5 计算与校验', sectionId: 'local-tools' },
+  { id: 'random', title: '随机数 / 随机字符串', sectionId: 'local-tools' },
+  { id: 'timestamp', title: '时间戳转换', sectionId: 'local-tools' },
+  { id: 'json', title: 'JSON 美化 / 压缩', sectionId: 'local-tools' },
+  { id: 'params', title: '参数分析', sectionId: 'local-tools' },
+  { id: 'sensitive', title: '敏感词快速检测', sectionId: 'local-tools' },
+  { id: 'qrcode', title: '二维码生成', sectionId: 'image-tools' },
+  { id: 'image-base64', title: '图片与 Base64 互转', sectionId: 'image-tools' },
+  { id: 'svg-image', title: 'SVG 转图片', sectionId: 'image-tools' },
+  { id: 'image-compress', title: '图片压缩', sectionId: 'image-tools' },
+  { id: 'pet-gif', title: '摸头 GIF（图片上传版）', sectionId: 'image-tools' },
+  { id: 'client-ip', title: '客户端 IP', sectionId: 'network-tools' },
+  { id: 'dns-lookup', title: 'DNS 查询', sectionId: 'network-tools' },
+  { id: 'ping', title: 'Ping（TCP 连通性）', sectionId: 'network-tools' },
+  { id: 'port-scan', title: '端口扫描', sectionId: 'network-tools' },
+  { id: 'url-status', title: 'URL 状态检测', sectionId: 'network-tools' },
+  { id: 'web-metadata', title: '网页元数据提取', sectionId: 'network-tools' },
+  { id: 'web-images', title: '网页图片提取', sectionId: 'network-tools' },
+  { id: 'web-markdown', title: '网页转 Markdown', sectionId: 'network-tools' },
+  { id: 'minecraft-player', title: 'Minecraft 玩家信息', sectionId: 'public-data-tools' },
+  { id: 'minecraft-server', title: 'Minecraft 服务器信息', sectionId: 'public-data-tools' },
+  { id: 'github-repo', title: 'GitHub 仓库信息', sectionId: 'public-data-tools' },
+  { id: 'gravatar', title: 'Gravatar', sectionId: 'public-data-tools' },
+  { id: 'ip-geo', title: '基础 IP 归属', sectionId: 'public-data-tools' },
+  { id: 'mobile-area', title: '手机号归属地', sectionId: 'public-data-tools' },
+  { id: 'bing-wallpaper', title: 'Bing 每日壁纸', sectionId: 'public-data-tools' },
+  { id: 'content-tools', title: '答案之书 / 诗词 / 历史今天', sectionId: 'public-data-tools' },
+] as const satisfies ReadonlyArray<{
+  id: string;
+  title: string;
+  sectionId: SectionId;
+}>;
+
+type ToolId = (typeof toolCatalog)[number]['id'];
+type ToolFilter = 'all' | ToolId;
+
+const sections = sectionMeta.map((section) => ({
+  ...section,
+  count: toolCatalog.filter((tool) => tool.sectionId === section.id).length,
+  tools: toolCatalog.filter((tool) => tool.sectionId === section.id),
+}));
 
 const inputClass =
   'w-full rounded-2xl border border-[#dfd3ff] bg-white/80 px-4 py-3 text-sm text-[#2f2154] shadow-sm outline-none transition focus:border-[#8b6bff] focus:ring-2 focus:ring-[#8b6bff]/20 dark:border-[#33274f] dark:bg-[#140f22]/90 dark:text-[#f4efff]';
@@ -70,6 +118,9 @@ const cardClass =
 
 const outputClass =
   'rounded-2xl border border-dashed border-[#d9ccff] bg-[#faf7ff] px-4 py-3 text-sm text-[#4d3f77] dark:border-[#3b2f59] dark:bg-[#181127] dark:text-[#d9ccff]';
+
+const secondaryButtonClass =
+  'rounded-full border-[#b9a3ff] bg-[#f7f1ff] text-[#4b2fd0] shadow-[0_12px_32px_rgba(91,61,245,0.12)] hover:border-[#8b6bff] hover:bg-[#eee3ff] hover:text-[#3c22c3] dark:border-[#5a4492] dark:bg-[#1d1533] dark:text-[#efe9ff] dark:hover:border-[#8b6bff] dark:hover:bg-[#291e45]';
 
 function bytesToBase64(bytes: Uint8Array) {
   let binary = '';
@@ -369,10 +420,59 @@ function OutputBox({ children, className = '' }: { children: React.ReactNode; cl
   return <div className={`${outputClass} ${className}`}>{children}</div>;
 }
 
+function FancySelect<T extends string>({
+  value,
+  options,
+  onChange,
+  ariaLabel,
+}: {
+  value: T;
+  options: Array<{ value: T; label: string }>;
+  onChange: (value: T) => void;
+  ariaLabel: string;
+}) {
+  const currentOption = options.find((option) => option.value === value);
+
+  return (
+    <SimpleDropdown
+      align="start"
+      className="min-w-[13rem] rounded-[22px] border border-[#dacdff] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,239,255,0.96))] p-2 shadow-[0_24px_70px_rgba(91,61,245,0.18)] dark:border-[#3a2f58] dark:bg-[linear-gradient(180deg,rgba(30,23,49,0.98),rgba(18,13,30,0.98))]"
+      trigger={
+        <button
+          type="button"
+          aria-label={ariaLabel}
+          className="flex h-[52px] w-full items-center justify-between rounded-2xl border border-[#dfd3ff] bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(246,240,255,0.88))] px-4 text-left text-sm text-[#2f2154] shadow-[0_10px_30px_rgba(91,61,245,0.08)] transition hover:border-[#b99fff] hover:shadow-[0_14px_36px_rgba(91,61,245,0.12)] dark:border-[#33274f] dark:bg-[linear-gradient(180deg,rgba(24,18,41,0.94),rgba(16,12,29,0.96))] dark:text-[#f4efff]"
+        >
+          <span className="truncate font-medium">{currentOption?.label || ariaLabel}</span>
+          <ChevronDown className="h-4 w-4 shrink-0 text-[#745da9] dark:text-[#c7baf1]" />
+        </button>
+      }
+    >
+      {options.map((option) => (
+        <SimpleDropdownItem
+          key={option.value}
+          onClick={() => onChange(option.value)}
+          active={option.value === value}
+          className={cn(
+            'rounded-2xl px-3 py-2.5 text-[#2f2154] dark:text-[#f4efff]',
+            option.value === value
+              ? 'bg-[#ece3ff] text-[#4f31d7] dark:bg-[#2b1f43] dark:text-[#efe9ff]'
+              : 'hover:text-[#4f31d7] dark:hover:text-[#ffffff]'
+          )}
+        >
+          <span className="text-sm font-medium">{option.label}</span>
+          {option.value === value ? <Check className="h-4 w-4" /> : <span className="h-4 w-4" />}
+        </SimpleDropdownItem>
+      ))}
+    </SimpleDropdown>
+  );
+}
+
 export default function ToolsClientPage() {
   const [loadingMap, setLoadingMap] = useState<LoadingMap>({});
   const [serverResults, setServerResults] = useState<ServerResultMap>({});
   const [serverErrors, setServerErrors] = useState<ServerErrorMap>({});
+  const [selectedTool, setSelectedTool] = useState<ToolFilter>('all');
 
   const [aesMode, setAesMode] = useState<'encrypt' | 'decrypt'>('encrypt');
   const [aesText, setAesText] = useState('');
@@ -465,6 +565,9 @@ export default function ToolsClientPage() {
   }, []);
 
   const sensitiveMatches = detectSensitiveWords(deferredSensitiveInput);
+  const activeTool = selectedTool === 'all' ? null : toolCatalog.find((tool) => tool.id === selectedTool) || null;
+  const isToolVisible = (toolId: ToolId) => selectedTool === 'all' || selectedTool === toolId;
+  const isSectionVisible = (sectionId: SectionId) => selectedTool === 'all' || activeTool?.sectionId === sectionId;
 
   async function runServerTool(tool: string, payload?: Record<string, unknown>) {
     setLoadingMap((current) => ({ ...current, [tool]: true }));
@@ -712,7 +815,7 @@ export default function ToolsClientPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {sectionMeta.map((section) => (
+              {sections.map((section) => (
                 <a
                   key={section.id}
                   href={`#${section.id}`}
@@ -726,7 +829,7 @@ export default function ToolsClientPage() {
           </div>
 
           <div className="mt-6 flex flex-wrap gap-2">
-            {sectionMeta.map((section) => (
+            {sections.map((section) => (
               <a
                 key={section.id}
                 href={`#${section.id}`}
@@ -736,17 +839,93 @@ export default function ToolsClientPage() {
               </a>
             ))}
           </div>
+
+          <div className="mt-6 rounded-[26px] border border-[#ddd0ff] bg-[linear-gradient(135deg,rgba(255,255,255,0.7),rgba(247,242,255,0.55))] p-4 shadow-[0_18px_55px_rgba(91,61,245,0.08)] dark:border-[#32274d] dark:bg-[linear-gradient(135deg,rgba(27,20,45,0.85),rgba(18,13,31,0.92))] sm:p-5">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-[#7f71ab] dark:text-[#ab9cd8]">
+                  <Filter className="h-3.5 w-3.5" />
+                  Tool Picker
+                </div>
+                <p className="mt-2 text-sm leading-7 text-[#65558e] dark:text-[#c4b6eb]">
+                  默认展示全部工具卡片；点选某个工具名后，会聚焦只显示这一张卡片。
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1 text-xs text-[#6b5b97] dark:border-[#3a2f58] dark:bg-white/[0.05] dark:text-[#c7baf1]">
+                  {selectedTool === 'all' ? `当前显示全部 ${toolCatalog.length} 张工具卡片` : `当前聚焦：${activeTool?.title || ''}`}
+                </span>
+                {selectedTool !== 'all' && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTool('all')}
+                    className="rounded-full bg-[#5b3df5] px-3.5 py-2 text-sm text-white transition hover:bg-[#4f31d7]"
+                  >
+                    恢复全部
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setSelectedTool('all')}
+                className={cn(
+                  'rounded-full border px-4 py-2 text-sm transition',
+                  selectedTool === 'all'
+                    ? 'border-[#5b3df5] bg-[#5b3df5] text-white shadow-[0_12px_30px_rgba(91,61,245,0.22)]'
+                    : 'border-[#d9ccff] bg-white/75 text-[#5c4a88] hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#362b53] dark:bg-white/[0.04] dark:text-[#d2c6f3]'
+                )}
+              >
+                全部工具
+              </button>
+            </div>
+
+            <div className="mt-4 grid gap-3 xl:grid-cols-2">
+              {sections.map((section) => (
+                <div
+                  key={section.id}
+                  className="rounded-[22px] border border-[#e4d8ff] bg-white/60 p-4 dark:border-[#302646] dark:bg-white/[0.04]"
+                >
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <div className="text-sm font-semibold text-[#312355] dark:text-[#f4efff]">{section.title}</div>
+                    <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{section.count} 个工具</div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {section.tools.map((tool) => (
+                      <button
+                        key={tool.id}
+                        type="button"
+                        onClick={() => setSelectedTool(tool.id)}
+                        className={cn(
+                          'rounded-full border px-3 py-1.5 text-xs transition sm:text-sm',
+                          selectedTool === tool.id
+                            ? 'border-[#5b3df5] bg-[#ece3ff] text-[#4f31d7] shadow-[0_8px_20px_rgba(91,61,245,0.14)] dark:border-[#8b6bff] dark:bg-[#2b1f43] dark:text-[#efe9ff]'
+                            : 'border-[#ddd0ff] bg-white/70 text-[#5f4e89] hover:border-[#b695ff] hover:text-[#4f31d7] dark:border-[#392d56] dark:bg-white/[0.03] dark:text-[#cabbef]'
+                        )}
+                      >
+                        {tool.title}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </header>
 
+      {isSectionVisible('local-tools') && (
       <section id="local-tools" className="scroll-mt-28 pt-12 sm:pt-16">
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">{sectionMeta[0].title}</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">{sectionMeta[0].description}</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">{sections[0].title}</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">{sections[0].description}</p>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">
-          <SectionCard icon={ShieldAlert} title="AES 加解密" description="使用浏览器内建的 Web Crypto 实现 AES-GCM，本地完成，不上传明文。">
+          <SectionCard icon={ShieldAlert} title="AES 加解密" description="使用浏览器内建的 Web Crypto 实现 AES-GCM，本地完成，不上传明文。" className={isToolVisible('aes') ? '' : 'hidden'}>
             <div className="space-y-3">
               <div className="flex gap-2">
                 <button
@@ -778,14 +957,14 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={SquareTerminal} title="Base64 编解码" description="支持 Unicode 文本安全编码，也可直接拿来测试接口参数。">
+          <SectionCard icon={SquareTerminal} title="Base64 编解码" description="支持 Unicode 文本安全编码，也可直接拿来测试接口参数。" className={isToolVisible('base64') ? '' : 'hidden'}>
             <div className="space-y-3">
               <textarea className={`${inputClass} min-h-[132px] resize-y`} value={base64Input} onChange={(event) => setBase64Input(event.target.value)} placeholder="输入文本或 Base64 内容" />
               <div className="flex flex-wrap gap-3">
                 <Button onClick={handleBase64Encode} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
                   编码
                 </Button>
-                <Button onClick={handleBase64Decode} variant="outline" className="rounded-full border-[#d7c8ff] text-[#5b3df5]">
+                <Button onClick={handleBase64Decode} variant="outline" className={secondaryButtonClass}>
                   解码
                 </Button>
               </div>
@@ -798,7 +977,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={Hash} title="MD5 计算与校验" description="服务端本地计算 MD5，可选输入目标哈希做快速校验。">
+          <SectionCard icon={Hash} title="MD5 计算与校验" description="服务端本地计算 MD5，可选输入目标哈希做快速校验。" className={isToolVisible('md5') ? '' : 'hidden'}>
             <div className="space-y-3">
               <textarea className={`${inputClass} min-h-[118px] resize-y`} value={md5Text} onChange={(event) => setMd5Text(event.target.value)} placeholder="输入待计算文本" />
               <Input className={inputClass} value={md5Expected} onChange={(event) => setMd5Expected(event.target.value)} placeholder="可选：输入预期 MD5 做比对" />
@@ -819,7 +998,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={Sparkles} title="随机数 / 随机字符串" description="快速生成测试用随机串，可自由切换字符集。">
+          <SectionCard icon={Sparkles} title="随机数 / 随机字符串" description="快速生成测试用随机串，可自由切换字符集。" className={isToolVisible('random') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Input className={inputClass} value={randomLength} onChange={(event) => setRandomLength(event.target.value)} placeholder="长度，例如 16" />
               <div className="grid grid-cols-2 gap-2 text-sm text-[#5c4a88] dark:text-[#d2c6f3]">
@@ -839,14 +1018,14 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={Clock3} title="时间戳转换" description="支持秒、毫秒时间戳和可解析日期串，快速换算本地时间与 ISO。">
+          <SectionCard icon={Clock3} title="时间戳转换" description="支持秒、毫秒时间戳和可解析日期串，快速换算本地时间与 ISO。" className={isToolVisible('timestamp') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Input className={inputClass} value={timestampInput} onChange={(event) => setTimestampInput(event.target.value)} placeholder="例如 1715664000000 或 2026-05-14 12:00:00" />
               <div className="flex flex-wrap gap-3">
                 <Button onClick={handleTimestampConvert} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
                   转换
                 </Button>
-                <Button onClick={() => setTimestampInput(String(Date.now()))} variant="outline" className="rounded-full border-[#d7c8ff] text-[#5b3df5]">
+                <Button onClick={() => setTimestampInput(String(Date.now()))} variant="outline" className={secondaryButtonClass}>
                   使用当前时间
                 </Button>
               </div>
@@ -864,14 +1043,14 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={FileJson2} title="JSON 美化 / 压缩" description="把 JSON 变得更好读，或者压成一行方便塞进配置与请求里。">
+          <SectionCard icon={FileJson2} title="JSON 美化 / 压缩" description="把 JSON 变得更好读，或者压成一行方便塞进配置与请求里。" className={isToolVisible('json') ? '' : 'hidden'}>
             <div className="space-y-3">
               <textarea className={`${inputClass} min-h-[180px] resize-y font-mono`} value={jsonInput} onChange={(event) => setJsonInput(event.target.value)} />
               <div className="flex flex-wrap gap-3">
                 <Button onClick={() => handleJsonBeautify(false)} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
                   美化
                 </Button>
-                <Button onClick={() => handleJsonBeautify(true)} variant="outline" className="rounded-full border-[#d7c8ff] text-[#5b3df5]">
+                <Button onClick={() => handleJsonBeautify(true)} variant="outline" className={secondaryButtonClass}>
                   压缩
                 </Button>
               </div>
@@ -884,7 +1063,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={ScanSearch} title="参数分析" description="识别 URL 查询串、表单参数或 JSON 键值，方便快速排查请求结构。">
+          <SectionCard icon={ScanSearch} title="参数分析" description="识别 URL 查询串、表单参数或 JSON 键值，方便快速排查请求结构。" className={isToolVisible('params') ? '' : 'hidden'}>
             <div className="space-y-3">
               <textarea className={`${inputClass} min-h-[148px] resize-y`} value={paramsInput} onChange={(event) => setParamsInput(event.target.value)} placeholder="粘贴完整 URL、a=1&b=2 或 JSON" />
               <Button onClick={handleParamsAnalyze} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
@@ -914,7 +1093,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={ShieldAlert} title="敏感词快速检测" description="使用内置轻量词表做快速扫描，适合草稿或提交前的第一轮自查。">
+          <SectionCard icon={ShieldAlert} title="敏感词快速检测" description="使用内置轻量词表做快速扫描，适合草稿或提交前的第一轮自查。" className={isToolVisible('sensitive') ? '' : 'hidden'}>
             <div className="space-y-3">
               <textarea className={`${inputClass} min-h-[164px] resize-y`} value={sensitiveInput} onChange={(event) => setSensitiveInput(event.target.value)} placeholder="把要检测的文本贴进来" />
               <OutputBox>
@@ -937,15 +1116,17 @@ export default function ToolsClientPage() {
           </SectionCard>
         </div>
       </section>
+      )}
 
+      {isSectionVisible('image-tools') && (
       <section id="image-tools" className="scroll-mt-28 pt-12 sm:pt-16">
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">{sectionMeta[1].title}</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">{sectionMeta[1].description}</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">{sections[1].title}</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">{sections[1].description}</p>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">
-          <SectionCard icon={QrCode} title="二维码生成" description="输入任意文本、本地直接生成 PNG Data URL，适合链接、备注和联系方式。">
+          <SectionCard icon={QrCode} title="二维码生成" description="输入任意文本、本地直接生成 PNG Data URL，适合链接、备注和联系方式。" className={isToolVisible('qrcode') ? '' : 'hidden'}>
             <div className="space-y-3">
               <textarea className={`${inputClass} min-h-[120px] resize-y`} value={qrText} onChange={(event) => setQrText(event.target.value)} placeholder="输入二维码内容" />
               <Button onClick={handleQrGenerate} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
@@ -963,7 +1144,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={ImageIcon} title="图片与 Base64 互转" description="上传图片可转 Data URL，粘贴 Base64 也能直接预览和验证。">
+          <SectionCard icon={ImageIcon} title="图片与 Base64 互转" description="上传图片可转 Data URL，粘贴 Base64 也能直接预览和验证。" className={isToolVisible('image-base64') ? '' : 'hidden'}>
             <div className="space-y-3">
               <input type="file" accept="image/*" onChange={handleImageFileToBase64} className="text-sm text-[#6c5b98] dark:text-[#b9aadf]" />
               <textarea className={`${inputClass} min-h-[150px] resize-y font-mono`} value={imageBase64Value} onChange={(event) => setImageBase64Value(event.target.value)} placeholder="这里会显示图片 Base64，也可以直接粘贴现成的 Base64" />
@@ -987,7 +1168,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={FileCode2} title="SVG 转图片" description="直接粘贴 SVG 源码，本地转成 PNG 预览与下载。">
+          <SectionCard icon={FileCode2} title="SVG 转图片" description="直接粘贴 SVG 源码，本地转成 PNG 预览与下载。" className={isToolVisible('svg-image') ? '' : 'hidden'}>
             <div className="space-y-3">
               <textarea className={`${inputClass} min-h-[200px] resize-y font-mono text-xs`} value={svgInput} onChange={(event) => setSvgInput(event.target.value)} />
               <Button onClick={handleSvgConvert} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
@@ -1005,16 +1186,21 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={Wand2} title="图片压缩" description="基于 Canvas 做本地压缩，可选 JPEG / WebP，适合发图前快速瘦身。">
+          <SectionCard icon={Wand2} title="图片压缩" description="基于 Canvas 做本地压缩，可选 JPEG / WebP，适合发图前快速瘦身。" className={isToolVisible('image-compress') ? '' : 'hidden'}>
             <div className="space-y-3">
               <input type="file" accept="image/*" onChange={handleCompressImage} className="text-sm text-[#6c5b98] dark:text-[#b9aadf]" />
               <div className="grid gap-3 sm:grid-cols-3">
                 <Input className={inputClass} value={compressQuality} onChange={(event) => setCompressQuality(event.target.value)} placeholder="质量 0~1" />
                 <Input className={inputClass} value={compressMaxWidth} onChange={(event) => setCompressMaxWidth(event.target.value)} placeholder="最大宽度" />
-                <select className={inputClass} value={compressType} onChange={(event) => setCompressType(event.target.value as 'image/jpeg' | 'image/webp')}>
-                  <option value="image/webp">WebP</option>
-                  <option value="image/jpeg">JPEG</option>
-                </select>
+                <FancySelect
+                  value={compressType}
+                  onChange={setCompressType}
+                  ariaLabel="选择压缩格式"
+                  options={[
+                    { value: 'image/webp', label: 'WebP' },
+                    { value: 'image/jpeg', label: 'JPEG' },
+                  ]}
+                />
               </div>
               {compressError && <OutputBox>{compressError}</OutputBox>}
               {compressDataUrl && compressInfo && (
@@ -1031,7 +1217,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={Swords} title="摸头 GIF（图片上传版）" description="上传头像后本地生成一个轻量简版摸头 GIF，适合做个性签名或评论区头像。">
+          <SectionCard icon={Swords} title="摸头 GIF（图片上传版）" description="上传头像后本地生成一个轻量简版摸头 GIF，适合做个性签名或评论区头像。" className={isToolVisible('pet-gif') ? '' : 'hidden'}>
             <div className="space-y-3">
               <input type="file" accept="image/*" onChange={handleGeneratePetGif} className="text-sm text-[#6c5b98] dark:text-[#b9aadf]" />
               <div className="text-xs leading-6 text-[#7b69a5] dark:text-[#af9fda]">
@@ -1058,15 +1244,17 @@ export default function ToolsClientPage() {
           </SectionCard>
         </div>
       </section>
+      )}
 
+      {isSectionVisible('network-tools') && (
       <section id="network-tools" className="scroll-mt-28 pt-12 sm:pt-16">
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">{sectionMeta[2].title}</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">{sectionMeta[2].description}</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">{sections[2].title}</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">{sections[2].description}</p>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">
-          <SectionCard icon={Globe} title="客户端 IP" description="读取当前请求头里的公网来源信息，适合快速确认反代和访客地址。">
+          <SectionCard icon={Globe} title="客户端 IP" description="读取当前请求头里的公网来源信息，适合快速确认反代和访客地址。" className={isToolVisible('client-ip') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Button onClick={() => runServerTool('client-ip')} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
                 {loadingMap['client-ip'] ? <Loader2 className="h-4 w-4 animate-spin" /> : '获取客户端信息'}
@@ -1082,7 +1270,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={DatabaseZap} title="DNS 查询" description="一次拉出 A、AAAA、MX、NS、TXT 等常见记录，方便排查域名解析问题。">
+          <SectionCard icon={DatabaseZap} title="DNS 查询" description="一次拉出 A、AAAA、MX、NS、TXT 等常见记录，方便排查域名解析问题。" className={isToolVisible('dns-lookup') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Input className={inputClass} value={dnsHost} onChange={(event) => setDnsHost(event.target.value)} placeholder="例如 openai.com" />
               <Button onClick={() => runServerTool('dns-lookup', { host: dnsHost })} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
@@ -1101,7 +1289,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={Wifi} title="Ping（TCP 连通性）" description="出于运行环境限制，这里做的是 TCP connect 延迟测试，更适合排查端口可达性。">
+          <SectionCard icon={Wifi} title="Ping（TCP 连通性）" description="出于运行环境限制，这里做的是 TCP connect 延迟测试，更适合排查端口可达性。" className={isToolVisible('ping') ? '' : 'hidden'}>
             <div className="space-y-3">
               <div className="grid gap-3 sm:grid-cols-2">
                 <Input className={inputClass} value={pingHost} onChange={(event) => setPingHost(event.target.value)} placeholder="目标主机" />
@@ -1124,7 +1312,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={Network} title="端口扫描" description="支持逗号和短范围写法，如 80,443,3000-3005；为了安全，限制了端口数量和内网目标。">
+          <SectionCard icon={Network} title="端口扫描" description="支持逗号和短范围写法，如 80,443,3000-3005；为了安全，限制了端口数量和内网目标。" className={isToolVisible('port-scan') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Input className={inputClass} value={portHost} onChange={(event) => setPortHost(event.target.value)} placeholder="目标主机" />
               <Input className={inputClass} value={portExpression} onChange={(event) => setPortExpression(event.target.value)} placeholder="例如 80,443,3000-3005" />
@@ -1147,7 +1335,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={RefreshCcw} title="URL 状态检测" description="检测最终跳转地址、状态码和响应头部中的基本信息。">
+          <SectionCard icon={RefreshCcw} title="URL 状态检测" description="检测最终跳转地址、状态码和响应头部中的基本信息。" className={isToolVisible('url-status') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Input className={inputClass} value={urlStatusInput} onChange={(event) => setUrlStatusInput(event.target.value)} placeholder="例如 https://openai.com" />
               <Button onClick={() => runServerTool('url-status', { url: urlStatusInput })} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
@@ -1166,7 +1354,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={BookOpenText} title="网页元数据提取" description="提取标题、描述、canonical、favicon 以及常见 OG / Twitter 元信息。">
+          <SectionCard icon={BookOpenText} title="网页元数据提取" description="提取标题、描述、canonical、favicon 以及常见 OG / Twitter 元信息。" className={isToolVisible('web-metadata') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Input className={inputClass} value={metadataUrlInput} onChange={(event) => setMetadataUrlInput(event.target.value)} placeholder="输入网页 URL" />
               <Button onClick={() => runServerTool('web-metadata', { url: metadataUrlInput })} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
@@ -1185,7 +1373,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={ImageIcon} title="网页图片提取" description="列出页面中的常见图片资源，适合快速收集素材或检查首图。">
+          <SectionCard icon={ImageIcon} title="网页图片提取" description="列出页面中的常见图片资源，适合快速收集素材或检查首图。" className={isToolVisible('web-images') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Input className={inputClass} value={imageExtractUrlInput} onChange={(event) => setImageExtractUrlInput(event.target.value)} placeholder="输入网页 URL" />
               <Button onClick={() => runServerTool('web-images', { url: imageExtractUrlInput })} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
@@ -1207,7 +1395,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={ScrollText} title="网页转 Markdown" description="抓取页面主体内容并转成 Markdown，适合先做初稿摘录或归档。">
+          <SectionCard icon={ScrollText} title="网页转 Markdown" description="抓取页面主体内容并转成 Markdown，适合先做初稿摘录或归档。" className={isToolVisible('web-markdown') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Input className={inputClass} value={markdownUrlInput} onChange={(event) => setMarkdownUrlInput(event.target.value)} placeholder="输入网页 URL" />
               <Button onClick={() => runServerTool('web-markdown', { url: markdownUrlInput })} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
@@ -1223,15 +1411,17 @@ export default function ToolsClientPage() {
           </SectionCard>
         </div>
       </section>
+      )}
 
+      {isSectionVisible('public-data-tools') && (
       <section id="public-data-tools" className="scroll-mt-28 pt-12 sm:pt-16">
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">{sectionMeta[3].title}</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">{sectionMeta[3].description}</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">{sections[3].title}</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">{sections[3].description}</p>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">
-          <SectionCard icon={Sparkles} title="Minecraft 玩家信息" description="查询 UUID、头像和皮肤资源，适合做个人主页挂件或资料卡。">
+          <SectionCard icon={Sparkles} title="Minecraft 玩家信息" description="查询 UUID、头像和皮肤资源，适合做个人主页挂件或资料卡。" className={isToolVisible('minecraft-player') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Input className={inputClass} value={minecraftPlayerInput} onChange={(event) => setMinecraftPlayerInput(event.target.value)} placeholder="例如 Notch" />
               <Button onClick={() => runServerTool('minecraft-player', { username: minecraftPlayerInput })} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
@@ -1254,7 +1444,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={Wifi} title="Minecraft 服务器信息" description="基于 mcstatus.io 免费接口查询 Java 或 Bedrock 服务器状态。">
+          <SectionCard icon={Wifi} title="Minecraft 服务器信息" description="基于 mcstatus.io 免费接口查询 Java 或 Bedrock 服务器状态。" className={isToolVisible('minecraft-server') ? '' : 'hidden'}>
             <div className="space-y-3">
               <div className="flex gap-2">
                 <button
@@ -1286,7 +1476,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={Globe} title="GitHub 仓库信息" description="解析 owner/repo 或完整仓库地址，返回 stars、forks、topics 和语言分布。">
+          <SectionCard icon={Globe} title="GitHub 仓库信息" description="解析 owner/repo 或完整仓库地址，返回 stars、forks、topics 和语言分布。" className={isToolVisible('github-repo') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Input className={inputClass} value={githubRepoInput} onChange={(event) => setGithubRepoInput(event.target.value)} placeholder="例如 vercel/next.js" />
               <Button onClick={() => runServerTool('github-repo', { repo: githubRepoInput })} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
@@ -1310,7 +1500,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={Hash} title="Gravatar" description="输入邮箱即可本地算出 MD5，并拼出 Gravatar 头像与资料页地址。">
+          <SectionCard icon={Hash} title="Gravatar" description="输入邮箱即可本地算出 MD5，并拼出 Gravatar 头像与资料页地址。" className={isToolVisible('gravatar') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Input className={inputClass} value={gravatarEmail} onChange={(event) => setGravatarEmail(event.target.value)} placeholder="邮箱地址" />
               <Button onClick={() => runServerTool('gravatar', { email: gravatarEmail, size: 256 })} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
@@ -1329,7 +1519,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={MapPinned} title="基础 IP 归属" description="优先查输入的 IP，没有的话就查你当前请求来源，基于本地 GeoIP 库完成。">
+          <SectionCard icon={MapPinned} title="基础 IP 归属" description="优先查输入的 IP，没有的话就查你当前请求来源，基于本地 GeoIP 库完成。" className={isToolVisible('ip-geo') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Input className={inputClass} value={geoIpInput} onChange={(event) => setGeoIpInput(event.target.value)} placeholder="可留空，默认查询当前访问 IP" />
               <Button onClick={() => runServerTool('ip-geo', { ip: geoIpInput })} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
@@ -1347,7 +1537,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={MapPinned} title="手机号归属地" description="使用本地号段库查询中国大陆手机号的省市和运营商，不走在线接口。">
+          <SectionCard icon={MapPinned} title="手机号归属地" description="使用本地号段库查询中国大陆手机号的省市和运营商，不走在线接口。" className={isToolVisible('mobile-area') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Input className={inputClass} value={phoneInput} onChange={(event) => setPhoneInput(event.target.value)} placeholder="例如 13800138000" />
               <Button onClick={() => runServerTool('mobile-area', { phone: phoneInput })} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
@@ -1365,13 +1555,18 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={ImageIcon} title="Bing 每日壁纸" description="直接拉取 Bing 当天壁纸，适合拿来做背景图、封面图或桌面收藏。">
+          <SectionCard icon={ImageIcon} title="Bing 每日壁纸" description="直接拉取 Bing 当天壁纸，适合拿来做背景图、封面图或桌面收藏。" className={isToolVisible('bing-wallpaper') ? '' : 'hidden'}>
             <div className="space-y-3">
-              <select className={inputClass} value={bingMarket} onChange={(event) => setBingMarket(event.target.value)}>
-                <option value="zh-CN">中国大陆（zh-CN）</option>
-                <option value="en-US">美国（en-US）</option>
-                <option value="ja-JP">日本（ja-JP）</option>
-              </select>
+              <FancySelect
+                value={bingMarket}
+                onChange={setBingMarket}
+                ariaLabel="选择 Bing 区域"
+                options={[
+                  { value: 'zh-CN', label: '中国大陆（zh-CN）' },
+                  { value: 'en-US', label: '美国（en-US）' },
+                  { value: 'ja-JP', label: '日本（ja-JP）' },
+                ]}
+              />
               <Button onClick={() => runServerTool('bing-wallpaper', { market: bingMarket })} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
                 {loadingMap['bing-wallpaper'] ? <Loader2 className="h-4 w-4 animate-spin" /> : '获取壁纸'}
               </Button>
@@ -1389,7 +1584,7 @@ export default function ToolsClientPage() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={BookOpenText} title="答案之书 / 诗词 / 历史今天" description="把轻量的内容型接口也收进来，适合做主页小挂件或随机内容卡片。">
+          <SectionCard icon={BookOpenText} title="答案之书 / 诗词 / 历史今天" description="把轻量的内容型接口也收进来，适合做主页小挂件或随机内容卡片。" className={isToolVisible('content-tools') ? '' : 'hidden'}>
             <div className="space-y-4">
               <div className="rounded-2xl border border-[#e3d7ff] bg-white/60 p-4 dark:border-[#34294f] dark:bg-white/[0.03]">
                 <div className="mb-2 text-sm font-medium text-[#2f2154] dark:text-[#f4efff]">答案之书</div>
@@ -1438,6 +1633,7 @@ export default function ToolsClientPage() {
           </SectionCard>
         </div>
       </section>
+      )}
 
       <div className="mt-14 rounded-[28px] border border-[#e6dbff] bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(246,240,255,0.92))] px-6 py-6 text-sm leading-7 text-[#66568f] shadow-[0_18px_60px_rgba(91,61,245,0.06)] dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.92),rgba(15,11,27,0.96))] dark:text-[#c4b6eb]">
         <p>

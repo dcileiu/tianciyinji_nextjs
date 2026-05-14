@@ -20,8 +20,6 @@ export function LayoutClient({ children, navItems, siteName = siteConfig.name }:
   const [isMobile, setIsMobile] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const pathname = usePathname();
-  const sidebarWidth = 192;
-  const gutter = 24;
 
   // 某些页面可能不需要显示侧边栏
   const isAuthPage = pathname === '/login' || pathname === '/setup';
@@ -56,7 +54,10 @@ export function LayoutClient({ children, navItems, siteName = siteConfig.name }:
   useEffect(() => {
     if (!isInitialized) return;
 
-    const paddingValue = !isMobile && !isAuthPage && isSidebarOpen ? `${sidebarWidth + gutter}px` : `${gutter}px`;
+    const paddingValue =
+      !isMobile && !isAuthPage && isSidebarOpen
+        ? 'calc(var(--sidebar-width) + var(--sidebar-gutter))'
+        : 'var(--sidebar-gutter)';
 
     if (document.documentElement) {
       document.documentElement.style.setProperty('--sidebar-padding', paddingValue);
@@ -112,7 +113,7 @@ export function LayoutClient({ children, navItems, siteName = siteConfig.name }:
       )}
 
       {!isAuthPage && !isFullscreenPage && (
-        <Sidebar isOpen={isSidebarOpen} width={sidebarWidth} navItems={navItems} onClose={handleCloseSidebar} />
+        <Sidebar isOpen={isSidebarOpen} navItems={navItems} onClose={handleCloseSidebar} />
       )}
 
       {isFullscreenPage ? (

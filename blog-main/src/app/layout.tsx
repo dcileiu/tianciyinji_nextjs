@@ -107,15 +107,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
                   var sidebarOpen = localStorage.getItem('sidebar-open');
                   if (sidebarOpen === 'true' && window.innerWidth >= 768) {
-                    root.style.setProperty('--sidebar-padding', '216px');
+                    root.style.setProperty('--sidebar-padding', 'calc(var(--sidebar-width) + var(--sidebar-gutter))');
                   } else {
-                    root.style.setProperty('--sidebar-padding', '24px');
+                    root.style.setProperty('--sidebar-padding', 'var(--sidebar-gutter)');
                   }
 
                   root.classList.add('sidebar-initializing');
                 } catch (error) {
                   document.documentElement.classList.add('layout-default');
-                  document.documentElement.style.setProperty('--sidebar-padding', '24px');
+                  document.documentElement.style.setProperty('--sidebar-padding', 'var(--sidebar-gutter)');
                   document.documentElement.classList.add('sidebar-initializing');
                 }
               })();

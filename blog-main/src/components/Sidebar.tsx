@@ -10,12 +10,12 @@ import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
 interface SidebarProps {
   isOpen: boolean;
-  width?: number;
+  width?: number | string;
   navItems: NavItem[];
   onClose?: () => void;
 }
 
-export function Sidebar({ isOpen, width = 192, navItems, onClose }: SidebarProps) {
+export function Sidebar({ isOpen, width = 'var(--sidebar-width)', navItems, onClose }: SidebarProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -66,7 +66,7 @@ export function Sidebar({ isOpen, width = 192, navItems, onClose }: SidebarProps
         style={{ width }}
         aria-label="侧边导航"
       >
-        <nav className="flex h-full flex-col items-stretch justify-center px-6">
+        <nav className="flex h-full flex-col items-stretch justify-center px-4 lg:px-5">
           <ul className="space-y-2">
             {navItems
               .filter((item) => item.enabled)
@@ -110,7 +110,7 @@ export function Sidebar({ isOpen, width = 192, navItems, onClose }: SidebarProps
             onMouseDown={handleClose}
           >
             {/* 侧边栏内容区域 */}
-            <div className="w-[280px] h-full" onMouseDown={(e: any) => e.stopPropagation()}>
+            <div className="h-full w-[min(20rem,82vw)]" onMouseDown={(e: any) => e.stopPropagation()}>
               {/* 关闭按钮 - 右上角 */}
               <div className="absolute top-6 right-6">
                 <button

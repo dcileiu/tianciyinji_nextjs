@@ -233,9 +233,7 @@ export function NowPlaying({ isSidebarOpen = true }: NowPlayingProps) {
 
   // ---------------- 设备与侧边栏偏移 ----------------
   const isMobile = windowWidth < 768;
-  const sidebarWidth = 192;
-  const gutter = 24;
-  const mainOffset = !isMobile && isSidebarOpen ? (sidebarWidth + gutter) / 2 : 0; // 开=108，关=0
+  const mainOffset = !isMobile && isSidebarOpen ? 'calc((var(--sidebar-width) + var(--sidebar-gutter)) / 2)' : '0px';
 
   // ---------------- 测量主显示行高度（供触发层使用） ----------------
   useEffect(() => {
@@ -284,7 +282,7 @@ export function NowPlaying({ isSidebarOpen = true }: NowPlayingProps) {
       <div
         ref={displayRowRef}
         className="flex items-center gap-3 text-sm text-muted-foreground cursor-pointer transition-all duration-300 ease-out"
-        style={{ marginLeft: `${mainOffset}px` }}
+        style={{ marginLeft: mainOffset }}
         onClick={() => {
           if (isMobile) {
             triggerHaptic(HapticFeedback.Light);
@@ -324,7 +322,7 @@ export function NowPlaying({ isSidebarOpen = true }: NowPlayingProps) {
             width: `${TOOLTIP_WIDTH}px`,
             height: `${displayRowHeight || 24}px`,
             top: 0,
-            transform: `translateX(calc(-50% + ${mainOffset}px))`,
+            transform: isSidebarOpen ? 'translateX(calc(-50% + (var(--sidebar-width) + var(--sidebar-gutter)) / 2))' : 'translateX(-50%)',
             pointerEvents: 'auto', // 可点击
           }}
           onClick={() => setIsPopoverOpen((prev) => !prev)}
@@ -342,7 +340,7 @@ export function NowPlaying({ isSidebarOpen = true }: NowPlayingProps) {
           className="absolute left-1/2 z-50 w-[640px]"
           style={{
             top: `calc(100% + ${GAP_PX}px)`,
-            transform: `translateX(calc(-50% + ${mainOffset}px))`,
+            transform: isSidebarOpen ? 'translateX(calc(-50% + (var(--sidebar-width) + var(--sidebar-gutter)) / 2))' : 'translateX(-50%)',
             pointerEvents: isPopoverOpen ? 'auto' : 'none', // 隐藏时可穿透
           }}
           role="dialog"
