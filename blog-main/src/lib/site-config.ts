@@ -15,7 +15,7 @@ export const siteConfig = {
   title: 'Dci',
   description: '记录博客、作品、资源与一些长期主义的尝试。',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-  avatar: '/avatar.webp',
+  avatar: '/avatar/avatar.webp',
   email: 'dcileiu@outlook.com',
   tagline: '写作、项目与一些正在发生的事。',
   role: '全栈开发者 / 写作者',
@@ -27,7 +27,7 @@ export const siteConfig = {
     rss: '/rss',
   },
   home: {
-    eyebrow: '个人网站',
+    eyebrow: 'Liu Dci\'s Blog',
     title: '记录博客、作品、资源与一些长期主义的尝试。',
     intro:
       '这里是我的个人站点，用来发布文章、整理作品、沉淀资源，也公开一些正在进行中的想法与实验。欢迎访问，也欢迎留言。',
