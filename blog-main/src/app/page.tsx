@@ -1,26 +1,30 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import HomeIntroOverlay from '@/components/HomeIntroOverlay';
+import type { Metadata } from "next";
+import Link from "next/link";
+import HomeIntroOverlay from "@/components/HomeIntroOverlay";
 // import HomeRepulsionField from '@/components/HomeRepulsionField';
-import HomeTitleTyper from '@/components/HomeTitleTyper';
-import { siteConfig } from '@/lib/site-config';
-import JsonLd from '@/components/JsonLd';
-import { buildCollectionPageJsonLd, buildItemListJsonLd, buildPageMetadata } from '@/lib/seo';
-import type { Post } from '@/types/post';
-import { getBlogPosts } from '@/utils/posts';
+import HomeTitleTyper from "@/components/HomeTitleTyper";
+import { siteConfig } from "@/lib/site-config";
+import JsonLd from "@/components/JsonLd";
+import {
+  buildCollectionPageJsonLd,
+  buildItemListJsonLd,
+  buildPageMetadata,
+} from "@/lib/seo";
+import type { Post } from "@/types/post";
+import { getBlogPosts } from "@/utils/posts";
 
 export const metadata: Metadata = buildPageMetadata({
   title: siteConfig.name,
   description: siteConfig.home.intro,
-  path: '/',
-  keywords: ['个人博客', '全栈开发', '作品集', '资源整理'],
+  path: "/",
+  keywords: ["个人博客", "全栈开发", "作品集", "资源整理"],
 });
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}.${month}.${day}`;
 }
 
@@ -53,10 +57,9 @@ function PostItem({ post }: { post: Post }) {
 
 export default async function Page() {
   const { posts, total } = await getBlogPosts(1);
-  const homeTitleLines: [string, string, string] = [
-    '欢迎来到我的个人主页',
-    '记录博客、作品、资源与一些长期主义的尝试。',
-    '全栈开发一枚',
+  const homeTitleLines: [string, string] = [
+    "全栈开发一枚",
+    "记录博客、作品、资源与一些长期主义的尝试。",
   ];
 
   return (
@@ -66,13 +69,13 @@ export default async function Page() {
           buildCollectionPageJsonLd({
             title: siteConfig.name,
             description: siteConfig.home.intro,
-            path: '/',
+            path: "/",
           }),
           buildItemListJsonLd(
             posts.map((post) => ({
               name: post.title,
               path: `/post/${post.slug}`,
-            }))
+            })),
           ),
         ]}
       />
@@ -87,8 +90,11 @@ export default async function Page() {
             </p>
 
             <h1 className="mb-6 sm:mb-8 md:mb-10">
-              <span className="sr-only">{homeTitleLines.join(' / ')}</span>
-              <HomeTitleTyper className="w-full max-w-[960px]" lines={homeTitleLines} />
+              <span className="sr-only">{homeTitleLines.join(" / ")}</span>
+              <HomeTitleTyper
+                className="w-full max-w-[960px]"
+                lines={homeTitleLines}
+              />
             </h1>
 
             <p className="mb-6 max-w-2xl text-sm leading-relaxed text-[#615488] sm:mb-8 sm:text-base md:text-lg dark:text-[#c7baf1]">
@@ -96,14 +102,29 @@ export default async function Page() {
             </p>
 
             <div className="mb-6 flex flex-wrap items-center gap-4 text-sm text-[#7769a0] sm:mb-8 dark:text-[#b5a8df]">
-              <Link href="/about" className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]">
+              <Link
+                href="/about"
+                className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]"
+              >
                 了解我
               </Link>
-              <Link href="/works" className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]">
+              <Link
+                href="/works"
+                className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]"
+              >
                 查看作品
               </Link>
-              <Link href="/resources" className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]">
+              <Link
+                href="/resources"
+                className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]"
+              >
                 浏览资源
+              </Link>
+              <Link
+                href="/tools"
+                className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]"
+              >
+                浏览工具
               </Link>
             </div>
 
@@ -113,8 +134,12 @@ export default async function Page() {
 
         <section>
           <div className="mb-6 sm:mb-8">
-            <h2 className="text-lg font-medium text-[#2e2150] sm:text-xl md:text-2xl dark:text-white">最近更新</h2>
-            <p className="mt-2 text-sm text-[#7769a0] sm:text-base dark:text-[#b5a8df]">最新发布的文章会出现在这里。</p>
+            <h2 className="text-lg font-medium text-[#2e2150] sm:text-xl md:text-2xl dark:text-white">
+              最近更新
+            </h2>
+            <p className="mt-2 text-sm text-[#7769a0] sm:text-base dark:text-[#b5a8df]">
+              最新发布的文章会出现在这里。
+            </p>
           </div>
 
           {posts.map((post) => (
