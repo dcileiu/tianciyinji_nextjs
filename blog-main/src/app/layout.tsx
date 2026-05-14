@@ -1,6 +1,7 @@
 import './style/global.css';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Noto_Sans_SC } from 'next/font/google';
+import JsonLd from '@/components/JsonLd';
 import { ThemeProvider } from 'next-themes';
 import { ChristmasEffect } from '@/components/ChristmasEffect';
 import { FabricBackground } from '@/components/FabricBackground';
@@ -8,6 +9,7 @@ import { LayoutClient } from '@/components/LayoutClient';
 import { MusicRuntime } from '@/components/music/music-runtime';
 import { NAV_ITEMS } from '@/lib/navigation';
 import { absoluteUrl, siteConfig, siteKeywords } from '@/lib/site-config';
+import { buildPageMetadata, buildPersonJsonLd, buildWebSiteJsonLd } from '@/lib/seo';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -31,25 +33,40 @@ const notoSansSC = Noto_Sans_SC({
   preload: true,
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
+const baseMetadata = buildPageMetadata({
   title: siteConfig.name,
   description: siteConfig.description,
+  path: '/',
   keywords: siteKeywords,
+});
+
+export const metadata: Metadata = {
+  ...baseMetadata,
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.name,
+    template: `%s`,
+  },
+  applicationName: siteConfig.name,
   authors: [{ name: siteConfig.name, url: siteConfig.url }],
   creator: siteConfig.name,
-  openGraph: {
-    type: 'website',
-    locale: 'zh_CN',
-    url: absoluteUrl('/'),
-    title: siteConfig.name,
-    description: siteConfig.description,
-    siteName: siteConfig.name,
+  publisher: siteConfig.name,
+  category: 'technology',
+  manifest: '/manifest.webmanifest',
+  referrer: 'origin-when-cross-origin',
+  formatDetection: {
+    telephone: false,
+    email: false,
+    address: false,
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: siteConfig.name,
-    description: siteConfig.description,
+  alternates: {
+    canonical: absoluteUrl('/'),
+    types: {
+      'application/rss+xml': absoluteUrl('/rss'),
+    },
+  },
+  verification: {
+    google: '06d6108ddd065823',
   },
   icons: {
     icon: '/logo-mark.svg',
@@ -61,7 +78,7 @@ const navItems = NAV_ITEMS;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-CN" suppressHydrationWarning className="christmas">
+    <html lang={siteConfig.language} suppressHydrationWarning className="christmas">
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -128,6 +145,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         className={`${geistSans.variable} ${geistMono.variable} ${notoSansSC.variable} font-sans antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <JsonLd data={[buildWebSiteJsonLd(), buildPersonJsonLd()]} />
           <MusicRuntime>
             <LayoutClient navItems={navItems} siteName={siteConfig.name}>
               {children}

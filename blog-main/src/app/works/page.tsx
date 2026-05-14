@@ -1,16 +1,14 @@
 import { ArrowUpRight } from 'lucide-react';
 import type { Metadata } from 'next';
 import { pageTitle, siteConfig } from '@/lib/site-config';
+import { buildPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: pageTitle('作品'),
   description: '用于展示项目、案例和长期维护中的作品。',
-  openGraph: {
-    title: pageTitle('作品'),
-    description: '用于展示项目、案例和长期维护中的作品。',
-    siteName: siteConfig.name,
-  },
-};
+  path: '/works',
+  keywords: ['作品集', '项目展示', '案例'],
+});
 
 export default function WorksPage() {
   return (

@@ -35,7 +35,7 @@ const nextConfig = {
   experimental: {
     scrollRestoration: true,
     serverActions: {
-      allowedOrigins: ['localhost:3000', 'sdjz.wiki'],
+      allowedOrigins: ['localhost:3000', 'itianci.cn', 'www.itianci.cn', 'sdjz.wiki'],
     },
   },
 

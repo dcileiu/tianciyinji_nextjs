@@ -1,10 +1,20 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import HomeIntroOverlay from '@/components/HomeIntroOverlay';
 // import HomeRepulsionField from '@/components/HomeRepulsionField';
 import HomeTitleTyper from '@/components/HomeTitleTyper';
 import { siteConfig } from '@/lib/site-config';
+import JsonLd from '@/components/JsonLd';
+import { buildCollectionPageJsonLd, buildItemListJsonLd, buildPageMetadata } from '@/lib/seo';
 import type { Post } from '@/types/post';
 import { getBlogPosts } from '@/utils/posts';
+
+export const metadata: Metadata = buildPageMetadata({
+  title: siteConfig.name,
+  description: siteConfig.home.intro,
+  path: '/',
+  keywords: ['个人博客', '全栈开发', '作品集', '资源整理'],
+});
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -51,6 +61,21 @@ export default async function Page() {
 
   return (
     <>
+      <JsonLd
+        data={[
+          buildCollectionPageJsonLd({
+            title: siteConfig.name,
+            description: siteConfig.home.intro,
+            path: '/',
+          }),
+          buildItemListJsonLd(
+            posts.map((post) => ({
+              name: post.title,
+              path: `/post/${post.slug}`,
+            }))
+          ),
+        ]}
+      />
       <HomeIntroOverlay />
 
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:py-24">

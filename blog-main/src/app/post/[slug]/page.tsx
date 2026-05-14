@@ -6,9 +6,11 @@ import { notFound } from 'next/navigation';
 import { CodeCopyButton } from '@/components/CodeCopyButton';
 import { CopyUrlButton } from '@/components/CopyUrlButton';
 import { ImagePreview } from '@/components/ImagePreview';
+import JsonLd from '@/components/JsonLd';
 import { LinkPreviewProvider } from '@/components/LinkPreviewProvider';
 import PostNavigator from '@/components/PostNavigator';
 import { pageTitle, siteConfig } from '@/lib/site-config';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildPageMetadata } from '@/lib/seo';
 import { resolveAuthorProfile } from '@/utils/author-profile';
 import { extractHeadings } from '@/utils/markdown';
 import { verifyPostPassword } from '@/utils/post-encryption';
@@ -67,23 +69,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const description = post.excerpt || '一篇记录思考与项目进展的文章。';
   const authorProfile = resolveAuthorProfile(post.author, post.authorAvatar);
 
-  return {
+  return buildPageMetadata({
     title: pageTitle(post.title),
     description,
-    openGraph: {
-      title: post.title,
-      description,
-      type: 'article',
-      publishedTime: post.date,
-      authors: [authorProfile.name],
-      siteName: siteConfig.name,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: post.title,
-      description,
-    },
-  };
+    path: `/post/${post.slug}`,
+    type: 'article',
+    image: post.coverImage || undefined,
+    publishedTime: post.date,
+    modifiedTime: post.date,
+    authors: [authorProfile.name],
+    section: post.category,
+    keywords: [...(post.tags || []), post.category || '文章', '博客'],
+    noIndex: Boolean(post.encrypted),
+  });
 }
 
 export const viewport: Viewport = {
@@ -120,8 +118,30 @@ export default async function PostPage({ params, searchParams }: PageProps) {
   const authorProfile = resolveAuthorProfile(post.author, post.authorAvatar);
 
   return (
-    <article className="mx-auto w-full px-4 pb-12 pt-6 sm:px-6 sm:pb-16 sm:pt-8">
-      <nav className="mx-auto mb-8 flex max-w-5xl items-center justify-center gap-2 text-xs text-black/40 sm:mb-12 sm:text-sm dark:text-white/40">
+    <>
+      <JsonLd
+        data={[
+          buildArticleJsonLd({
+            title: post.title,
+            description: post.excerpt || '一篇记录思考与项目进展的文章。',
+            path: `/post/${post.slug}`,
+            publishedTime: post.date,
+            modifiedTime: post.date,
+            image: post.coverImage || siteConfig.avatar,
+            keywords: post.tags || [],
+            authorName: authorProfile.name,
+            section: post.category,
+            wordCount: post.wordCount,
+          }),
+          buildBreadcrumbJsonLd([
+            { name: '首页', path: '/' },
+            { name: '归档', path: '/archive' },
+            { name: post.title, path: `/post/${post.slug}` },
+          ]),
+        ]}
+      />
+      <article className="mx-auto w-full px-4 pb-12 pt-6 sm:px-6 sm:pb-16 sm:pt-8">
+        <nav className="mx-auto mb-8 flex max-w-5xl items-center justify-center gap-2 text-xs text-black/40 sm:mb-12 sm:text-sm dark:text-white/40">
         <Link
           href="/"
           className="inline-flex flex-shrink-0 items-center gap-1 hover:text-black sm:gap-1.5 dark:hover:text-white"
@@ -189,9 +209,10 @@ export default async function PostPage({ params, searchParams }: PageProps) {
         </div>
       </LinkPreviewProvider>
 
-      <PostNavigator headings={headings} />
-      <ImagePreview />
-    </article>
+        <PostNavigator headings={headings} />
+        <ImagePreview />
+      </article>
+    </>
   );
 }
 

@@ -1,15 +1,13 @@
 import type { Metadata } from 'next';
 import { pageTitle, siteConfig } from '@/lib/site-config';
+import { buildPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: pageTitle('隐私政策'),
   description: '关于站点如何处理访问数据和联系信息的简要说明。',
-  openGraph: {
-    title: pageTitle('隐私政策'),
-    description: '关于站点如何处理访问数据和联系信息的简要说明。',
-    siteName: siteConfig.name,
-  },
-};
+  path: '/privacy',
+  keywords: ['隐私政策', '数据处理', 'Cookie'],
+});
 
 export default function PrivacyPage() {
   return (

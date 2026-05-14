@@ -1,18 +1,17 @@
 import { BriefcaseBusiness, Github, Mail, MapPin, Rss } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import JsonLd from '@/components/JsonLd';
 import { getGitHubStats } from '@/lib/github';
 import { hasGithubProfile, pageTitle, siteConfig } from '@/lib/site-config';
+import { buildBreadcrumbJsonLd, buildPageMetadata, buildPersonJsonLd } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: pageTitle('关于'),
   description: siteConfig.about.intro,
-  openGraph: {
-    title: pageTitle('关于'),
-    description: siteConfig.about.intro,
-    siteName: siteConfig.name,
-  },
-};
+  path: '/about',
+  keywords: ['关于我', '个人介绍', '技术栈', '联系方式'],
+});
 
 export const revalidate = 3600;
 
@@ -26,6 +25,15 @@ export default async function AboutPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-16 md:px-6 md:py-24">
+      <JsonLd
+        data={[
+          buildPersonJsonLd(),
+          buildBreadcrumbJsonLd([
+            { name: '首页', path: '/' },
+            { name: '关于', path: '/about' },
+          ]),
+        ]}
+      />
       <header className="mb-16 md:mb-20">
         <div className="flex flex-col gap-6 text-center md:flex-row md:items-start md:text-left">
           <div className="mx-auto overflow-hidden rounded-full border border-black/10 md:mx-0 dark:border-white/10">

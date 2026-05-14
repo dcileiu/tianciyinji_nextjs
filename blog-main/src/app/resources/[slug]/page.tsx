@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CodeCopyButton } from '@/components/CodeCopyButton';
 import { DesignPreview } from '@/components/DesignPreview';
+import JsonLd from '@/components/JsonLd';
 import { pageTitle, siteConfig } from '@/lib/site-config';
+import { buildBreadcrumbJsonLd, buildCreativeWorkJsonLd, buildPageMetadata } from '@/lib/seo';
 import { getResourceBySlug, getResources } from '@/utils/resources';
 
 export const revalidate = 60;
@@ -27,15 +29,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
-  return {
+  return buildPageMetadata({
     title: pageTitle(`资源 / ${resource.title}`),
     description: resource.description,
-    openGraph: {
-      title: pageTitle(`资源 / ${resource.title}`),
-      description: resource.description,
-      siteName: siteConfig.name,
-    },
-  };
+    path: `/resources/${resource.slug}`,
+    image: siteConfig.avatar,
+    keywords: [...(resource.tags || []), resource.type, resource.format || '资源'],
+    publishedTime: resource.date,
+    modifiedTime: resource.date,
+  });
 }
 
 export default async function ResourceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -48,6 +50,26 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-12 sm:px-8 sm:py-16 md:px-6 md:py-24">
+      <JsonLd
+        data={[
+          buildCreativeWorkJsonLd({
+            title: resource.title,
+            description: resource.description,
+            path: `/resources/${resource.slug}`,
+            publishedTime: resource.date,
+            modifiedTime: resource.date,
+            keywords: resource.tags,
+            encodingFormat: resource.format,
+            downloadUrl: resource.downloadUrl,
+            image: siteConfig.avatar,
+          }),
+          buildBreadcrumbJsonLd([
+            { name: '首页', path: '/' },
+            { name: '资源', path: '/resources' },
+            { name: resource.title, path: `/resources/${resource.slug}` },
+          ]),
+        ]}
+      />
       <Link
         href={'/resources' as any}
         className="mb-8 inline-flex items-center gap-2 text-sm text-black/60 transition-colors hover:text-black dark:text-white/60 dark:hover:text-white"

@@ -1,17 +1,15 @@
 import type { Metadata } from 'next';
 import ArchiveClientPage from '@/components/ArchiveClientPage';
-import { pageTitle, siteConfig } from '@/lib/site-config';
+import { pageTitle } from '@/lib/site-config';
+import { buildPageMetadata } from '@/lib/seo';
 import { getAllBlogPosts } from '@/utils/posts';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: pageTitle('归档'),
   description: '按时间整理的博客文章与更新记录。',
-  openGraph: {
-    title: pageTitle('归档'),
-    description: '按时间整理的博客文章与更新记录。',
-    siteName: siteConfig.name,
-  },
-};
+  path: '/archive',
+  keywords: ['文章归档', '博客归档', '时间线'],
+});
 
 export const revalidate = 60;
 

@@ -1,18 +1,16 @@
 import type { Metadata } from 'next';
-import { pageTitle, siteConfig } from '@/lib/site-config';
+import { pageTitle } from '@/lib/site-config';
+import { buildPageMetadata } from '@/lib/seo';
 
 const friendsDescription =
   '朋友站点、创作者链接与常逛的实用站点。';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: pageTitle('友链'),
   description: friendsDescription,
-  openGraph: {
-    title: pageTitle('友链'),
-    description: friendsDescription,
-    siteName: siteConfig.name,
-  },
-};
+  path: '/friends',
+  keywords: ['友链', '友情链接', '创作者推荐'],
+});
 
 const friends = [
   {

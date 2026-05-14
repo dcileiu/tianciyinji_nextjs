@@ -1,15 +1,13 @@
 import type { Metadata } from 'next';
 import { pageTitle, siteConfig } from '@/lib/site-config';
+import { buildPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: pageTitle('合作咨询'),
   description: '如果你想聊项目合作、网站搭建或内容定制，可以从这里联系我。',
-  openGraph: {
-    title: pageTitle('合作咨询'),
-    description: '如果你想聊项目合作、网站搭建或内容定制，可以从这里联系我。',
-    siteName: siteConfig.name,
-  },
-};
+  path: '/pricing',
+  keywords: ['合作咨询', '项目合作', '网站搭建', '内容定制'],
+});
 
 export default function PricingPage() {
   return (
