@@ -34,7 +34,7 @@ function PostItem({ post }: { post: Post }) {
   return (
     <Link
       href={`/post/${post.slug}`}
-      className="group grid grid-cols-[70px_1fr] gap-4 border-b border-[#e7defe] px-2 py-6 transition-colors last:border-0 hover:bg-[#f7f2ff]/70 sm:-mx-4 sm:grid-cols-[90px_1fr] sm:gap-6 sm:px-4 sm:py-8 md:grid-cols-[120px_1fr] md:gap-12 md:py-10 dark:border-white/5 dark:hover:bg-white/[0.01]"
+      className="group mb-4 grid grid-cols-[70px_1fr] gap-4 rounded-[28px] border border-[#e7defe] bg-[linear-gradient(135deg,rgba(255,255,255,0.64),rgba(245,239,255,0.52))] px-4 py-6 shadow-[0_12px_36px_rgba(91,61,245,0.06)] transition-all duration-300 last:mb-0 hover:border-[#c7b0ff] hover:bg-[linear-gradient(135deg,rgba(246,238,255,0.96),rgba(236,226,255,0.88))] hover:shadow-[0_20px_54px_rgba(91,61,245,0.14)] sm:grid-cols-[90px_1fr] sm:gap-6 sm:px-5 sm:py-8 md:grid-cols-[120px_1fr] md:gap-12 md:px-6 md:py-10 dark:border-[#2c2342] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.72),rgba(18,13,31,0.82))] dark:hover:border-[#5f45aa] dark:hover:bg-[linear-gradient(135deg,rgba(38,28,68,0.94),rgba(28,20,49,0.96))] dark:hover:shadow-[0_24px_60px_rgba(0,0,0,0.28)]"
     >
       <time className="pt-0.5 font-mono text-xs text-[#8779b3] sm:pt-1 sm:text-sm dark:text-[#9f91c9]">
         {formattedDate}
