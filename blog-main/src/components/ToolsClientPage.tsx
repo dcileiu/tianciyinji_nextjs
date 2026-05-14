@@ -441,7 +441,7 @@ function FancySelect<T extends string>({
         <button
           type="button"
           aria-label={ariaLabel}
-          className="flex h-[52px] w-full items-center justify-between rounded-2xl border border-[#dfd3ff] bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(246,240,255,0.88))] px-4 text-left text-sm text-[#2f2154] shadow-[0_10px_30px_rgba(91,61,245,0.08)] transition hover:border-[#b99fff] hover:shadow-[0_14px_36px_rgba(91,61,245,0.12)] dark:border-[#33274f] dark:bg-[linear-gradient(180deg,rgba(24,18,41,0.94),rgba(16,12,29,0.96))] dark:text-[#f4efff]"
+          className="flex h-9 w-full items-center justify-between rounded-2xl border border-[#dfd3ff] bg-white/80 px-4 py-1 text-left text-sm text-[#2f2154] shadow-sm transition hover:border-[#b99fff] focus-visible:border-[#8b6bff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8b6bff]/20 dark:border-[#33274f] dark:bg-[#140f22]/90 dark:text-[#f4efff]"
         >
           <span className="truncate font-medium">{currentOption?.label || ariaLabel}</span>
           <ChevronDown className="h-4 w-4 shrink-0 text-[#745da9] dark:text-[#c7baf1]" />
@@ -465,6 +465,45 @@ function FancySelect<T extends string>({
         </SimpleDropdownItem>
       ))}
     </SimpleDropdown>
+  );
+}
+
+function FancyCheckbox({
+  checked,
+  label,
+  onChange,
+}: {
+  checked: boolean;
+  label: string;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label
+      className={cn(
+        'group flex cursor-pointer items-center gap-3 rounded-2xl border px-3 py-2.5 transition select-none',
+        checked
+          ? 'border-[#b69cff] bg-[linear-gradient(135deg,rgba(240,231,255,0.96),rgba(234,224,255,0.88))] text-[#4327ba] shadow-[0_14px_36px_rgba(91,61,245,0.12)] dark:border-[#7454cf] dark:bg-[linear-gradient(135deg,rgba(40,28,69,0.94),rgba(31,22,53,0.9))] dark:text-[#f2edff]'
+          : 'border-[#ded2ff] bg-white/55 text-[#5e4f8a] hover:border-[#b99fff] hover:bg-[#f7f2ff] dark:border-[#382d55] dark:bg-white/[0.03] dark:text-[#cbbff0] dark:hover:border-[#7156c8] dark:hover:bg-white/[0.05]'
+      )}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+        className="sr-only"
+      />
+      <span
+        className={cn(
+          'flex h-5 w-5 shrink-0 items-center justify-center rounded-[8px] border transition',
+          checked
+            ? 'border-[#6d46ff] bg-[#5b3df5] text-white shadow-[0_8px_18px_rgba(91,61,245,0.24)] dark:border-[#a58eff] dark:bg-[#8e72ff]'
+            : 'border-[#bfaeff] bg-white/90 text-transparent dark:border-[#54407f] dark:bg-[#1a132d]'
+        )}
+      >
+        <Check className={cn('h-3.5 w-3.5 transition', checked ? 'scale-100 opacity-100' : 'scale-75 opacity-0')} />
+      </span>
+      <span className="text-sm font-medium">{label}</span>
+    </label>
   );
 }
 
@@ -1001,11 +1040,11 @@ export default function ToolsClientPage() {
           <SectionCard icon={Sparkles} title="随机数 / 随机字符串" description="快速生成测试用随机串，可自由切换字符集。" className={isToolVisible('random') ? '' : 'hidden'}>
             <div className="space-y-3">
               <Input className={inputClass} value={randomLength} onChange={(event) => setRandomLength(event.target.value)} placeholder="长度，例如 16" />
-              <div className="grid grid-cols-2 gap-2 text-sm text-[#5c4a88] dark:text-[#d2c6f3]">
-                <label className="flex items-center gap-2"><input type="checkbox" checked={randomIncludeUppercase} onChange={(event) => setRandomIncludeUppercase(event.target.checked)} />大写字母</label>
-                <label className="flex items-center gap-2"><input type="checkbox" checked={randomIncludeLowercase} onChange={(event) => setRandomIncludeLowercase(event.target.checked)} />小写字母</label>
-                <label className="flex items-center gap-2"><input type="checkbox" checked={randomIncludeNumbers} onChange={(event) => setRandomIncludeNumbers(event.target.checked)} />数字</label>
-                <label className="flex items-center gap-2"><input type="checkbox" checked={randomIncludeSymbols} onChange={(event) => setRandomIncludeSymbols(event.target.checked)} />符号</label>
+              <div className="grid grid-cols-2 gap-3">
+                <FancyCheckbox checked={randomIncludeUppercase} onChange={setRandomIncludeUppercase} label="大写字母" />
+                <FancyCheckbox checked={randomIncludeLowercase} onChange={setRandomIncludeLowercase} label="小写字母" />
+                <FancyCheckbox checked={randomIncludeNumbers} onChange={setRandomIncludeNumbers} label="数字" />
+                <FancyCheckbox checked={randomIncludeSymbols} onChange={setRandomIncludeSymbols} label="符号" />
               </div>
               <Button onClick={handleRandomGenerate} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
                 生成随机串
