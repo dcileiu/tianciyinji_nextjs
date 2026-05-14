@@ -25,6 +25,9 @@ const nextConfig = {
   // 优化静态生成
   output: 'standalone',
 
+  // 避免带本地数据文件的 Node 包被打进 Turbopack server bundle 后丢失路径
+  serverExternalPackages: ['geoip-lite'],
+
   // 类型路由
   typedRoutes: true,
 

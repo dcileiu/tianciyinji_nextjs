@@ -75,6 +75,7 @@ export const primaryNavItems: NavItem[] = [
   { label: '首页', href: '/', enabled: true },
   { label: '归档', href: '/archive', enabled: true },
   { label: '作品', href: '/works', enabled: true },
+  { label: '工具', href: '/tools', enabled: true },
   { label: '资源', href: '/resources', enabled: true },
   { label: '关于', href: '/about', enabled: true },
 ];
