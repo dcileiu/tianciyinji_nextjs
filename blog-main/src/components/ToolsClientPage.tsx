@@ -841,8 +841,8 @@ export default function ToolsClientPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(130,96,255,0.16),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(218,208,255,0.18),transparent_30%)]" />
         <div className="relative">
           <p className="text-xs uppercase tracking-[0.28em] text-[#7f71ab] dark:text-[#ab9cd8]">Tools Menu</p>
-          <div className="mt-4 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-3xl">
+          <div className="mt-4">
+            <div className="max-w-4xl">
               <h1 className="text-3xl font-semibold tracking-tight text-[#2e2150] sm:text-4xl md:text-5xl dark:text-[#f4efff]">
                 给博客加一套真正能用的工具箱
               </h1>
@@ -853,28 +853,19 @@ export default function ToolsClientPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {sections.map((section) => (
-                <a
-                  key={section.id}
-                  href={`#${section.id}`}
-                  className="rounded-2xl border border-[#e7defe] bg-white/75 px-4 py-3 text-left transition hover:border-[#bda7ff] hover:bg-[#f7f2ff] dark:border-[#2f2548] dark:bg-white/[0.04] dark:hover:border-[#5b3df5]"
-                >
-                  <div className="text-xl font-semibold text-[#2e2150] dark:text-[#f4efff]">{section.count}</div>
-                  <div className="mt-1 text-xs leading-5 text-[#6d5d98] dark:text-[#b9aadf]">{section.title}</div>
-                </a>
-              ))}
-            </div>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="mt-6 flex flex-wrap gap-3">
             {sections.map((section) => (
               <a
                 key={section.id}
                 href={`#${section.id}`}
-                className="rounded-full border border-[#ddd0ff] px-4 py-2 text-sm text-[#5c4a88] transition hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#362b53] dark:text-[#d2c6f3] dark:hover:border-[#8b6bff] dark:hover:text-white"
+                className="inline-flex items-center gap-2 rounded-full border border-[#ddd0ff] bg-white/72 px-4 py-2.5 text-sm text-[#5c4a88] shadow-[0_10px_28px_rgba(91,61,245,0.07)] transition hover:border-[#8b6bff] hover:bg-[#f7f1ff] hover:text-[#5b3df5] dark:border-[#362b53] dark:bg-white/[0.04] dark:text-[#d2c6f3] dark:hover:border-[#8b6bff] dark:hover:bg-[#211834] dark:hover:text-white"
               >
-                {section.title}
+                <span>{section.title}</span>
+                <span className="inline-flex min-w-7 items-center justify-center rounded-full bg-[#efe6ff] px-2 py-0.5 text-[11px] font-semibold leading-none text-[#5b3df5] dark:bg-[#2b1f43] dark:text-[#efe9ff]">
+                  {section.count}
+                </span>
               </a>
             ))}
           </div>
