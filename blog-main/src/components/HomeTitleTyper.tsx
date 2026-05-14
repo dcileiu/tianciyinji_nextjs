@@ -16,7 +16,7 @@ const RESET_MS = 380;
 
 const LINE_STYLES = [
   'min-h-[1.6rem] text-sm font-medium tracking-[0.18em] text-[#5f4aa8] dark:text-[#cfc4ff] sm:min-h-[2rem] sm:text-base md:text-lg',
-  'min-h-[3.2rem] text-3xl font-semibold tracking-tight text-[#3f2a8f] dark:text-[#f1ebff] sm:min-h-[4rem] sm:text-4xl md:min-h-[5rem] md:text-5xl lg:min-h-[5.75rem] lg:text-6xl',
+  'min-h-[3.1rem] text-[2.4rem] font-semibold leading-[0.96] tracking-tight text-[#3f2a8f] dark:text-[#f1ebff] sm:min-h-[3.9rem] sm:text-[3rem] md:min-h-[4.6rem] md:text-[3.9rem] lg:min-h-[5.15rem] lg:text-[4.7rem]',
   'min-h-[1.8rem] text-base font-medium tracking-[0.06em] text-[#7660c8] dark:text-[#ded5ff] sm:min-h-[2.2rem] sm:text-lg md:text-2xl',
 ] as const;
 
@@ -100,7 +100,7 @@ export default function HomeTitleTyper({ className, lines }: HomeTitleTyperProps
           const lineStyle = LINE_STYLES[index] ?? LINE_STYLES[LINE_STYLES.length - 1];
 
           return (
-            <div key={`${index}-${line}`} className={`${lineStyle} flex items-baseline gap-1`}>
+            <div key={`${index}-${line}`} className={lineStyle}>
               <span
                 className={
                   index === 1
@@ -109,14 +109,14 @@ export default function HomeTitleTyper({ className, lines }: HomeTitleTyperProps
                 }
               >
                 {displayText}
+                {isCursorLine && (
+                  <span
+                    aria-hidden="true"
+                    className="ml-[0.08em] inline-block h-[0.96em] w-[0.11em] translate-y-[0.08em] rounded-full bg-[#5b3df5] align-middle dark:bg-[#d8cdff]"
+                    style={{ opacity: cursorVisible ? 1 : 0 }}
+                  />
+                )}
               </span>
-              {isCursorLine && (
-                <span
-                  aria-hidden="true"
-                  className="inline-block h-[1em] w-[0.12em] rounded-full bg-[#5b3df5] dark:bg-[#d8cdff]"
-                  style={{ opacity: cursorVisible ? 1 : 0 }}
-                />
-              )}
             </div>
           );
         })}
