@@ -27,14 +27,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://itianci.cn'),
+  metadataBase: new URL("https://itianci.cn"),
   title: {
     default: "天赐印记",
-    template: "%s | 天赐印记"
+    template: "%s | 天赐印记",
   },
-  description: "欢迎来到Tianci的个人网站！这里分享前端开发技术、项目作品和技术博客。专注于React、Next.js、TypeScript等现代Web开发技术。",
-  keywords: ["前端开发", "React", "Next.js", "TypeScript", "Web开发", "个人博客", "技术分享", "Tianci"],
-  authors: [{ name: "Tianci", url: "https://github.com/tianci" }],
+  description:
+    "欢迎来到Tianci的个人网站！这里分享前端开发技术、项目作品和技术博客。专注于React、Next.js、TypeScript等现代Web开发技术。",
+  keywords: [
+    "前端开发",
+    "React",
+    "Next.js",
+    "TypeScript",
+    "Web开发",
+    "个人博客",
+    "技术分享",
+    "Tianci",
+  ],
+  authors: [{ name: "Tianci", url: "https://github.com/dcileiu" }],
   creator: "Tianci",
   publisher: "Tianci",
   robots: {
@@ -59,7 +69,8 @@ export const metadata: Metadata = {
     locale: "zh_CN",
     url: "https://itianci.cn",
     title: "天赐印记 - 前端开发者个人网站",
-    description: "欢迎来到Tianci的个人网站！这里分享前端开发技术、项目作品和技术博客。",
+    description:
+      "欢迎来到Tianci的个人网站！这里分享前端开发技术、项目作品和技术博客。",
     siteName: "天赐印记",
     images: [
       {
@@ -73,7 +84,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "天赐印记 - 前端开发者个人网站",
-    description: "欢迎来到Tianci的个人网站！这里分享前端开发技术、项目作品和技术博客。",
+    description:
+      "欢迎来到Tianci的个人网站！这里分享前端开发技术、项目作品和技术博客。",
     images: ["/og-image.svg"],
     creator: "@tianci",
   },
@@ -110,7 +122,11 @@ export default function RootLayout({
       <head>
         {/* 远程图片 CDN 预连接，降低首屏图片 TTFB */}
         <link rel="dns-prefetch" href="//s2.loli.net" />
-        <link rel="preconnect" href="https://s2.loli.net" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://s2.loli.net"
+          crossOrigin="anonymous"
+        />
         <link rel="dns-prefetch" href="//p1.qhimg.com" />
         {/* Fix for markdown-it isSpace error with Next.js 15 + Turbopack */}
         <Script id="markdown-it-fix" strategy="beforeInteractive">
@@ -135,9 +151,7 @@ export default function RootLayout({
           <StructuredData type="website" />
           <StructuredData type="person" />
           <DynamicHeader />
-          <PageTransition>
-            {children}
-          </PageTransition>
+          <PageTransition>{children}</PageTransition>
           <PublicVisitTracker />
         </ThemeProvider>
       </body>

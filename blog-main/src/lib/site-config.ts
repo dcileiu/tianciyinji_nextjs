@@ -20,11 +20,11 @@ export const siteConfig = {
   avatar: '/avatar/avatar.webp',
   email: 'dcileiu@outlook.com',
   tagline: '写作、项目与一些正在发生的事。',
-  role: '全栈开发者 / 写作者',
+  role: '全栈开发 / 小程序',
   location: '广东深圳',
   githubUsername: 'tianci',
   socials: {
-    github: 'https://github.com/tianci',
+    github: 'https://github.com/dcileiu',
     email: 'mailto:dcileiu@outlook.com',
     rss: '/rss',
   },
@@ -32,7 +32,7 @@ export const siteConfig = {
     eyebrow: 'Liu Dci\'s Blog',
     title: '记录博客、作品、资源与一些长期主义的尝试',
     intro:
-      '这里是我的个人站点，用来发布文章、整理作品、沉淀资源，也公开一些正在进行中的想法与实验。欢迎访问，也欢迎留言。',
+      '这里是我的个人站点，用来发布文章、整理作品、沉淀资源、小工具，也公开一些正在进行中的想法与实验。',
   },
   about: {
     intro:
