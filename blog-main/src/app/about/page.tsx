@@ -35,48 +35,50 @@ export default async function AboutPage() {
         ]}
       />
       <header className="mb-16 md:mb-20">
-        <div className="flex flex-col gap-6 text-center md:flex-row md:items-start md:text-left">
-          <div className="mx-auto overflow-hidden rounded-full border border-black/10 md:mx-0 dark:border-white/10">
-            <Image
-              src={siteConfig.avatar}
-              alt={siteConfig.name}
-              width={112}
-              height={112}
-              className="h-28 w-28 object-cover"
-              priority
-            />
-          </div>
-
-          <div className="flex-1">
-            <h1 className="text-3xl font-medium tracking-tight text-black md:text-5xl dark:text-white">
-              {siteConfig.name}
-            </h1>
-            <p className="mt-3 text-base text-black/60 md:text-lg dark:text-white/60">{siteConfig.tagline}</p>
-
-            <div className="mt-5 flex flex-col items-center gap-3 text-sm text-black/55 md:flex-row md:flex-wrap dark:text-white/55">
-              <span className="inline-flex items-center gap-2">
-                <BriefcaseBusiness className="h-4 w-4" />
-                {siteConfig.role}
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                {siteConfig.location}
-              </span>
+        <div className="rounded-2xl border border-black/6 bg-black/[0.02] px-5 py-5 dark:border-white/6 dark:bg-white/[0.02] md:px-6 md:py-6">
+          <div className="flex flex-col gap-6 text-center md:flex-row md:items-start md:text-left">
+            <div className="mx-auto overflow-hidden rounded-full border border-black/10 md:mx-0 dark:border-white/10">
+              <Image
+                src={siteConfig.avatar}
+                alt={siteConfig.name}
+                width={112}
+                height={112}
+                className="h-28 w-28 object-cover"
+                priority
+              />
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-4 md:justify-start">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.href}
-                  target={social.href.startsWith('mailto:') ? undefined : '_blank'}
-                  rel={social.href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
-                  className="inline-flex items-center gap-2 rounded-full border border-black/10 px-4 py-2 text-sm text-black/70 transition-colors hover:bg-black/[0.04] hover:text-black dark:border-white/10 dark:text-white/70 dark:hover:bg-white/[0.04] dark:hover:text-white"
-                >
-                  <social.icon className="h-4 w-4" />
-                  {social.name}
-                </a>
-              ))}
+            <div className="flex-1">
+              <h1 className="text-3xl font-medium tracking-tight text-black md:text-5xl dark:text-white">
+                {siteConfig.name}
+              </h1>
+              <p className="mt-3 text-base text-black/60 md:text-lg dark:text-white/60">{siteConfig.tagline}</p>
+
+              <div className="mt-5 flex flex-col items-center gap-3 text-sm text-black/55 md:flex-row md:flex-wrap dark:text-white/55">
+                <span className="inline-flex items-center gap-2">
+                  <BriefcaseBusiness className="h-4 w-4" />
+                  {siteConfig.role}
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  {siteConfig.location}
+                </span>
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-4 md:justify-start">
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    target={social.href.startsWith('mailto:') ? undefined : '_blank'}
+                    rel={social.href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+                    className="inline-flex items-center gap-2 rounded-full border border-black/10 px-4 py-2 text-sm text-black/70 transition-colors hover:bg-black/[0.04] hover:text-black dark:border-white/10 dark:text-white/70 dark:hover:bg-white/[0.04] dark:hover:text-white"
+                  >
+                    <social.icon className="h-4 w-4" />
+                    {social.name}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>

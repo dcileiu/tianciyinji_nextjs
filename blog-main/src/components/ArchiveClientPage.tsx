@@ -77,13 +77,15 @@ export default function ArchiveClientPage({ posts }: ArchiveClientPageProps) {
     <div className="max-w-4xl mx-auto px-4 md:px-6 py-16 md:py-24">
       {/* 页面标题 */}
       <header className="mb-12 md:mb-16">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-black dark:text-white mb-4">
-          归档
-        </h1>
-        <p className="text-lg text-black/50 dark:text-white/50 mb-8">
-          今年我写了 {stats.thisYearCount} 篇文章，一共 {stats.totalWords} 字
-        </p>
-        <div className="w-16 h-[2px] bg-black dark:bg-white" />
+        <div className="rounded-2xl border border-black/6 bg-black/[0.02] px-5 py-5 dark:border-white/6 dark:bg-white/[0.02] md:px-6 md:py-6">
+          <h1 className="mb-4 text-4xl font-medium tracking-tight text-black md:text-5xl lg:text-6xl dark:text-white">
+            归档
+          </h1>
+          <p className="mb-8 text-lg text-black/50 dark:text-white/50">
+            今年我写了 {stats.thisYearCount} 篇文章，一共 {stats.totalWords} 字
+          </p>
+          <div className="h-[2px] w-16 bg-black dark:bg-white" />
+        </div>
       </header>
 
       {/* 分类筛选 */}
@@ -95,7 +97,7 @@ export default function ArchiveClientPage({ posts }: ArchiveClientPageProps) {
           {groupedPosts.map(([year, yearPosts]: [string, any[]]) => (
             <section key={year}>
               {/* 年份标题 */}
-              <h2 className="text-2xl md:text-3xl font-medium text-black dark:text-white mb-8 sticky top-4 bg-gray-50/80 dark:bg-[#121212]/80 backdrop-blur-sm py-2 -mx-2 px-2 rounded">
+              <h2 className="sticky top-4 z-10 mb-8 rounded-2xl border border-black/6 bg-black/[0.02] px-5 py-4 text-2xl font-medium text-black dark:border-white/6 dark:bg-white/[0.02] dark:text-white md:text-3xl">
                 {year}
               </h2>
 
