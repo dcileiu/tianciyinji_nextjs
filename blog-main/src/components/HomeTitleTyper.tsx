@@ -15,9 +15,9 @@ const HOLD_MS = 2200;
 const RESET_MS = 380;
 
 const LINE_STYLES = [
-  'min-h-[1.65rem] text-xs font-medium leading-[1.6] tracking-[0.18em] text-[#5f4aa8] dark:text-[#cfc4ff] sm:min-h-[2rem] sm:text-sm md:text-base',
-  'min-h-[3rem] text-[1.6rem] font-semibold leading-[1.25] tracking-tight text-[#3f2a8f] dark:text-[#f1ebff] sm:min-h-[3.5rem] sm:text-[2.05rem] md:min-h-[4rem] md:text-[2.5rem] lg:min-h-[4.5rem] lg:text-[2.9rem]',
-  'min-h-[1.85rem] text-sm font-medium leading-[1.55] tracking-[0.06em] text-[#7660c8] dark:text-[#ded5ff] sm:min-h-[2.2rem] sm:text-base md:text-xl',
+  'text-xs font-medium leading-[1.6] tracking-[0.18em] text-[#5f4aa8] dark:text-[#cfc4ff] sm:text-sm md:text-base',
+  'text-[1.6rem] font-semibold leading-[1.25] tracking-tight text-[#3f2a8f] dark:text-[#f1ebff] sm:text-[2.05rem] md:text-[2.5rem] lg:text-[2.9rem]',
+  'text-sm font-medium leading-[1.55] tracking-[0.06em] text-[#7660c8] dark:text-[#ded5ff] sm:text-base md:text-xl',
 ] as const;
 
 export default function HomeTitleTyper({ className, lines }: HomeTitleTyperProps) {
@@ -93,7 +93,7 @@ export default function HomeTitleTyper({ className, lines }: HomeTitleTyperProps
 
   return (
     <div className={className}>
-      <div className="space-y-3 sm:space-y-5 md:space-y-6">
+      <div className="space-y-2 sm:space-y-3 md:space-y-4">
         {safeLines.map((line, index) => {
           const displayText = renderedLines[index] ?? '';
           const isCursorLine = cursorLineIndex === index && phase !== 'resetting';

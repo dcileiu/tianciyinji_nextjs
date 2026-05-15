@@ -89,7 +89,7 @@ export default async function Page() {
               {siteConfig.home.eyebrow}
             </p>
 
-            <h1 className="mb-6 sm:mb-8 md:mb-10">
+            <h1 className="mb-4 sm:mb-5 md:mb-6">
               <span className="sr-only">{homeTitleLines.join(" / ")}</span>
               <HomeTitleTyper
                 className="w-full max-w-[960px]"
