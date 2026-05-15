@@ -112,7 +112,7 @@ export default function HomeTitleTyper({ className, lines }: HomeTitleTyperProps
                 {isCursorLine && (
                   <span
                     aria-hidden="true"
-                    className="ml-[0.08em] inline-block h-[0.92em] w-[0.08em] -translate-y-[0.02em] rounded-full bg-[#5b3df5] align-baseline dark:bg-[#d8cdff]"
+                    className="ml-[0.08em] inline-block h-[0.82em] w-[0.08em] rounded-full bg-[#5b3df5] align-baseline dark:bg-[#d8cdff]"
                     style={{ opacity: cursorVisible ? 1 : 0 }}
                   />
                 )}
