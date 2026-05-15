@@ -59,7 +59,7 @@ export default async function Page() {
   const { posts, total } = await getBlogPosts(1);
   const homeTitleLines: [string, string] = [
     "全栈开发一枚",
-    "记录博客、作品、资源与一些长期主义的尝试。",
+    "记录博客、作品、资源与一些长期主义的尝试",
   ];
 
   return (

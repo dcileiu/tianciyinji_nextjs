@@ -15,9 +15,9 @@ const HOLD_MS = 2200;
 const RESET_MS = 380;
 
 const LINE_STYLES = [
-  'min-h-[1.6rem] text-sm font-medium tracking-[0.18em] text-[#5f4aa8] dark:text-[#cfc4ff] sm:min-h-[2rem] sm:text-base md:text-lg',
-  'min-h-[3.35rem] text-[2.1rem] font-semibold leading-[1.08] tracking-tight text-[#3f2a8f] dark:text-[#f1ebff] sm:min-h-[4.1rem] sm:text-[2.7rem] md:min-h-[4.8rem] md:text-[3.35rem] lg:min-h-[5.4rem] lg:text-[4rem]',
-  'min-h-[1.8rem] text-base font-medium tracking-[0.06em] text-[#7660c8] dark:text-[#ded5ff] sm:min-h-[2.2rem] sm:text-lg md:text-2xl',
+  'min-h-[1.8rem] text-sm font-medium leading-[1.6] tracking-[0.18em] text-[#5f4aa8] dark:text-[#cfc4ff] sm:min-h-[2.2rem] sm:text-base md:text-lg',
+  'min-h-[3.8rem] text-[2.1rem] font-semibold leading-[1.25] tracking-tight text-[#3f2a8f] dark:text-[#f1ebff] sm:min-h-[4.6rem] sm:text-[2.7rem] md:min-h-[5.4rem] md:text-[3.35rem] lg:min-h-[6.2rem] lg:text-[4rem]',
+  'min-h-[2rem] text-base font-medium leading-[1.55] tracking-[0.06em] text-[#7660c8] dark:text-[#ded5ff] sm:min-h-[2.4rem] sm:text-lg md:text-2xl',
 ] as const;
 
 export default function HomeTitleTyper({ className, lines }: HomeTitleTyperProps) {
@@ -93,7 +93,7 @@ export default function HomeTitleTyper({ className, lines }: HomeTitleTyperProps
 
   return (
     <div className={className}>
-      <div className="space-y-2 sm:space-y-3 md:space-y-4">
+      <div className="space-y-3 sm:space-y-5 md:space-y-6">
         {safeLines.map((line, index) => {
           const displayText = renderedLines[index] ?? '';
           const isCursorLine = cursorLineIndex === index && phase !== 'resetting';
@@ -112,7 +112,7 @@ export default function HomeTitleTyper({ className, lines }: HomeTitleTyperProps
                 {isCursorLine && (
                   <span
                     aria-hidden="true"
-                    className="ml-[0.08em] inline-block h-[0.96em] w-[0.11em] translate-y-[0.08em] rounded-full bg-[#5b3df5] align-middle dark:bg-[#d8cdff]"
+                    className="ml-[0.08em] inline-block h-[0.92em] w-[0.08em] -translate-y-[0.02em] rounded-full bg-[#5b3df5] align-baseline dark:bg-[#d8cdff]"
                     style={{ opacity: cursorVisible ? 1 : 0 }}
                   />
                 )}

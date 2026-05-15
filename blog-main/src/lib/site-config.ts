@@ -13,7 +13,7 @@ type StarterWork = {
 export const siteConfig = {
   name: 'Dci',
   title: 'Dci',
-  description: '记录博客、作品、资源与一些长期主义的尝试。',
+  description: '记录博客、作品、资源与一些长期主义的尝试',
   url: process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://itianci.cn',
   language: 'zh-CN',
   locale: 'zh_CN',
@@ -30,7 +30,7 @@ export const siteConfig = {
   },
   home: {
     eyebrow: 'Liu Dci\'s Blog',
-    title: '记录博客、作品、资源与一些长期主义的尝试。',
+    title: '记录博客、作品、资源与一些长期主义的尝试',
     intro:
       '这里是我的个人站点，用来发布文章、整理作品、沉淀资源，也公开一些正在进行中的想法与实验。欢迎访问，也欢迎留言。',
   },
