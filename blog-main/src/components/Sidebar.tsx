@@ -3,19 +3,19 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { NavItem } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
 interface SidebarProps {
   isOpen: boolean;
-  width?: number | string;
   navItems: NavItem[];
   onClose?: () => void;
 }
 
-export function Sidebar({ isOpen, width = 'var(--sidebar-width)', navItems, onClose }: SidebarProps) {
+export function Sidebar({ isOpen, navItems, onClose }: SidebarProps) {
+  const asideRef = useRef<HTMLElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -37,6 +37,21 @@ export function Sidebar({ isOpen, width = 'var(--sidebar-width)', navItems, onCl
     }
   }, [isInitialLoad]);
 
+  // 同步侧栏实际宽度，供主内容区 padding 与音乐播放器定位使用
+  useEffect(() => {
+    const el = asideRef.current;
+    if (!el || !isOpen) return;
+
+    const syncWidth = () => {
+      document.documentElement.style.setProperty('--sidebar-width', `${el.getBoundingClientRect().width}px`);
+    };
+
+    syncWidth();
+    const observer = new ResizeObserver(syncWidth);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isOpen, navItems]);
+
   const handleClose = () => {
     triggerHaptic(HapticFeedback.Medium);
     setIsAnimating(true);
@@ -54,19 +69,19 @@ export function Sidebar({ isOpen, width = 'var(--sidebar-width)', navItems, onCl
     <>
       {/* 桌面端侧边栏 */}
       <aside
+        ref={asideRef}
         className={cn(
           'hidden md:block',
-          'fixed top-0 left-0 z-40 h-screen pt-16',
-          'bg-[#fbf8ff] dark:bg-[#120f1f]',
+          'fixed top-0 left-0 z-40 h-screen w-fit pt-16',
+          'bg-transparent',
           'transition-transform duration-300 ease-out will-change-transform',
           isOpen ? 'translate-x-0' : '-translate-x-full',
           // 初始加载时的淡入动画
           isInitialLoad && isOpen && 'animate-in fade-in slide-in-from-left-4 duration-400'
         )}
-        style={{ width }}
         aria-label="侧边导航"
       >
-        <nav className="flex h-full flex-col items-stretch justify-center px-4 lg:px-5">
+        <nav className="flex h-full flex-col items-start justify-center px-3 lg:px-4">
           <ul className="space-y-2">
             {navItems
               .filter((item) => item.enabled)
@@ -75,7 +90,7 @@ export function Sidebar({ isOpen, width = 'var(--sidebar-width)', navItems, onCl
                   <Link
                     href={item.href as any}
                     className={cn(
-                      'group flex h-9 w-full items-center justify-between rounded-md px-3 text-sm',
+                      'group inline-flex h-9 w-fit min-w-0 items-center rounded-md px-3 text-sm whitespace-nowrap',
                       'text-[#34265d] dark:text-[#efeaff]',
                       'hover:bg-[#eee7ff] dark:hover:bg-[#221b37]',
                       'hover:text-[#4f31d7] dark:hover:text-[#ffffff]',

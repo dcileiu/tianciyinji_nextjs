@@ -162,7 +162,7 @@ html.christmas.dark ::-webkit-scrollbar-thumb {
   }
 
   :root {
-    --sidebar-width: clamp(10.5rem, calc(12vw + 2rem), 15rem);
+    --sidebar-width: 7rem; /* 由 Sidebar ResizeObserver 按实际内容宽度覆盖 */
     --sidebar-gutter: 24px;
     --sidebar-padding: 24px;
   }
