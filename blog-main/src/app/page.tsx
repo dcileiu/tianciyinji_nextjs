@@ -34,7 +34,10 @@ function PostItem({ post }: { post: Post }) {
   const categoryLabel = post.category?.trim() || "博客";
 
   return (
-    <article className="rounded-3xl border border-black/6 bg-black/[0.02] p-6 transition-colors hover:bg-black/[0.03] sm:p-8 dark:border-white/6 dark:bg-white/[0.02] dark:hover:bg-white/[0.04]">
+    <Link
+      href={`/post/${post.slug}`}
+      className="group block rounded-3xl border border-black/6 bg-black/[0.02] p-6 transition-colors hover:bg-black/[0.03] sm:p-8 dark:border-white/6 dark:bg-white/[0.02] dark:hover:bg-white/[0.04]"
+    >
       <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0 max-w-2xl">
           <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -66,15 +69,12 @@ function PostItem({ post }: { post: Post }) {
           )}
         </div>
 
-        <Link
-          href={`/post/${post.slug}`}
-          className="inline-flex shrink-0 items-center gap-2 text-sm text-black/55 transition-colors hover:text-black md:mt-1 dark:text-white/55 dark:hover:text-white"
-        >
+        <span className="inline-flex shrink-0 items-center gap-2 text-sm text-black/55 transition-colors group-hover:text-black md:mt-1 dark:text-white/55 dark:group-hover:text-white">
           阅读文章
           <ArrowUpRight className="h-4 w-4" />
-        </Link>
+        </span>
       </div>
-    </article>
+    </Link>
   );
 }
 
