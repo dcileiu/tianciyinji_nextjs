@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "lucide-react";
 import type { Metadata, Route } from "next";
 import Link from "next/link";
 import HomeIntroOverlay from "@/components/HomeIntroOverlay";
@@ -30,28 +31,50 @@ function formatDate(dateString: string): string {
 
 function PostItem({ post }: { post: Post }) {
   const formattedDate = formatDate(post.date);
+  const categoryLabel = post.category?.trim() || "博客";
 
   return (
-    <Link
-      href={`/post/${post.slug}`}
-      className="group mb-4 grid grid-cols-[70px_1fr] gap-4 rounded-[28px] border border-[#e7defe] bg-[linear-gradient(135deg,rgba(255,255,255,0.64),rgba(245,239,255,0.52))] px-4 py-6 shadow-[0_12px_36px_rgba(91,61,245,0.06)] transition-all duration-300 last:mb-0 hover:border-[#bfa7ff] hover:bg-[linear-gradient(135deg,rgba(243,235,255,0.84),rgba(232,223,248,0.74))] hover:shadow-[0_16px_42px_rgba(91,61,245,0.10)] sm:grid-cols-[90px_1fr] sm:gap-6 sm:px-5 sm:py-8 md:grid-cols-[120px_1fr] md:gap-12 md:px-6 md:py-10 dark:border-[#2c2342] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.72),rgba(18,13,31,0.82))] dark:hover:border-[#564092] dark:hover:bg-[linear-gradient(135deg,rgba(33,24,58,0.90),rgba(24,18,42,0.94))] dark:hover:shadow-[0_20px_48px_rgba(0,0,0,0.24)]"
-    >
-      <time className="pt-0.5 font-mono text-xs text-[#8779b3] sm:pt-1 sm:text-sm dark:text-[#9f91c9]">
-        {formattedDate}
-      </time>
+    <article className="rounded-3xl border border-black/6 bg-black/[0.02] p-6 transition-colors hover:bg-black/[0.03] sm:p-8 dark:border-white/6 dark:bg-white/[0.02] dark:hover:bg-white/[0.04]">
+      <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+        <div className="min-w-0 max-w-2xl">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-black px-3 py-1 text-xs font-medium text-white dark:bg-white dark:text-black">
+              {categoryLabel}
+            </span>
+            <span className="text-xs text-black/45 dark:text-white/45">{formattedDate}</span>
+          </div>
 
-      <div className="min-w-0">
-        <h2 className="mb-2 text-xl font-medium leading-tight text-[#2e2150] transition-colors group-hover:text-[#5b3df5] sm:mb-3 sm:text-2xl md:text-3xl dark:text-white dark:group-hover:text-[#d8cdff]">
-          {post.title}
-        </h2>
+          <h2 className="text-2xl font-medium text-black dark:text-white">{post.title}</h2>
 
-        {post.excerpt && (
-          <p className="line-clamp-2 text-sm leading-relaxed text-[#615488] sm:text-base dark:text-[#c7baf1]">
-            {post.excerpt}
-          </p>
-        )}
+          {post.excerpt && (
+            <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-black/60 sm:text-base dark:text-white/60">
+              {post.excerpt}
+            </p>
+          )}
+
+          {post.tags && post.tags.length > 0 && (
+            <div className="mt-5 flex flex-wrap gap-2">
+              {post.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-black/[0.05] px-3 py-1.5 text-xs text-black/65 dark:bg-white/[0.06] dark:text-white/65"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <Link
+          href={`/post/${post.slug}`}
+          className="inline-flex shrink-0 items-center gap-2 text-sm text-black/55 transition-colors hover:text-black md:mt-1 dark:text-white/55 dark:hover:text-white"
+        >
+          阅读文章
+          <ArrowUpRight className="h-4 w-4" />
+        </Link>
       </div>
-    </Link>
+    </article>
   );
 }
 
@@ -142,9 +165,11 @@ export default async function Page() {
             </p>
           </div>
 
-          {posts.map((post) => (
-            <PostItem key={post.slug} post={post as unknown as Post} />
-          ))}
+          <div className="space-y-4">
+            {posts.map((post) => (
+              <PostItem key={post.slug} post={post as unknown as Post} />
+            ))}
+          </div>
         </section>
 
         {total > 10 && (

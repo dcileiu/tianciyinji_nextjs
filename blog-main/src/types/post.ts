@@ -65,6 +65,7 @@ export interface MatterResult extends GrayMatterFile<string> {
 
 export interface Post extends BaseContent {
   tags?: string[];
+  category?: string;
 }
 
 export interface PostIndex {
