@@ -4,6 +4,7 @@ export interface Resource {
   slug: string;
   title: string;
   description: string;
+  category?: string;
   type: string;
   format?: string;
   size?: string;
@@ -23,6 +24,7 @@ export async function getResources(): Promise<Resource[]> {
     slug: resource.slug,
     title: resource.title,
     description: resource.excerpt || '',
+    category: resource.category,
     type: resource.resourceType || '文档',
     format: resource.format,
     size: resource.size,
@@ -51,6 +53,7 @@ export async function getResourceBySlug(slug: string): Promise<Resource | null> 
     slug: resource.slug,
     title: resource.title,
     description: resource.excerpt || '',
+    category: resource.category,
     type: resource.resourceType || '文档',
     format: resource.format,
     size: resource.size,

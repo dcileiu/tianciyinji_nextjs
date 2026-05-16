@@ -2,12 +2,18 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import {
+  RESOURCE_CATEGORIES,
+  type ResourceCategoryId,
+  matchResourceCategory,
+} from '@/lib/resource-categories';
 import { LiveCodeRenderer } from './LiveCodeRenderer';
 
 interface Resource {
   title: string;
   description: string;
   slug: string;
+  category?: string;
   type?: string;
   format?: string;
   size?: string;
@@ -47,14 +53,28 @@ function extractDescriptionFromHtml(html: string): string {
   return '';
 }
 
+type MainTab = 'resources' | 'commands' | 'design';
+
+const MAIN_TABS: { id: MainTab; label: string }[] = [
+  { id: 'resources', label: '资源' },
+  { id: 'commands', label: '命令' },
+  { id: 'design', label: '设计' },
+];
+
 export default function ResourcesClient({ resources }: ResourcesClientProps) {
-  const [activeTab, setActiveTab] = useState<'resources' | 'commands' | 'design'>('resources');
+  const [activeTab, setActiveTab] = useState<MainTab>('resources');
+  const [activeCategory, setActiveCategory] = useState<ResourceCategoryId>('all');
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('resources-tab') as 'resources' | 'commands' | 'design';
-    if (saved) {
-      setActiveTab(saved);
+    const savedTab = localStorage.getItem('resources-tab') as MainTab | null;
+    const savedCategory = localStorage.getItem('resources-category') as ResourceCategoryId | null;
+
+    if (savedTab) {
+      setActiveTab(savedTab);
+    }
+    if (savedCategory && RESOURCE_CATEGORIES.some((item) => item.id === savedCategory)) {
+      setActiveCategory(savedCategory);
     }
     setIsHydrated(true);
   }, []);
@@ -64,6 +84,12 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
       localStorage.setItem('resources-tab', activeTab);
     }
   }, [activeTab, isHydrated]);
+
+  useEffect(() => {
+    if (isHydrated) {
+      localStorage.setItem('resources-category', activeCategory);
+    }
+  }, [activeCategory, isHydrated]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [designFilter, setDesignFilter] = useState<string | null>(null);
 
@@ -71,6 +97,9 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
   const normalResources = resources.filter((r) => r.type !== 'command' && r.type !== 'design');
   const commandResources = resources.filter((r) => r.type === 'command');
   const designResources = resources.filter((r) => r.type === 'design');
+  const filteredResources = normalResources.filter((resource) =>
+    matchResourceCategory(resource.category, activeCategory),
+  );
 
   const copyToClipboard = async (command: string, id: string) => {
     try {
@@ -124,39 +153,49 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
         <div className="w-12 sm:w-16 h-[2px] bg-black dark:bg-white" />
       </header>
 
-      {/* Tab 切换 */}
-      <div className="flex gap-1 p-1 mb-6 bg-black/[0.04] dark:bg-white/[0.06] rounded-full w-fit">
-        <button
-          onClick={() => setActiveTab('resources')}
-          className={`px-5 py-2 text-sm font-medium rounded-full transition-all ${
-            activeTab === 'resources'
-              ? 'bg-white dark:bg-black text-black dark:text-white shadow-sm'
-              : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
-          }`}
-        >
-          资源
-        </button>
-        <button
-          onClick={() => setActiveTab('commands')}
-          className={`px-5 py-2 text-sm font-medium rounded-full transition-all ${
-            activeTab === 'commands'
-              ? 'bg-white dark:bg-black text-black dark:text-white shadow-sm'
-              : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
-          }`}
-        >
-          命令
-        </button>
-        <button
-          onClick={() => setActiveTab('design')}
-          className={`px-5 py-2 text-sm font-medium rounded-full transition-all ${
-            activeTab === 'design'
-              ? 'bg-white dark:bg-black text-black dark:text-white shadow-sm'
-              : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
-          }`}
-        >
-          设计
-        </button>
+      {/* 主 Tab */}
+      <div className="flex gap-1 p-1 mb-4 bg-[#efe8ff]/80 dark:bg-[#1d162f]/80 rounded-full w-fit">
+        {MAIN_TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-5 py-2 text-sm font-medium rounded-full transition-all ${
+              activeTab === tab.id
+                ? 'bg-white dark:bg-[#241c38] text-[#2e2150] dark:text-[#f0ebff] shadow-sm'
+                : 'text-[#716397] dark:text-[#ac9cd8] hover:text-[#4f31d7] dark:hover:text-[#f0ebff]'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
+
+      {/* 资源分类 Tab */}
+      {activeTab === 'resources' && (
+        <div className="mb-6 -mx-1 overflow-x-auto pb-1">
+          <div className="flex min-w-max gap-2 px-1">
+            {RESOURCE_CATEGORIES.map((category) => {
+              const Icon = category.icon;
+              const isActive = activeCategory === category.id;
+
+              return (
+                <button
+                  key={category.id}
+                  onClick={() => setActiveCategory(category.id)}
+                  className={`inline-flex flex-col items-center gap-1.5 min-w-[4.5rem] px-3 py-2.5 rounded-2xl transition-all ${
+                    isActive
+                      ? 'bg-[#efe8ff] dark:bg-[#241c38] text-[#4f31d7] dark:text-[#f0ebff] shadow-[0_8px_24px_rgba(91,61,245,0.10)]'
+                      : 'text-[#7c6daa] dark:text-[#ac9cd8] hover:bg-[#f5f0ff] dark:hover:bg-[#1d162f]'
+                  }`}
+                >
+                  <Icon className={`h-5 w-5 ${isActive ? 'text-[#5b3df5] dark:text-[#d8cdff]' : ''}`} />
+                  <span className="text-xs font-medium whitespace-nowrap">{category.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* 资源列表 */}
       {activeTab === 'resources' && (
@@ -168,9 +207,18 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                 在 Obsidian 文章的 frontmatter 中添加 resource: true 来创建资源
               </p>
             </div>
+          ) : filteredResources.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-black/60 dark:text-white/60 mb-2">
+                {RESOURCE_CATEGORIES.find((item) => item.id === activeCategory)?.label ?? '该分类'} 下暂无资源
+              </p>
+              <p className="text-sm text-black/40 dark:text-white/40">
+                可在 frontmatter 中设置 category，例如 category: film 或 category: 影视
+              </p>
+            </div>
           ) : (
             <div className="space-y-0">
-              {normalResources.map((resource, index) => (
+              {filteredResources.map((resource, index) => (
                 <article
                   key={index}
                   className="group py-6 border-b border-black/[0.06] dark:border-white/[0.06] last:border-0"

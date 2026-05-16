@@ -2,7 +2,6 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Grid3x3, Maximize2, Minimize2, Monitor, Moon, Settings, Square, Sun } from 'lucide-react';
-import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
@@ -15,20 +14,10 @@ interface AppearanceConfig {
   layoutMode: LayoutMode;
 }
 
-// 这些页面禁用背景图片
-const NO_BACKGROUND_PAGES = ['/music', '/works', '/friends', '/resources', '/games'];
-
-// 这些页面强制使用宽屏布局（音乐页面、游戏页面）
-const FORCE_WIDE_LAYOUT_PAGES = ['/music', '/games'];
-
-// 这些页面强制使用紧凑布局（作品页面）
-const FORCE_COMPACT_LAYOUT_PAGES = ['/works'];
-
 export default function AppearanceSettings() {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
-  const pathname = usePathname();
   const [config, setConfig] = useState<AppearanceConfig>({
     backgroundStyle: 'fabric',
     layoutMode: 'default',
@@ -36,20 +25,7 @@ export default function AppearanceSettings() {
   const popoverRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // 检查当前页面是否需要禁用背景
-  const shouldDisableBackground = NO_BACKGROUND_PAGES.some((page) => pathname.startsWith(page));
-
-  // 检查当前页面是否需要强制宽屏布局
-  const shouldForceWideLayout = FORCE_WIDE_LAYOUT_PAGES.some((page) => pathname.startsWith(page));
-
-  // 检查当前页面是否需要强制紧凑布局
-  const shouldForceCompactLayout = FORCE_COMPACT_LAYOUT_PAGES.some((page) => pathname.startsWith(page));
-
-  // 是否强制布局（任何一种）
-  const shouldForceLayout = shouldForceWideLayout || shouldForceCompactLayout;
-
   useEffect(() => {
-    // 读取配置并设置状态（背景和布局已在 inline script 中应用）
     const saved = localStorage.getItem('appearance-config');
     if (saved) {
       try {
@@ -70,32 +46,19 @@ export default function AppearanceSettings() {
     if (!mounted) return;
     localStorage.setItem('appearance-config', JSON.stringify(config));
 
-    // 应用背景样式（特定页面强制禁用背景）
     if (document.body) {
       document.body.classList.remove('background-character', 'background-luoxiaohei', 'background-fabric');
 
-      if (shouldDisableBackground || config.backgroundStyle === 'none') {
-        // 不添加任何背景 class，保持纯净
-      } else if (config.backgroundStyle === 'fabric') {
+      if (config.backgroundStyle === 'fabric') {
         document.body.classList.add('background-fabric');
       }
     }
 
-    // 应用布局模式
     if (document.documentElement) {
       document.documentElement.classList.remove('layout-default', 'layout-wide', 'layout-compact');
-
-      // 根据页面类型应用强制布局或用户选择的布局
-      let layoutToApply = config.layoutMode;
-      if (shouldForceWideLayout) {
-        layoutToApply = 'wide';
-      } else if (shouldForceCompactLayout) {
-        layoutToApply = 'compact';
-      }
-
-      document.documentElement.classList.add(`layout-${layoutToApply}`);
+      document.documentElement.classList.add(`layout-${config.layoutMode}`);
     }
-  }, [config, mounted, shouldDisableBackground, shouldForceWideLayout, shouldForceCompactLayout]);
+  }, [config, mounted]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -150,7 +113,6 @@ export default function AppearanceSettings() {
             className="absolute top-full right-0 mt-2 w-72 bg-[#fffbff] dark:bg-[#171125] rounded-xl border border-[#ddd3fb]/70 dark:border-[#2a2140]/90 shadow-[0_18px_48px_rgba(91,61,245,0.14)] dark:shadow-[0_18px_48px_rgba(0,0,0,0.45)] overflow-hidden z-50"
           >
             <div className="p-5 space-y-5">
-              {/* 主题切换 */}
               <div>
                 <div className="text-[11px] font-semibold text-[#8677b2] dark:text-[#b4a7db] mb-3 uppercase tracking-wider">
                   主题
@@ -197,21 +159,12 @@ export default function AppearanceSettings() {
                 </div>
               </div>
 
-              {/* 分隔线 */}
               <div className="h-px bg-[#e5ddfb] dark:bg-[#2a2140]" />
 
-              {/* 背景设置 */}
               <div>
                 <div className="text-[11px] font-semibold text-[#8677b2] dark:text-[#b4a7db] mb-3 uppercase tracking-wider">
                   背景
                 </div>
-                {shouldDisableBackground && (
-                  <div className="mb-3 p-2.5 rounded-lg bg-amber-50/80 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/30">
-                    <p className="text-[11px] leading-relaxed text-amber-700 dark:text-amber-400/90">
-                      当前页面不支持背景图片
-                    </p>
-                  </div>
-                )}
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { value: 'fabric' as const, label: '织物', Icon: Grid3x3 },
@@ -220,37 +173,32 @@ export default function AppearanceSettings() {
                     <button
                       key={item.value}
                       onClick={() => {
-                        if (!shouldDisableBackground) {
-                          triggerHaptic(HapticFeedback.Light);
-                          updateBackground(item.value);
-                        }
+                        triggerHaptic(HapticFeedback.Light);
+                        updateBackground(item.value);
                       }}
-                      disabled={shouldDisableBackground}
                       className={`group relative p-3 rounded-xl transition-all ${
-                        shouldDisableBackground
-                          ? 'opacity-40 cursor-not-allowed'
-                          : config.backgroundStyle === item.value
-                            ? 'bg-[#efe8ff] dark:bg-[#241c38]'
-                            : 'hover:bg-[#f5f0ff] dark:hover:bg-[#1d162f]'
+                        config.backgroundStyle === item.value
+                          ? 'bg-[#efe8ff] dark:bg-[#241c38]'
+                          : 'hover:bg-[#f5f0ff] dark:hover:bg-[#1d162f]'
                       }`}
                     >
                       <item.Icon
                         className={`w-5 h-5 mx-auto mb-1.5 transition-colors ${
-                          !shouldDisableBackground && config.backgroundStyle === item.value
+                          config.backgroundStyle === item.value
                             ? 'text-[#4f31d7] dark:text-[#f0ebff]'
                             : 'text-[#7c6daa] dark:text-[#ac9cd8]'
                         }`}
                       />
                       <div
                         className={`text-[11px] font-medium transition-colors ${
-                          !shouldDisableBackground && config.backgroundStyle === item.value
+                          config.backgroundStyle === item.value
                             ? 'text-[#3d2b82] dark:text-[#f0ebff]'
                             : 'text-[#716397] dark:text-[#ac9cd8]'
                         }`}
                       >
                         {item.label}
                       </div>
-                      {config.backgroundStyle === item.value && !shouldDisableBackground && (
+                      {config.backgroundStyle === item.value && (
                         <motion.div
                           layoutId="activeBackground"
                           className="absolute inset-0 border-2 border-[#c4b6ff] dark:border-[#5b4694] rounded-xl"
@@ -262,86 +210,55 @@ export default function AppearanceSettings() {
                 </div>
               </div>
 
-              {/* 分隔线 */}
               <div className="h-px bg-[#e5ddfb] dark:bg-[#2a2140]" />
 
-              {/* 页面布局 */}
               <div>
                 <div className="text-[11px] font-semibold text-[#8677b2] dark:text-[#b4a7db] mb-3 uppercase tracking-wider">
                   布局
                 </div>
-                {shouldForceLayout && (
-                  <div className="mb-3 p-2.5 rounded-lg bg-amber-50/80 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/30">
-                    <p className="text-[11px] leading-relaxed text-amber-700 dark:text-amber-400/90">
-                      当前页面仅支持默认布局
-                    </p>
-                  </div>
-                )}
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { value: 'compact' as const, label: '紧凑', Icon: Minimize2 },
                     { value: 'default' as const, label: '默认', Icon: Square },
                     { value: 'wide' as const, label: '宽屏', Icon: Maximize2 },
-                  ].map((item) => {
-                    // 确定哪个布局被强制使用
-                    const forcedLayout = shouldForceWideLayout ? 'wide' : shouldForceCompactLayout ? 'compact' : null;
-                    const isForced = item.value === forcedLayout;
-
-                    return (
-                      <button
-                        key={item.value}
-                        onClick={() => {
-                          if (!shouldForceLayout) {
-                            triggerHaptic(HapticFeedback.Light);
-                            updateLayout(item.value);
-                          }
-                        }}
-                        disabled={shouldForceLayout}
-                        className={`group relative p-3 rounded-xl transition-all ${
-                          shouldForceLayout
-                            ? isForced
-                              ? 'bg-[#efe8ff] dark:bg-[#241c38] cursor-not-allowed'
-                              : 'opacity-40 cursor-not-allowed'
-                            : config.layoutMode === item.value
-                              ? 'bg-[#efe8ff] dark:bg-[#241c38]'
-                              : 'hover:bg-[#f5f0ff] dark:hover:bg-[#1d162f]'
+                  ].map((item) => (
+                    <button
+                      key={item.value}
+                      onClick={() => {
+                        triggerHaptic(HapticFeedback.Light);
+                        updateLayout(item.value);
+                      }}
+                      className={`group relative p-3 rounded-xl transition-all ${
+                        config.layoutMode === item.value
+                          ? 'bg-[#efe8ff] dark:bg-[#241c38]'
+                          : 'hover:bg-[#f5f0ff] dark:hover:bg-[#1d162f]'
+                      }`}
+                    >
+                      <item.Icon
+                        className={`w-5 h-5 mx-auto mb-1.5 transition-colors ${
+                          config.layoutMode === item.value
+                            ? 'text-[#4f31d7] dark:text-[#f0ebff]'
+                            : 'text-[#7c6daa] dark:text-[#ac9cd8]'
+                        }`}
+                      />
+                      <div
+                        className={`text-[11px] font-medium transition-colors ${
+                          config.layoutMode === item.value
+                            ? 'text-[#3d2b82] dark:text-[#f0ebff]'
+                            : 'text-[#716397] dark:text-[#ac9cd8]'
                         }`}
                       >
-                        <item.Icon
-                          className={`w-5 h-5 mx-auto mb-1.5 transition-colors ${
-                            shouldForceLayout
-                              ? isForced
-                                ? 'text-[#4f31d7] dark:text-[#f0ebff]'
-                                : 'text-[#7c6daa] dark:text-[#ac9cd8]'
-                              : config.layoutMode === item.value
-                                ? 'text-[#4f31d7] dark:text-[#f0ebff]'
-                                : 'text-[#7c6daa] dark:text-[#ac9cd8]'
-                          }`}
+                        {item.label}
+                      </div>
+                      {config.layoutMode === item.value && (
+                        <motion.div
+                          layoutId="activeLayout"
+                          className="absolute inset-0 border-2 border-[#c4b6ff] dark:border-[#5b4694] rounded-xl"
+                          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                         />
-                        <div
-                          className={`text-[11px] font-medium transition-colors ${
-                            shouldForceLayout
-                              ? isForced
-                                ? 'text-[#3d2b82] dark:text-[#f0ebff]'
-                                : 'text-[#716397] dark:text-[#ac9cd8]'
-                              : config.layoutMode === item.value
-                                ? 'text-[#3d2b82] dark:text-[#f0ebff]'
-                                : 'text-[#716397] dark:text-[#ac9cd8]'
-                          }`}
-                        >
-                          {item.label}
-                        </div>
-                        {((shouldForceLayout && isForced) ||
-                          (!shouldForceLayout && config.layoutMode === item.value)) && (
-                          <motion.div
-                            layoutId="activeLayout"
-                            className="absolute inset-0 border-2 border-[#c4b6ff] dark:border-[#5b4694] rounded-xl"
-                            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                          />
-                        )}
-                      </button>
-                    );
-                  })}
+                      )}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>

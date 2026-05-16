@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import Link from "next/link";
 import HomeIntroOverlay from "@/components/HomeIntroOverlay";
 // import HomeRepulsionField from '@/components/HomeRepulsionField';
@@ -121,10 +121,10 @@ export default async function Page() {
                 浏览资源
               </Link>
               <Link
-                href="/tools"
+                href={"/tools" as Route}
                 className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]"
               >
-                浏览工具
+                实用工具
               </Link>
             </div>
 

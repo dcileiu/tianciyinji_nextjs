@@ -86,7 +86,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               (function () {
                 try {
                   var root = document.documentElement;
-                  var path = window.location.pathname;
                   var rawConfig = localStorage.getItem('appearance-config');
                   var layout = 'default';
                   var backgroundStyle = 'fabric';
@@ -97,20 +96,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     backgroundStyle = parsed.backgroundStyle === 'none' ? 'none' : 'fabric';
                   }
 
-                  if (path.startsWith('/music') || path.startsWith('/games')) {
-                    layout = 'wide';
-                  } else if (path.startsWith('/works')) {
-                    layout = 'compact';
-                  }
-
                   root.classList.add('layout-' + layout);
 
-                  var noBackgroundPages = ['/music', '/works', '/friends', '/resources', '/games'];
-                  var shouldDisableBackground = noBackgroundPages.some(function (page) {
-                    return path.startsWith(page);
-                  });
-
-                  if (!shouldDisableBackground && backgroundStyle && backgroundStyle !== 'none') {
+                  if (backgroundStyle && backgroundStyle !== 'none') {
                     var applyBackground = function () {
                       document.body.classList.add('background-' + backgroundStyle);
                     };
