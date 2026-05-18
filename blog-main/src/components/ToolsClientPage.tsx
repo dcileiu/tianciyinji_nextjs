@@ -131,6 +131,7 @@ const toolCatalog = [
 
 type ToolId = (typeof toolCatalog)[number]["id"];
 type ToolFilter = "all" | ToolId;
+type SectionFilter = "all" | SectionId;
 
 const sections = sectionMeta.map((section) => ({
   ...section,
@@ -624,6 +625,7 @@ export default function ToolsClientPage() {
   const [serverResults, setServerResults] = useState<ServerResultMap>({});
   const [serverErrors, setServerErrors] = useState<ServerErrorMap>({});
   const [selectedTool, setSelectedTool] = useState<ToolFilter>("all");
+  const [selectedSection, setSelectedSection] = useState<SectionFilter>("all");
 
   const [aesMode, setAesMode] = useState<"encrypt" | "decrypt">("encrypt");
   const [aesText, setAesText] = useState("");
@@ -756,10 +758,18 @@ export default function ToolsClientPage() {
     selectedTool === "all"
       ? null
       : toolCatalog.find((tool) => tool.id === selectedTool) || null;
+  const activeSection =
+    selectedTool !== "all"
+      ? sections.find((section) => section.id === activeTool?.sectionId) || null
+      : selectedSection === "all"
+        ? null
+        : sections.find((section) => section.id === selectedSection) || null;
   const isToolVisible = (toolId: ToolId) =>
     selectedTool === "all" || selectedTool === toolId;
   const isSectionVisible = (sectionId: SectionId) =>
-    selectedTool === "all" || activeTool?.sectionId === sectionId;
+    selectedTool !== "all"
+      ? activeTool?.sectionId === sectionId
+      : selectedSection === "all" || selectedSection === sectionId;
 
   async function runServerTool(
     tool: string,
@@ -1063,21 +1073,6 @@ export default function ToolsClientPage() {
             </div>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            {sections.map((section) => (
-              <a
-                key={section.id}
-                href={`#${section.id}`}
-                className="inline-flex items-center gap-2 rounded-full border border-[#ddd0ff] bg-white/72 px-4 py-2.5 text-sm text-[#5c4a88] shadow-[0_10px_28px_rgba(91,61,245,0.07)] transition hover:border-[#8b6bff] hover:bg-[#f7f1ff] hover:text-[#5b3df5] dark:border-[#362b53] dark:bg-white/[0.04] dark:text-[#d2c6f3] dark:hover:border-[#8b6bff] dark:hover:bg-[#211834] dark:hover:text-white"
-              >
-                <span>{section.title}</span>
-                <span className="inline-flex min-w-7 items-center justify-center rounded-full bg-[#efe6ff] px-2 py-0.5 text-[11px] font-semibold leading-none text-[#5b3df5] dark:bg-[#2b1f43] dark:text-[#efe9ff]">
-                  {section.count}
-                </span>
-              </a>
-            ))}
-          </div>
-
           <div className="mt-6 rounded-[26px] border border-[#ddd0ff] bg-[linear-gradient(135deg,rgba(255,255,255,0.7),rgba(247,242,255,0.55))] p-4 shadow-[0_18px_55px_rgba(91,61,245,0.08)] dark:border-[#32274d] dark:bg-[linear-gradient(135deg,rgba(27,20,45,0.85),rgba(18,13,31,0.92))] sm:p-5">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div>
@@ -1092,14 +1087,19 @@ export default function ToolsClientPage() {
 
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1 text-xs text-[#6b5b97] dark:border-[#3a2f58] dark:bg-white/[0.05] dark:text-[#c7baf1]">
-                  {selectedTool === "all"
-                    ? `当前显示全部 ${toolCatalog.length} 张工具卡片`
-                    : `当前聚焦：${activeTool?.title || ""}`}
+                  {selectedTool !== "all"
+                    ? `当前聚焦：${activeTool?.title || ""}`
+                    : selectedSection !== "all"
+                      ? `当前分类：${activeSection?.title || ""} · ${activeSection?.count || 0} 张工具卡片`
+                      : `当前显示全部 ${toolCatalog.length} 张工具卡片`}
                 </span>
-                {selectedTool !== "all" && (
+                {(selectedTool !== "all" || selectedSection !== "all") && (
                   <button
                     type="button"
-                    onClick={() => setSelectedTool("all")}
+                    onClick={() => {
+                      setSelectedTool("all");
+                      setSelectedSection("all");
+                    }}
                     className="rounded-full bg-[#5b3df5] px-3.5 py-2 text-sm text-white transition hover:bg-[#4f31d7]"
                   >
                     恢复全部
@@ -1111,20 +1111,51 @@ export default function ToolsClientPage() {
             <div className="mt-4 flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={() => setSelectedTool("all")}
+                onClick={() => {
+                  setSelectedTool("all");
+                  setSelectedSection("all");
+                }}
                 className={cn(
                   "rounded-full border px-4 py-2 text-sm transition",
-                  selectedTool === "all"
+                  selectedTool === "all" && selectedSection === "all"
                     ? "border-[#5b3df5] bg-[#5b3df5] text-white shadow-[0_12px_30px_rgba(91,61,245,0.22)]"
                     : "border-[#d9ccff] bg-white/75 text-[#5c4a88] hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#362b53] dark:bg-white/[0.04] dark:text-[#d2c6f3]",
                 )}
               >
                 全部工具
               </button>
+              {sections.map((section) => (
+                <button
+                  key={section.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedTool("all");
+                    setSelectedSection(section.id);
+                  }}
+                  className={cn(
+                    "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition",
+                    selectedTool === "all" && selectedSection === section.id
+                      ? "border-[#5b3df5] bg-[#5b3df5] text-white shadow-[0_12px_30px_rgba(91,61,245,0.22)]"
+                      : "border-[#d9ccff] bg-white/75 text-[#5c4a88] hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#362b53] dark:bg-white/[0.04] dark:text-[#d2c6f3]",
+                  )}
+                >
+                  <span>{section.title}</span>
+                  <span
+                    className={cn(
+                      "inline-flex min-w-7 items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-semibold leading-none",
+                      selectedTool === "all" && selectedSection === section.id
+                        ? "bg-white/18 text-white"
+                        : "bg-[#efe6ff] text-[#5b3df5] dark:bg-[#2b1f43] dark:text-[#efe9ff]",
+                    )}
+                  >
+                    {section.count}
+                  </span>
+                </button>
+              ))}
             </div>
 
             <div className="mt-4 grid gap-3 xl:grid-cols-2">
-              {sections.map((section) => (
+              {sections.filter((section) => isSectionVisible(section.id)).map((section) => (
                 <div
                   key={section.id}
                   className="rounded-[22px] border border-[#e4d8ff] bg-white/60 p-4 dark:border-[#302646] dark:bg-white/[0.04]"
@@ -1142,7 +1173,10 @@ export default function ToolsClientPage() {
                       <button
                         key={tool.id}
                         type="button"
-                        onClick={() => setSelectedTool(tool.id)}
+                        onClick={() => {
+                          setSelectedTool(tool.id);
+                          setSelectedSection(section.id);
+                        }}
                         className={cn(
                           "rounded-full border px-3 py-1.5 text-xs transition sm:text-sm",
                           selectedTool === tool.id
