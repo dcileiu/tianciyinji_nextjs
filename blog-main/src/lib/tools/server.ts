@@ -337,6 +337,10 @@ function normalizePathname(pathname: string) {
   return normalized || '/';
 }
 
+function getPathDepth(pathname: string) {
+  return normalizePathname(pathname).split('/').filter(Boolean).length;
+}
+
 const LANGUAGE_LABEL_MAP: Record<string, { code: string; label: string }> = {
   english: { code: 'en', label: 'English' },
   en: { code: 'en', label: 'English' },
@@ -430,21 +434,51 @@ function inferLanguageFromPath(pathname: string) {
 }
 
 function mergeLanguageVariants(variants: LanguageVariant[]) {
-  const byKey = new Map<string, LanguageVariant>();
+  const sourceWeight: Record<LanguageVariantSource, number> = {
+    default: 0,
+    'html-lang': 1,
+    'meta-locale': 2,
+    hreflang: 3,
+    switcher: 4,
+    sitemap: 5,
+  };
+  const byCode = new Map<string, LanguageVariant>();
 
   for (const variant of variants) {
     if (!variant.code || !variant.url) continue;
-    const key = `${variant.code}::${variant.url}`;
-    if (!byKey.has(key)) {
-      byKey.set(key, variant);
+    const current = byCode.get(variant.code);
+    if (!current) {
+      byCode.set(variant.code, variant);
+      continue;
+    }
+
+    const currentPath = new URL(current.url).pathname;
+    const nextPath = new URL(variant.url).pathname;
+    const currentDepth = getPathDepth(currentPath);
+    const nextDepth = getPathDepth(nextPath);
+    const currentWeight = sourceWeight[current.source] ?? 99;
+    const nextWeight = sourceWeight[variant.source] ?? 99;
+
+    if (
+      nextDepth < currentDepth ||
+      (nextDepth === currentDepth && nextWeight < currentWeight)
+    ) {
+      byCode.set(variant.code, variant);
     }
   }
 
-  return Array.from(byKey.values()).sort((left, right) => {
+  return Array.from(byCode.values()).sort((left, right) => {
     if (left.code === 'x-default') return -1;
     if (right.code === 'x-default') return 1;
     return left.code.localeCompare(right.code);
   });
+}
+
+function isLanguageRootPath(pathname: string) {
+  const segments = normalizePathname(pathname).split('/').filter(Boolean);
+  if (segments.length === 0) return true;
+  if (segments.length !== 1) return false;
+  return Boolean(inferLanguageFromPath(pathname));
 }
 
 function safeDecodeURIComponent(value: string) {
@@ -645,7 +679,7 @@ function extractLanguageVariants(html: string, baseUrl: string) {
     const path = new URL(normalizedUrl).pathname;
     const labelText = cleanSnippet($(element).text() || $(element).attr('aria-label') || $(element).attr('title') || '', 40);
     const byLabel = labelText ? resolveLanguageFromLabel(labelText) : null;
-    const byPath = inferLanguageFromPath(path);
+    const byPath = isLanguageRootPath(path) ? inferLanguageFromPath(path) : null;
 
     const resolved = byLabel || byPath;
     if (!resolved) return;
@@ -754,7 +788,8 @@ function parseSitemapDocument(xml: string, siteOrigin: string) {
           });
 
         if (loc) {
-          const inferred = inferLanguageFromPath(new URL(loc).pathname);
+          const locPath = new URL(loc).pathname;
+          const inferred = isLanguageRootPath(locPath) ? inferLanguageFromPath(locPath) : null;
           if (inferred) {
             entries.push({
               code: inferred.code,
