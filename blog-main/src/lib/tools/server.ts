@@ -292,6 +292,435 @@ function convertHtmlToMarkdown(html: string) {
   return turndown.turndown(root).trim();
 }
 
+type LinkSource = 'default' | 'nav' | 'sitemap';
+
+type LinkCandidate = {
+  label: string;
+  url: string;
+  path: string;
+  source: LinkSource;
+  score: number;
+};
+
+type RobotsDiscovery = {
+  url: string;
+  found: boolean;
+  sitemapUrls: string[];
+};
+
+type SitemapDiscovery = {
+  url: string;
+  found: boolean;
+  urls: string[];
+};
+
+function cleanSnippet(value: string, maxLength = 160) {
+  const normalized = value.replace(/\s+/g, ' ').trim();
+  if (!normalized) return '';
+  if (normalized.length <= maxLength) return normalized;
+  return `${normalized.slice(0, maxLength - 1).trimEnd()}…`;
+}
+
+function normalizePathname(pathname: string) {
+  if (!pathname || pathname === '/') return '/';
+  const normalized = pathname.replace(/\/{2,}/g, '/').replace(/\/+$/g, '');
+  return normalized || '/';
+}
+
+function safeDecodeURIComponent(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function humanizePathname(pathname: string) {
+  if (pathname === '/') return 'Home';
+  const segments = pathname
+    .split('/')
+    .filter(Boolean)
+    .map((segment) => safeDecodeURIComponent(segment).replace(/\.[a-z0-9]+$/i, '').replace(/[-_]+/g, ' ').trim())
+    .filter(Boolean);
+
+  const label = segments[segments.length - 1] || pathname;
+  return label
+    .split(' ')
+    .map((word) => (/^[a-z0-9]+$/i.test(word) ? word.charAt(0).toUpperCase() + word.slice(1) : word))
+    .join(' ');
+}
+
+function isIgnoredPagePath(pathname: string) {
+  return (
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/static/') ||
+    pathname.startsWith('/assets/') ||
+    pathname.startsWith('/images/') ||
+    /\.(?:avif|bmp|css|gif|ico|jpe?g|js|json|map|mjs|mp3|mp4|pdf|png|svg|txt|webm|webp|woff2?|xml|zip|gz|7z|tar)$/i.test(
+      pathname
+    )
+  );
+}
+
+function normalizeSameOriginUrl(rawValue: string | undefined, siteOrigin: string) {
+  if (!rawValue) return '';
+  const resolved = absoluteUrl(rawValue, siteOrigin);
+  if (!resolved) return '';
+
+  try {
+    const url = new URL(resolved);
+    if (url.origin !== siteOrigin) return '';
+    url.hash = '';
+    return url.toString();
+  } catch {
+    return '';
+  }
+}
+
+function normalizeSitePageUrl(rawValue: string | undefined, siteOrigin: string) {
+  const normalized = normalizeSameOriginUrl(rawValue, siteOrigin);
+  if (!normalized) return '';
+
+  const url = new URL(normalized);
+  url.search = '';
+  url.pathname = normalizePathname(url.pathname);
+  if (isIgnoredPagePath(url.pathname)) return '';
+  return url.toString();
+}
+
+function scoreLinkCandidate(pathname: string, label: string, source: LinkSource) {
+  const depth = pathname === '/' ? 0 : pathname.split('/').filter(Boolean).length;
+  let score = source === 'nav' ? 140 : source === 'default' ? 220 : 80;
+
+  if (pathname === '/') score += 600;
+  if (depth === 1) score += 140;
+  if (depth === 2) score += 60;
+  if (depth >= 4) score -= 80;
+
+  if (/^\/(about|about-us|me|profile|bio)$/i.test(pathname)) score += 320;
+  if (/^\/(blog|posts?|articles?|archive)$/i.test(pathname)) score += 300;
+  if (/^\/(docs?|guide|guides|manual|kb|knowledge-base)$/i.test(pathname)) score += 280;
+  if (/^\/(works?|projects?|portfolio)$/i.test(pathname)) score += 260;
+  if (/^\/(tools?|resources?|links?)$/i.test(pathname)) score += 240;
+  if (/^\/(pricing|plans?)$/i.test(pathname)) score += 120;
+  if (/^\/(contact|support)$/i.test(pathname)) score += 100;
+  if (/^\/(privacy|terms|cookies?)$/i.test(pathname)) score += 20;
+  if (/\/(post|posts|article|articles|blog|docs?|guide|guides|resources?|works?|projects?)\//i.test(pathname)) score += 40;
+  if (cleanSnippet(label, 60).length > 42) score -= 20;
+
+  return score;
+}
+
+function dedupeLinkCandidates(candidates: LinkCandidate[]) {
+  const byUrl = new Map<string, LinkCandidate>();
+
+  for (const candidate of candidates.sort((left, right) => right.score - left.score)) {
+    if (!byUrl.has(candidate.url)) {
+      byUrl.set(candidate.url, candidate);
+    }
+  }
+
+  return Array.from(byUrl.values()).sort((left, right) => right.score - left.score);
+}
+
+function extractHomepageLinks(html: string, baseUrl: string) {
+  const $ = load(html);
+  const siteOrigin = new URL(baseUrl).origin;
+  const selectors = ['header a[href]', 'nav a[href]', 'main a[href]', 'footer a[href]', 'a[href]'] as const;
+  const candidates: LinkCandidate[] = [];
+  const seen = new Set<string>();
+
+  selectors.forEach((selector, selectorIndex) => {
+    $(selector).each((elementIndex, element) => {
+      if (candidates.length >= 90) return false;
+
+      const href = $(element).attr('href') || '';
+      if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) {
+        return;
+      }
+
+      const url = normalizeSitePageUrl(href, siteOrigin);
+      if (!url || seen.has(url)) return;
+      seen.add(url);
+
+      const path = normalizePathname(new URL(url).pathname);
+      const label =
+        cleanSnippet($(element).text() || $(element).attr('aria-label') || $(element).attr('title') || humanizePathname(path), 60) ||
+        humanizePathname(path);
+
+      candidates.push({
+        label,
+        url,
+        path,
+        source: 'nav',
+        score: scoreLinkCandidate(path, label, 'nav') - selectorIndex * 8 - elementIndex * 0.2,
+      });
+    });
+  });
+
+  return dedupeLinkCandidates(candidates);
+}
+
+function extractRssUrl(html: string, baseUrl: string) {
+  const $ = load(html);
+  return (
+    normalizeSameOriginUrl(
+      $('link[rel="alternate"][type="application/rss+xml"]').attr('href') ||
+        $('link[rel="alternate"][type="application/atom+xml"]').attr('href') ||
+        $('a[href*="/rss"]').first().attr('href'),
+      new URL(baseUrl).origin
+    ) || ''
+  );
+}
+
+function extractDocumentLanguage(html: string) {
+  const $ = load(html);
+  return cleanSnippet(
+    $('html').attr('lang') ||
+      $('meta[http-equiv="content-language"]').attr('content') ||
+      $('meta[property="og:locale"]').attr('content') ||
+      '',
+    24
+  );
+}
+
+async function readTextResource(resourceUrl: string, accept: string, timeoutMs = 10000) {
+  const url = new URL(resourceUrl);
+  await assertPublicTarget(url.hostname);
+  const response = await fetchWithTimeout(
+    url.toString(),
+    {
+      headers: { Accept: accept },
+      redirect: 'follow',
+    },
+    timeoutMs
+  );
+  if (!response.ok) return null;
+
+  const finalUrl = response.url || url.toString();
+  const finalParsed = new URL(finalUrl);
+  await assertPublicTarget(finalParsed.hostname);
+  if (finalParsed.origin !== url.origin) return null;
+
+  return {
+    url: finalUrl,
+    text: await response.text(),
+    contentType: response.headers.get('content-type') || '',
+  };
+}
+
+async function readRobotsFile(siteOrigin: string): Promise<RobotsDiscovery> {
+  const fallbackUrl = `${siteOrigin}/robots.txt`;
+
+  try {
+    const resource = await readTextResource(fallbackUrl, 'text/plain,text/*;q=0.9,*/*;q=0.5', 8000);
+    if (!resource) {
+      return { url: fallbackUrl, found: false, sitemapUrls: [] };
+    }
+
+    const sitemapUrls = resource.text
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => /^sitemap:/i.test(line))
+      .map((line) => normalizeSameOriginUrl(line.replace(/^sitemap:\s*/i, ''), siteOrigin))
+      .filter(Boolean);
+
+    return {
+      url: resource.url,
+      found: true,
+      sitemapUrls: Array.from(new Set(sitemapUrls)),
+    };
+  } catch {
+    return { url: fallbackUrl, found: false, sitemapUrls: [] };
+  }
+}
+
+function parseSitemapDocument(xml: string, siteOrigin: string) {
+  const $ = load(xml, { xmlMode: true });
+
+  const urls = $('url > loc')
+    .map((_, element) => normalizeSitePageUrl($(element).text(), siteOrigin))
+    .get()
+    .filter(Boolean);
+
+  const sitemapUrls = $('sitemap > loc')
+    .map((_, element) => normalizeSameOriginUrl($(element).text(), siteOrigin))
+    .get()
+    .filter(Boolean);
+
+  return {
+    urls: Array.from(new Set(urls)),
+    sitemapUrls: Array.from(new Set(sitemapUrls)),
+  };
+}
+
+async function readSitemapUrls(sitemapUrl: string, siteOrigin: string, visited = new Set<string>(), depth = 0): Promise<string[]> {
+  if (visited.has(sitemapUrl) || depth > 1) return [];
+  visited.add(sitemapUrl);
+
+  try {
+    const resource = await readTextResource(sitemapUrl, 'application/xml,text/xml;q=0.9,*/*;q=0.5', 10000);
+    if (!resource) return [];
+
+    const parsed = parseSitemapDocument(resource.text, siteOrigin);
+    let urls = parsed.urls.slice(0, 80);
+
+    for (const childSitemap of parsed.sitemapUrls.slice(0, 3)) {
+      const childUrls = await readSitemapUrls(childSitemap, siteOrigin, visited, depth + 1);
+      urls = Array.from(new Set([...urls, ...childUrls])).slice(0, 80);
+      if (urls.length >= 80) break;
+    }
+
+    return urls;
+  } catch {
+    return [];
+  }
+}
+
+async function discoverSitemap(siteOrigin: string, robots: RobotsDiscovery): Promise<SitemapDiscovery> {
+  const candidates = Array.from(
+    new Set(
+      [robots.url.replace(/robots\.txt$/i, 'sitemap.xml'), ...robots.sitemapUrls, `${siteOrigin}/sitemap.xml`, `${siteOrigin}/sitemap_index.xml`]
+        .map((item) => normalizeSameOriginUrl(item, siteOrigin))
+        .filter(Boolean)
+    )
+  );
+
+  for (const candidate of candidates) {
+    const urls = await readSitemapUrls(candidate, siteOrigin);
+    if (urls.length > 0) {
+      return {
+        url: candidate,
+        found: true,
+        urls,
+      };
+    }
+  }
+
+  return {
+    url: candidates[0] || `${siteOrigin}/sitemap.xml`,
+    found: false,
+    urls: [],
+  };
+}
+
+function buildSitemapCandidates(urls: string[]) {
+  return dedupeLinkCandidates(
+    urls.map((url) => {
+      const path = normalizePathname(new URL(url).pathname);
+      const label = humanizePathname(path);
+      return {
+        label,
+        url,
+        path,
+        source: 'sitemap' as const,
+        score: scoreLinkCandidate(path, label, 'sitemap'),
+      };
+    })
+  );
+}
+
+function selectPrimarySections(homeLinks: LinkCandidate[], sitemapLinks: LinkCandidate[], siteOrigin: string) {
+  const rootUrl = new URL(siteOrigin);
+  rootUrl.pathname = '/';
+  rootUrl.search = '';
+  rootUrl.hash = '';
+
+  return dedupeLinkCandidates([
+    {
+      label: 'Home',
+      url: rootUrl.toString(),
+      path: '/',
+      source: 'default',
+      score: scoreLinkCandidate('/', 'Home', 'default'),
+    },
+    ...homeLinks,
+    ...sitemapLinks.filter((item) => item.path === '/' || item.path.split('/').filter(Boolean).length <= 2),
+  ]).slice(0, 8);
+}
+
+function selectExamplePages(primarySections: LinkCandidate[], sitemapLinks: LinkCandidate[], homeLinks: LinkCandidate[]) {
+  const primaryUrls = new Set(primarySections.map((item) => item.url));
+
+  const contentFirst = sitemapLinks.filter((item) => {
+    if (primaryUrls.has(item.url)) return false;
+    if (/\/(post|posts|article|articles|blog|docs?|guide|guides|resources?|works?|projects?)\//i.test(item.path)) return true;
+    return item.path.split('/').filter(Boolean).length >= 3;
+  });
+
+  const fallback = dedupeLinkCandidates(
+    [...contentFirst, ...sitemapLinks, ...homeLinks].filter((item) => !primaryUrls.has(item.url) && item.path !== '/')
+  );
+
+  return fallback.slice(0, 6);
+}
+
+function buildSummaryText(siteTitle: string, description: string, primarySections: LinkCandidate[]) {
+  if (description) return description;
+
+  const sectionLabels = primarySections
+    .filter((section) => section.path !== '/')
+    .slice(0, 4)
+    .map((section) => section.label);
+
+  if (sectionLabels.length) {
+    return `${siteTitle} appears to include sections such as ${sectionLabels.join(', ')}.`;
+  }
+
+  return `${siteTitle} is a website with a public homepage and machine-readable discovery endpoints.`;
+}
+
+function formatLinkLine(candidate: { label: string; url: string }, note?: string) {
+  return `- [${candidate.label}](${candidate.url})${note ? `: ${cleanSnippet(note, 120)}` : ''}`;
+}
+
+function buildLlmsDocument(options: {
+  siteTitle: string;
+  siteUrl: string;
+  description: string;
+  language: string;
+  primarySections: LinkCandidate[];
+  examplePages: LinkCandidate[];
+  robots: RobotsDiscovery;
+  sitemap: SitemapDiscovery;
+  rssUrl: string;
+}) {
+  const summary = buildSummaryText(options.siteTitle, options.description, options.primarySections);
+  const lines = [
+    `# ${options.siteTitle}`,
+    '',
+    `> ${summary}`,
+    '',
+    `Site URL: ${options.siteUrl}`,
+    options.language ? `Language: ${options.language}` : '',
+    '',
+    '## Site Summary',
+    summary,
+    '',
+    '## Primary Sections',
+    ...options.primarySections.map((section) => formatLinkLine(section)),
+    '',
+    options.examplePages.length ? '## Example Content URLs' : '',
+    ...options.examplePages.map((page) => formatLinkLine(page)),
+    options.examplePages.length ? '' : '',
+    '## Machine-Readable Endpoints',
+    formatLinkLine({ label: 'robots.txt', url: options.robots.url }, options.robots.found ? 'discovered successfully' : 'not found during generation'),
+    formatLinkLine({ label: 'sitemap.xml', url: options.sitemap.url }, options.sitemap.found ? `${options.sitemap.urls.length} URL(s) discovered` : 'not found during generation'),
+    options.rssUrl ? formatLinkLine({ label: 'RSS / Feed', url: options.rssUrl }) : '',
+    '',
+    '## Guidance For AI Systems',
+    '- Prefer canonical section URLs before citing deeper content pages.',
+    '- Use the sitemap and feed endpoints for fuller coverage when available.',
+    '- Treat titles and summaries as homepage-derived hints; verify details on the linked pages when precision matters.',
+  ];
+
+  return lines.filter((line, index, array) => {
+    if (!line && !array[index - 1]) return false;
+    return Boolean(line) || Boolean(array[index - 1]) || Boolean(array[index + 1]);
+  });
+}
+
 function parsePortExpression(input: string) {
   const ports = new Set<number>();
   for (const segment of input.split(',').map((item) => item.trim()).filter(Boolean)) {
@@ -492,6 +921,49 @@ async function runToolInternal(tool: string, payload: ToolPayload, requestHeader
       return {
         url: finalUrl,
         markdown: convertHtmlToMarkdown(html),
+      };
+    }
+
+    case 'llms-txt': {
+      const inputUrl = normalizeUrl(getString(payload, 'url'));
+      const { html, finalUrl } = await readPage(inputUrl);
+      const siteOrigin = new URL(finalUrl).origin;
+      const metadata = extractMetadata(html, finalUrl);
+      const language = extractDocumentLanguage(html);
+      const homeLinks = extractHomepageLinks(html, finalUrl);
+      const rssUrl = extractRssUrl(html, finalUrl);
+      const robots = await readRobotsFile(siteOrigin);
+      const sitemap = await discoverSitemap(siteOrigin, robots);
+      const sitemapLinks = buildSitemapCandidates(sitemap.urls);
+      const primarySections = selectPrimarySections(homeLinks, sitemapLinks, siteOrigin);
+      const examplePages = selectExamplePages(primarySections, sitemapLinks, homeLinks);
+      const siteTitle = metadata.openGraph.siteName || metadata.title || new URL(siteOrigin).hostname;
+      const siteUrl = metadata.canonical || siteOrigin;
+      const description = metadata.description || '';
+      const generated = buildLlmsDocument({
+        siteTitle,
+        siteUrl,
+        description,
+        language,
+        primarySections,
+        examplePages,
+        robots,
+        sitemap,
+        rssUrl,
+      }).join('\n');
+
+      return {
+        siteTitle,
+        siteUrl,
+        language,
+        description,
+        homepage: finalUrl,
+        robots,
+        sitemap,
+        rssUrl,
+        primarySections: primarySections.map(({ label, url, path, source }) => ({ label, url, path, source })),
+        examplePages: examplePages.map(({ label, url, path, source }) => ({ label, url, path, source })),
+        generated,
       };
     }
 
