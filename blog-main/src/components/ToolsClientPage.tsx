@@ -86,6 +86,7 @@ const toolCatalog = [
   { id: "svg-image", title: "SVG 转图片", sectionId: "image-tools" },
   { id: "image-compress", title: "图片压缩", sectionId: "image-tools" },
   { id: "pet-gif", title: "摸头 GIF（图片上传版）", sectionId: "image-tools" },
+  { id: "llms-txt", title: "llms.txt 生成器", sectionId: "network-tools" },
   { id: "client-ip", title: "客户端 IP", sectionId: "network-tools" },
   { id: "dns-lookup", title: "DNS 查询", sectionId: "network-tools" },
   { id: "ping", title: "Ping（TCP 连通性）", sectionId: "network-tools" },
@@ -94,7 +95,6 @@ const toolCatalog = [
   { id: "web-metadata", title: "网页元数据提取", sectionId: "network-tools" },
   { id: "web-images", title: "网页图片提取", sectionId: "network-tools" },
   { id: "web-markdown", title: "网页转 Markdown", sectionId: "network-tools" },
-  { id: "llms-txt", title: "llms.txt 生成器", sectionId: "network-tools" },
   {
     id: "minecraft-player",
     title: "Minecraft 玩家信息",
@@ -1841,6 +1841,186 @@ export default function ToolsClientPage() {
 
           <div className="grid gap-5 lg:grid-cols-2">
             <SectionCard
+              icon={FileCode2}
+              title="llms.txt 生成器"
+              description="一款免费的 llms.txt 生成工具，可以把网站里的核心内容整理成统一的纯文本格式，让 ChatGPT、Claude、Gemini 这类模型更容易读懂、检索和引用你的信息。"
+              className={isToolVisible("llms-txt") ? "" : "hidden"}
+            >
+              <div className="space-y-3">
+                <Input
+                  className={inputClass}
+                  value={llmsUrlInput}
+                  onChange={(event) => setLlmsUrlInput(event.target.value)}
+                  placeholder="例如 https://example.com"
+                />
+
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    onClick={() => runServerTool("llms-txt", { url: llmsUrlInput })}
+                    className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
+                  >
+                    {loadingMap["llms-txt"] ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      "生成 llms.txt"
+                    )}
+                  </Button>
+
+                  {serverResults["llms-txt"]?.generated && (
+                    <>
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          copyGeneratedText(
+                            "llms-txt",
+                            serverResults["llms-txt"].generated,
+                          )
+                        }
+                        className={secondaryButtonClass}
+                      >
+                        {copiedTool === "llms-txt" ? (
+                          <Check className="mr-2 h-4 w-4" />
+                        ) : (
+                          <Copy className="mr-2 h-4 w-4" />
+                        )}
+                        {copiedTool === "llms-txt" ? "已复制" : "复制文本"}
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          downloadPlainText(
+                            "llms.txt",
+                            serverResults["llms-txt"].generated,
+                          )
+                        }
+                        className={secondaryButtonClass}
+                      >
+                        <Download className="mr-2 h-4 w-4" />
+                        下载 llms.txt
+                      </Button>
+                    </>
+                  )}
+                </div>
+
+                {serverErrors["llms-txt"] && (
+                  <OutputBox>{serverErrors["llms-txt"]}</OutputBox>
+                )}
+
+                {serverResults["llms-txt"] && (
+                  <OutputBox className="space-y-3">
+                    <div className="grid gap-2 text-sm sm:grid-cols-2">
+                      <div>站点标题：{serverResults["llms-txt"].siteTitle}</div>
+                      <div>主语言：{serverResults["llms-txt"].language || "-"}</div>
+                      <div className="break-all">
+                        站点地址：{serverResults["llms-txt"].siteUrl}
+                      </div>
+                      <div>
+                        语言版本：
+                        {
+                          serverResults["llms-txt"].languageVariants.filter(
+                            (item: { code: string }) => item.code !== "x-default",
+                          ).length
+                        }{" "}
+                        个
+                      </div>
+                      <div>
+                        主要栏目数：{serverResults["llms-txt"].primarySections.length} 个
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      <a
+                        href={serverResults["llms-txt"].robots.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1.5 text-[#5c4a88] transition hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#392d56] dark:bg-white/[0.03] dark:text-[#d2c6f3]"
+                      >
+                        robots.txt
+                      </a>
+                      <a
+                        href={serverResults["llms-txt"].sitemap.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1.5 text-[#5c4a88] transition hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#392d56] dark:bg-white/[0.03] dark:text-[#d2c6f3]"
+                      >
+                        sitemap.xml
+                      </a>
+                      {serverResults["llms-txt"].rssUrl && (
+                        <a
+                          href={serverResults["llms-txt"].rssUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1.5 text-[#5c4a88] transition hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#392d56] dark:bg-white/[0.03] dark:text-[#d2c6f3]"
+                        >
+                          RSS / Feed
+                        </a>
+                      )}
+                    </div>
+
+                    {serverResults["llms-txt"].languageVariants.filter(
+                      (item: { code: string }) => item.code !== "x-default",
+                    ).length > 0 && (
+                      <div className="space-y-2">
+                        <div className="text-xs uppercase tracking-[0.18em] text-[#7f71ab] dark:text-[#ab9cd8]">
+                          Language Versions
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {serverResults["llms-txt"].languageVariants.map(
+                            (item: { code: string; label: string; url: string }) =>
+                              item.code === "x-default" ? null : (
+                                <a
+                                  key={`${item.code}-${item.url}`}
+                                  href={item.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="rounded-full border border-[#dacdff] bg-[#f7f1ff] px-3 py-1.5 text-xs text-[#543c8f] transition hover:border-[#8b6bff] hover:text-[#4f31d7] dark:border-[#392d56] dark:bg-[#211834] dark:text-[#d8ccff]"
+                                >
+                                  {item.label}
+                                  <span className="ml-1 text-[#876fc4] dark:text-[#bbaef0]">
+                                    {item.code}
+                                  </span>
+                                </a>
+                              ),
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {serverResults["llms-txt"].primarySections.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="text-xs uppercase tracking-[0.18em] text-[#7f71ab] dark:text-[#ab9cd8]">
+                          Primary Sections
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {serverResults["llms-txt"].primarySections.map(
+                            (item: { label: string; url: string }) => (
+                              <a
+                                key={item.url}
+                                href={item.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="rounded-full border border-[#dacdff] bg-[#f7f1ff] px-3 py-1.5 text-xs text-[#543c8f] transition hover:border-[#8b6bff] hover:text-[#4f31d7] dark:border-[#392d56] dark:bg-[#211834] dark:text-[#d8ccff]"
+                              >
+                                {item.label}
+                              </a>
+                            ),
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    <textarea
+                      className={`${inputClass} min-h-[320px] resize-y font-mono text-xs leading-6`}
+                      value={serverResults["llms-txt"].generated}
+                      readOnly
+                    />
+                  </OutputBox>
+                )}
+              </div>
+            </SectionCard>
+
+            <SectionCard
               icon={Globe}
               title="客户端 IP"
               description="读取当前请求头里的公网来源信息，适合快速确认反代和访客地址。"
@@ -2268,186 +2448,6 @@ export default function ToolsClientPage() {
               </div>
             </SectionCard>
 
-            <SectionCard
-              icon={FileCode2}
-              title="llms.txt 生成器"
-              description="一款免费的 llms.txt 生成工具，可以把网站里的核心内容整理成统一的纯文本格式，让 ChatGPT、Claude、Gemini 这类模型更容易读懂、检索和引用你的信息。"
-              className={isToolVisible("llms-txt") ? "" : "hidden"}
-            >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={llmsUrlInput}
-                  onChange={(event) => setLlmsUrlInput(event.target.value)}
-                  placeholder="例如 https://example.com"
-                />
-
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    onClick={() => runServerTool("llms-txt", { url: llmsUrlInput })}
-                    className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                  >
-                    {loadingMap["llms-txt"] ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      "生成 llms.txt"
-                    )}
-                  </Button>
-
-                  {serverResults["llms-txt"]?.generated && (
-                    <>
-                      <Button
-                        variant="outline"
-                        onClick={() =>
-                          copyGeneratedText(
-                            "llms-txt",
-                            serverResults["llms-txt"].generated,
-                          )
-                        }
-                        className={secondaryButtonClass}
-                      >
-                        {copiedTool === "llms-txt" ? (
-                          <Check className="mr-2 h-4 w-4" />
-                        ) : (
-                          <Copy className="mr-2 h-4 w-4" />
-                        )}
-                        {copiedTool === "llms-txt" ? "已复制" : "复制文本"}
-                      </Button>
-
-                      <Button
-                        variant="outline"
-                        onClick={() =>
-                          downloadPlainText(
-                            "llms.txt",
-                            serverResults["llms-txt"].generated,
-                          )
-                        }
-                        className={secondaryButtonClass}
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        下载 llms.txt
-                      </Button>
-                    </>
-                  )}
-                </div>
-
-                {serverErrors["llms-txt"] && (
-                  <OutputBox>{serverErrors["llms-txt"]}</OutputBox>
-                )}
-
-                {serverResults["llms-txt"] && (
-                  <OutputBox className="space-y-3">
-                    <div className="grid gap-2 text-sm sm:grid-cols-2">
-                      <div>站点标题：{serverResults["llms-txt"].siteTitle}</div>
-                      <div>主语言：{serverResults["llms-txt"].language || "-"}</div>
-                      <div className="break-all">
-                        站点地址：{serverResults["llms-txt"].siteUrl}
-                      </div>
-                      <div>
-                        语言版本：
-                        {
-                          serverResults["llms-txt"].languageVariants.filter(
-                            (item: { code: string }) => item.code !== "x-default",
-                          ).length
-                        }{" "}
-                        个
-                      </div>
-                      <div>
-                        主要栏目数：{serverResults["llms-txt"].primarySections.length} 个
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 text-xs">
-                      <a
-                        href={serverResults["llms-txt"].robots.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1.5 text-[#5c4a88] transition hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#392d56] dark:bg-white/[0.03] dark:text-[#d2c6f3]"
-                      >
-                        robots.txt
-                      </a>
-                      <a
-                        href={serverResults["llms-txt"].sitemap.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1.5 text-[#5c4a88] transition hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#392d56] dark:bg-white/[0.03] dark:text-[#d2c6f3]"
-                      >
-                        sitemap.xml
-                      </a>
-                      {serverResults["llms-txt"].rssUrl && (
-                        <a
-                          href={serverResults["llms-txt"].rssUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1.5 text-[#5c4a88] transition hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#392d56] dark:bg-white/[0.03] dark:text-[#d2c6f3]"
-                        >
-                          RSS / Feed
-                        </a>
-                      )}
-                    </div>
-
-                    {serverResults["llms-txt"].languageVariants.filter(
-                      (item: { code: string }) => item.code !== "x-default",
-                    ).length > 0 && (
-                      <div className="space-y-2">
-                        <div className="text-xs uppercase tracking-[0.18em] text-[#7f71ab] dark:text-[#ab9cd8]">
-                          Language Versions
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {serverResults["llms-txt"].languageVariants.map(
-                            (item: { code: string; label: string; url: string }) => (
-                              item.code === "x-default" ? null : (
-                              <a
-                                key={`${item.code}-${item.url}`}
-                                href={item.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="rounded-full border border-[#dacdff] bg-[#f7f1ff] px-3 py-1.5 text-xs text-[#543c8f] transition hover:border-[#8b6bff] hover:text-[#4f31d7] dark:border-[#392d56] dark:bg-[#211834] dark:text-[#d8ccff]"
-                              >
-                                {item.label}
-                                <span className="ml-1 text-[#876fc4] dark:text-[#bbaef0]">
-                                  {item.code}
-                                </span>
-                              </a>
-                              )
-                            ),
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {serverResults["llms-txt"].primarySections.length > 0 && (
-                      <div className="space-y-2">
-                        <div className="text-xs uppercase tracking-[0.18em] text-[#7f71ab] dark:text-[#ab9cd8]">
-                          Primary Sections
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {serverResults["llms-txt"].primarySections.map(
-                            (item: { label: string; url: string }) => (
-                              <a
-                                key={item.url}
-                                href={item.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="rounded-full border border-[#dacdff] bg-[#f7f1ff] px-3 py-1.5 text-xs text-[#543c8f] transition hover:border-[#8b6bff] hover:text-[#4f31d7] dark:border-[#392d56] dark:bg-[#211834] dark:text-[#d8ccff]"
-                              >
-                                {item.label}
-                              </a>
-                            ),
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    <textarea
-                      className={`${inputClass} min-h-[320px] resize-y font-mono text-xs leading-6`}
-                      value={serverResults["llms-txt"].generated}
-                      readOnly
-                    />
-                  </OutputBox>
-                )}
-              </div>
-            </SectionCard>
           </div>
         </section>
       )}
