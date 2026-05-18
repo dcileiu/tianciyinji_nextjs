@@ -2310,7 +2310,13 @@ export default function ToolsClientPage() {
                         站点地址：{serverResults["llms-txt"].siteUrl}
                       </div>
                       <div>
-                        语言版本：{serverResults["llms-txt"].languageVariants.length} 个
+                        语言版本：
+                        {
+                          serverResults["llms-txt"].languageVariants.filter(
+                            (item: { code: string }) => item.code !== "x-default",
+                          ).length
+                        }{" "}
+                        个
                       </div>
                       <div>
                         主要栏目数：{serverResults["llms-txt"].primarySections.length} 个
@@ -2346,7 +2352,9 @@ export default function ToolsClientPage() {
                       )}
                     </div>
 
-                    {serverResults["llms-txt"].languageVariants.length > 0 && (
+                    {serverResults["llms-txt"].languageVariants.filter(
+                      (item: { code: string }) => item.code !== "x-default",
+                    ).length > 0 && (
                       <div className="space-y-2">
                         <div className="text-xs uppercase tracking-[0.18em] text-[#7f71ab] dark:text-[#ab9cd8]">
                           Language Versions
@@ -2354,6 +2362,7 @@ export default function ToolsClientPage() {
                         <div className="flex flex-wrap gap-2">
                           {serverResults["llms-txt"].languageVariants.map(
                             (item: { code: string; label: string; url: string }) => (
+                              item.code === "x-default" ? null : (
                               <a
                                 key={`${item.code}-${item.url}`}
                                 href={item.url}
@@ -2366,6 +2375,7 @@ export default function ToolsClientPage() {
                                   {item.code}
                                 </span>
                               </a>
+                              )
                             ),
                           )}
                         </div>

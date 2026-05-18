@@ -963,9 +963,10 @@ function buildLlmsDocument(options: {
   rssUrl: string;
 }) {
   const summary = buildSummaryText(options.siteTitle, options.description, options.primarySections);
+  const displayLanguageVariants = options.languageVariants.filter((variant) => variant.code !== 'x-default');
   const languageLine =
-    options.languageVariants.length > 0
-      ? `Languages: ${options.languageVariants.map((variant) => variant.code).join(', ')}`
+    displayLanguageVariants.length > 0
+      ? `Languages: ${displayLanguageVariants.map((variant) => variant.code).join(', ')}`
       : options.language
         ? `Language: ${options.language}`
         : '';
@@ -980,9 +981,9 @@ function buildLlmsDocument(options: {
     '## Site Summary',
     summary,
     '',
-    options.languageVariants.length ? '## Language Versions' : '',
-    ...options.languageVariants.map((variant) => formatLinkLine({ label: `${variant.label} (${variant.code})`, url: variant.url })),
-    options.languageVariants.length ? '' : '',
+    displayLanguageVariants.length ? '## Language Versions' : '',
+    ...displayLanguageVariants.map((variant) => formatLinkLine({ label: `${variant.label} (${variant.code})`, url: variant.url })),
+    displayLanguageVariants.length ? '' : '',
     '## Primary Sections',
     ...options.primarySections.map((section) => formatLinkLine(section)),
     '',
