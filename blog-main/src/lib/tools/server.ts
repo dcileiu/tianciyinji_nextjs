@@ -302,6 +302,15 @@ type LinkCandidate = {
   score: number;
 };
 
+type LanguageVariantSource = 'html-lang' | 'meta-locale' | 'hreflang' | 'switcher' | 'sitemap' | 'default';
+
+type LanguageVariant = {
+  code: string;
+  label: string;
+  url: string;
+  source: LanguageVariantSource;
+};
+
 type RobotsDiscovery = {
   url: string;
   found: boolean;
@@ -312,6 +321,7 @@ type SitemapDiscovery = {
   url: string;
   found: boolean;
   urls: string[];
+  languageVariants: LanguageVariant[];
 };
 
 function cleanSnippet(value: string, maxLength = 160) {
@@ -325,6 +335,116 @@ function normalizePathname(pathname: string) {
   if (!pathname || pathname === '/') return '/';
   const normalized = pathname.replace(/\/{2,}/g, '/').replace(/\/+$/g, '');
   return normalized || '/';
+}
+
+const LANGUAGE_LABEL_MAP: Record<string, { code: string; label: string }> = {
+  english: { code: 'en', label: 'English' },
+  en: { code: 'en', label: 'English' },
+  japanese: { code: 'ja', label: '日本語' },
+  ja: { code: 'ja', label: '日本語' },
+  '日本語': { code: 'ja', label: '日本語' },
+  vietnamese: { code: 'vi', label: 'Tiếng Việt' },
+  vi: { code: 'vi', label: 'Tiếng Việt' },
+  'tiếng việt': { code: 'vi', label: 'Tiếng Việt' },
+  chinese: { code: 'zh', label: '中文' },
+  zh: { code: 'zh', label: '中文' },
+  '简体中文': { code: 'zh-CN', label: '简体中文' },
+  '繁體中文': { code: 'zh-TW', label: '繁體中文' },
+  '繁体中文': { code: 'zh-TW', label: '繁體中文' },
+  'traditional chinese': { code: 'zh-TW', label: '繁體中文' },
+  'simplified chinese': { code: 'zh-CN', label: '简体中文' },
+  español: { code: 'es', label: 'Español' },
+  spanish: { code: 'es', label: 'Español' },
+  es: { code: 'es', label: 'Español' },
+  français: { code: 'fr', label: 'Français' },
+  french: { code: 'fr', label: 'Français' },
+  fr: { code: 'fr', label: 'Français' },
+  português: { code: 'pt', label: 'Português' },
+  portuguese: { code: 'pt', label: 'Português' },
+  pt: { code: 'pt', label: 'Português' },
+  deutsch: { code: 'de', label: 'Deutsch' },
+  german: { code: 'de', label: 'Deutsch' },
+  de: { code: 'de', label: 'Deutsch' },
+  '한국어': { code: 'ko', label: '한국어' },
+  korean: { code: 'ko', label: '한국어' },
+  ko: { code: 'ko', label: '한국어' },
+  italiano: { code: 'it', label: 'Italiano' },
+  italian: { code: 'it', label: 'Italiano' },
+  it: { code: 'it', label: 'Italiano' },
+  русский: { code: 'ru', label: 'Русский' },
+  russian: { code: 'ru', label: 'Русский' },
+  ru: { code: 'ru', label: 'Русский' },
+  العربية: { code: 'ar', label: 'العربية' },
+  arabic: { code: 'ar', label: 'العربية' },
+  ar: { code: 'ar', label: 'العربية' },
+  ไทย: { code: 'th', label: 'ไทย' },
+  thai: { code: 'th', label: 'ไทย' },
+  th: { code: 'th', label: 'ไทย' },
+  indonesia: { code: 'id', label: 'Bahasa Indonesia' },
+  indonesian: { code: 'id', label: 'Bahasa Indonesia' },
+  id: { code: 'id', label: 'Bahasa Indonesia' },
+  'bahasa indonesia': { code: 'id', label: 'Bahasa Indonesia' },
+};
+
+function normalizeLocaleCode(value: string) {
+  const raw = value.trim().replace(/_/g, '-');
+  if (!raw) return '';
+  if (/^x-default$/i.test(raw)) return 'x-default';
+
+  const parts = raw
+    .split('-')
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (parts.length === 0) return '';
+
+  const [language, ...rest] = parts;
+  return [language.toLowerCase(), ...rest.map((part) => (/^[a-z]{2}$/i.test(part) ? part.toUpperCase() : part))].join('-');
+}
+
+function localeCodeToLabel(code: string) {
+  const normalized = normalizeLocaleCode(code);
+  if (!normalized) return '';
+  if (normalized === 'x-default') return 'Default';
+  const mapped = LANGUAGE_LABEL_MAP[normalized.toLowerCase()];
+  if (mapped) return mapped.label;
+  return normalized;
+}
+
+function resolveLanguageFromLabel(rawLabel: string) {
+  const label = cleanSnippet(rawLabel, 40);
+  if (!label) return null;
+  const mapped = LANGUAGE_LABEL_MAP[label.toLowerCase()];
+  if (mapped) return mapped;
+  return null;
+}
+
+function inferLanguageFromPath(pathname: string) {
+  const segments = normalizePathname(pathname).split('/').filter(Boolean);
+  if (segments.length === 0) return null;
+  const first = normalizeLocaleCode(segments[0]);
+  if (!first) return null;
+  if (/^[a-z]{2}(?:-[A-Z]{2})?$/.test(first) || first === 'x-default') {
+    return { code: first, label: localeCodeToLabel(first) || first };
+  }
+  return null;
+}
+
+function mergeLanguageVariants(variants: LanguageVariant[]) {
+  const byKey = new Map<string, LanguageVariant>();
+
+  for (const variant of variants) {
+    if (!variant.code || !variant.url) continue;
+    const key = `${variant.code}::${variant.url}`;
+    if (!byKey.has(key)) {
+      byKey.set(key, variant);
+    }
+  }
+
+  return Array.from(byKey.values()).sort((left, right) => {
+    if (left.code === 'x-default') return -1;
+    if (right.code === 'x-default') return 1;
+    return left.code.localeCompare(right.code);
+  });
 }
 
 function safeDecodeURIComponent(value: string) {
@@ -476,13 +596,77 @@ function extractRssUrl(html: string, baseUrl: string) {
 
 function extractDocumentLanguage(html: string) {
   const $ = load(html);
-  return cleanSnippet(
+  return normalizeLocaleCode(
     $('html').attr('lang') ||
       $('meta[http-equiv="content-language"]').attr('content') ||
       $('meta[property="og:locale"]').attr('content') ||
-      '',
-    24
+      ''
   );
+}
+
+function extractLanguageVariants(html: string, baseUrl: string) {
+  const $ = load(html);
+  const siteOrigin = new URL(baseUrl).origin;
+  const variants: LanguageVariant[] = [];
+
+  const pushVariant = (code: string, url: string, source: LanguageVariantSource, label?: string) => {
+    const normalizedCode = normalizeLocaleCode(code);
+    const normalizedUrl = normalizeSitePageUrl(url, siteOrigin) || normalizeSameOriginUrl(url, siteOrigin);
+    if (!normalizedCode || !normalizedUrl) return;
+    variants.push({
+      code: normalizedCode,
+      label: label || localeCodeToLabel(normalizedCode) || normalizedCode,
+      url: normalizedUrl,
+      source,
+    });
+  };
+
+  const htmlLang = $('html').attr('lang') || '';
+  if (htmlLang) {
+    pushVariant(htmlLang, baseUrl, 'html-lang');
+  }
+
+  $('meta[property="og:locale"], meta[property="og:locale:alternate"]').each((_, element) => {
+    const content = $(element).attr('content') || '';
+    if (content) pushVariant(content, baseUrl, 'meta-locale');
+  });
+
+  $('link[rel="alternate"][hreflang]').each((_, element) => {
+    const href = $(element).attr('href') || '';
+    const hreflang = $(element).attr('hreflang') || '';
+    if (hreflang && href) pushVariant(hreflang, href, 'hreflang');
+  });
+
+  $('a[href]').each((_, element) => {
+    const href = $(element).attr('href') || '';
+    const normalizedUrl = normalizeSitePageUrl(href, siteOrigin);
+    if (!normalizedUrl) return;
+
+    const path = new URL(normalizedUrl).pathname;
+    const labelText = cleanSnippet($(element).text() || $(element).attr('aria-label') || $(element).attr('title') || '', 40);
+    const byLabel = labelText ? resolveLanguageFromLabel(labelText) : null;
+    const byPath = inferLanguageFromPath(path);
+
+    const resolved = byLabel || byPath;
+    if (!resolved) return;
+    pushVariant(resolved.code, normalizedUrl, 'switcher', labelText || resolved.label);
+  });
+
+  const currentPath = normalizePathname(new URL(baseUrl).pathname);
+  if (currentPath !== '/' && (variants.length > 0 || inferLanguageFromPath(currentPath))) {
+    const rootUrl = new URL(siteOrigin);
+    rootUrl.pathname = '/';
+    rootUrl.search = '';
+    rootUrl.hash = '';
+    variants.push({
+      code: 'x-default',
+      label: 'Default',
+      url: rootUrl.toString(),
+      source: 'default',
+    });
+  }
+
+  return mergeLanguageVariants(variants);
 }
 
 async function readTextResource(resourceUrl: string, accept: string, timeoutMs = 10000) {
@@ -549,32 +733,78 @@ function parseSitemapDocument(xml: string, siteOrigin: string) {
     .get()
     .filter(Boolean);
 
+  const languageVariants = mergeLanguageVariants(
+    $('url')
+      .map((_, element) => {
+        const loc = normalizeSitePageUrl($(element).find('loc').first().text(), siteOrigin);
+        const entries: LanguageVariant[] = [];
+
+        $(element)
+          .find('xhtml\\:link[rel="alternate"][hreflang], link[rel="alternate"][hreflang]')
+          .each((__, alternate) => {
+            const hreflang = $(alternate).attr('hreflang') || '';
+            const href = normalizeSitePageUrl($(alternate).attr('href') || '', siteOrigin);
+            if (!hreflang || !href) return;
+            entries.push({
+              code: normalizeLocaleCode(hreflang),
+              label: localeCodeToLabel(hreflang) || normalizeLocaleCode(hreflang),
+              url: href,
+              source: 'sitemap',
+            });
+          });
+
+        if (loc) {
+          const inferred = inferLanguageFromPath(new URL(loc).pathname);
+          if (inferred) {
+            entries.push({
+              code: inferred.code,
+              label: inferred.label,
+              url: loc,
+              source: 'sitemap',
+            });
+          }
+        }
+
+        return entries;
+      })
+      .get()
+      .flat()
+  );
+
   return {
     urls: Array.from(new Set(urls)),
     sitemapUrls: Array.from(new Set(sitemapUrls)),
+    languageVariants,
   };
 }
 
-async function readSitemapUrls(sitemapUrl: string, siteOrigin: string, visited = new Set<string>(), depth = 0): Promise<string[]> {
-  if (visited.has(sitemapUrl) || depth > 1) return [];
+async function readSitemapData(
+  sitemapUrl: string,
+  siteOrigin: string,
+  visited = new Set<string>(),
+  depth = 0
+): Promise<{ urls: string[]; languageVariants: LanguageVariant[] }> {
+  if (visited.has(sitemapUrl) || depth > 1) return { urls: [], languageVariants: [] };
   visited.add(sitemapUrl);
 
   try {
     const resource = await readTextResource(sitemapUrl, 'application/xml,text/xml;q=0.9,*/*;q=0.5', 10000);
-    if (!resource) return [];
+    if (!resource) return { urls: [], languageVariants: [] };
 
     const parsed = parseSitemapDocument(resource.text, siteOrigin);
     let urls = parsed.urls.slice(0, 80);
+    let languageVariants = parsed.languageVariants.slice(0, 40);
 
     for (const childSitemap of parsed.sitemapUrls.slice(0, 3)) {
-      const childUrls = await readSitemapUrls(childSitemap, siteOrigin, visited, depth + 1);
-      urls = Array.from(new Set([...urls, ...childUrls])).slice(0, 80);
+      const childData = await readSitemapData(childSitemap, siteOrigin, visited, depth + 1);
+      urls = Array.from(new Set([...urls, ...childData.urls])).slice(0, 80);
+      languageVariants = mergeLanguageVariants([...languageVariants, ...childData.languageVariants]).slice(0, 40);
       if (urls.length >= 80) break;
     }
 
-    return urls;
+    return { urls, languageVariants };
   } catch {
-    return [];
+    return { urls: [], languageVariants: [] };
   }
 }
 
@@ -588,12 +818,13 @@ async function discoverSitemap(siteOrigin: string, robots: RobotsDiscovery): Pro
   );
 
   for (const candidate of candidates) {
-    const urls = await readSitemapUrls(candidate, siteOrigin);
-    if (urls.length > 0) {
+    const data = await readSitemapData(candidate, siteOrigin);
+    if (data.urls.length > 0 || data.languageVariants.length > 0) {
       return {
         url: candidate,
         found: true,
-        urls,
+        urls: data.urls,
+        languageVariants: data.languageVariants,
       };
     }
   }
@@ -602,6 +833,7 @@ async function discoverSitemap(siteOrigin: string, robots: RobotsDiscovery): Pro
     url: candidates[0] || `${siteOrigin}/sitemap.xml`,
     found: false,
     urls: [],
+    languageVariants: [],
   };
 }
 
@@ -621,22 +853,30 @@ function buildSitemapCandidates(urls: string[]) {
   );
 }
 
-function selectPrimarySections(homeLinks: LinkCandidate[], sitemapLinks: LinkCandidate[], siteOrigin: string) {
+function selectPrimarySections(
+  homeLinks: LinkCandidate[],
+  sitemapLinks: LinkCandidate[],
+  siteOrigin: string,
+  excludedUrls: Set<string>
+) {
   const rootUrl = new URL(siteOrigin);
   rootUrl.pathname = '/';
   rootUrl.search = '';
   rootUrl.hash = '';
+  const rootHref = rootUrl.toString();
 
   return dedupeLinkCandidates([
     {
       label: 'Home',
-      url: rootUrl.toString(),
+      url: rootHref,
       path: '/',
       source: 'default',
       score: scoreLinkCandidate('/', 'Home', 'default'),
     },
-    ...homeLinks,
-    ...sitemapLinks.filter((item) => item.path === '/' || item.path.split('/').filter(Boolean).length <= 2),
+    ...homeLinks.filter((item) => item.url === rootHref || !excludedUrls.has(item.url)),
+    ...sitemapLinks.filter(
+      (item) => (item.path === '/' || item.path.split('/').filter(Boolean).length <= 2) && (item.url === rootHref || !excludedUrls.has(item.url))
+    ),
   ]).slice(0, 8);
 }
 
@@ -680,6 +920,7 @@ function buildLlmsDocument(options: {
   siteUrl: string;
   description: string;
   language: string;
+  languageVariants: LanguageVariant[];
   primarySections: LinkCandidate[];
   examplePages: LinkCandidate[];
   robots: RobotsDiscovery;
@@ -687,17 +928,26 @@ function buildLlmsDocument(options: {
   rssUrl: string;
 }) {
   const summary = buildSummaryText(options.siteTitle, options.description, options.primarySections);
+  const languageLine =
+    options.languageVariants.length > 0
+      ? `Languages: ${options.languageVariants.map((variant) => variant.code).join(', ')}`
+      : options.language
+        ? `Language: ${options.language}`
+        : '';
   const lines = [
     `# ${options.siteTitle}`,
     '',
     `> ${summary}`,
     '',
     `Site URL: ${options.siteUrl}`,
-    options.language ? `Language: ${options.language}` : '',
+    languageLine,
     '',
     '## Site Summary',
     summary,
     '',
+    options.languageVariants.length ? '## Language Versions' : '',
+    ...options.languageVariants.map((variant) => formatLinkLine({ label: `${variant.label} (${variant.code})`, url: variant.url })),
+    options.languageVariants.length ? '' : '',
     '## Primary Sections',
     ...options.primarySections.map((section) => formatLinkLine(section)),
     '',
@@ -930,12 +1180,25 @@ async function runToolInternal(tool: string, payload: ToolPayload, requestHeader
       const siteOrigin = new URL(finalUrl).origin;
       const metadata = extractMetadata(html, finalUrl);
       const language = extractDocumentLanguage(html);
+      const homepageLanguageVariants = extractLanguageVariants(html, finalUrl);
       const homeLinks = extractHomepageLinks(html, finalUrl);
       const rssUrl = extractRssUrl(html, finalUrl);
       const robots = await readRobotsFile(siteOrigin);
       const sitemap = await discoverSitemap(siteOrigin, robots);
+      const languageVariants = mergeLanguageVariants([...homepageLanguageVariants, ...sitemap.languageVariants]);
       const sitemapLinks = buildSitemapCandidates(sitemap.urls);
-      const primarySections = selectPrimarySections(homeLinks, sitemapLinks, siteOrigin);
+      const languageUrls = new Set(
+        languageVariants
+          .map((variant) => variant.url)
+          .filter((url) => {
+            try {
+              return new URL(url).pathname !== '/';
+            } catch {
+              return true;
+            }
+          })
+      );
+      const primarySections = selectPrimarySections(homeLinks, sitemapLinks, siteOrigin, languageUrls);
       const examplePages = selectExamplePages(primarySections, sitemapLinks, homeLinks);
       const siteTitle = metadata.openGraph.siteName || metadata.title || new URL(siteOrigin).hostname;
       const siteUrl = metadata.canonical || siteOrigin;
@@ -945,6 +1208,7 @@ async function runToolInternal(tool: string, payload: ToolPayload, requestHeader
         siteUrl,
         description,
         language,
+        languageVariants,
         primarySections,
         examplePages,
         robots,
@@ -956,6 +1220,7 @@ async function runToolInternal(tool: string, payload: ToolPayload, requestHeader
         siteTitle,
         siteUrl,
         language,
+        languageVariants,
         description,
         homepage: finalUrl,
         robots,

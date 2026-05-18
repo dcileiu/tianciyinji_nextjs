@@ -2305,12 +2305,15 @@ export default function ToolsClientPage() {
                   <OutputBox className="space-y-3">
                     <div className="grid gap-2 text-sm sm:grid-cols-2">
                       <div>站点标题：{serverResults["llms-txt"].siteTitle}</div>
-                      <div>语言：{serverResults["llms-txt"].language || "-"}</div>
+                      <div>主语言：{serverResults["llms-txt"].language || "-"}</div>
                       <div className="break-all">
                         站点地址：{serverResults["llms-txt"].siteUrl}
                       </div>
                       <div>
-                        主要栏目：{serverResults["llms-txt"].primarySections.length} 个
+                        语言版本：{serverResults["llms-txt"].languageVariants.length} 个
+                      </div>
+                      <div>
+                        主要栏目数：{serverResults["llms-txt"].primarySections.length} 个
                       </div>
                     </div>
 
@@ -2342,6 +2345,32 @@ export default function ToolsClientPage() {
                         </a>
                       )}
                     </div>
+
+                    {serverResults["llms-txt"].languageVariants.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="text-xs uppercase tracking-[0.18em] text-[#7f71ab] dark:text-[#ab9cd8]">
+                          Language Versions
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {serverResults["llms-txt"].languageVariants.map(
+                            (item: { code: string; label: string; url: string }) => (
+                              <a
+                                key={`${item.code}-${item.url}`}
+                                href={item.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="rounded-full border border-[#dacdff] bg-[#f7f1ff] px-3 py-1.5 text-xs text-[#543c8f] transition hover:border-[#8b6bff] hover:text-[#4f31d7] dark:border-[#392d56] dark:bg-[#211834] dark:text-[#d8ccff]"
+                              >
+                                {item.label}
+                                <span className="ml-1 text-[#876fc4] dark:text-[#bbaef0]">
+                                  {item.code}
+                                </span>
+                              </a>
+                            ),
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                     {serverResults["llms-txt"].primarySections.length > 0 && (
                       <div className="space-y-2">
