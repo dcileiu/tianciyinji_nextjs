@@ -6,6 +6,12 @@ import type { IncomingHttpHeaders } from 'node:http';
 import { load } from 'cheerio';
 import TurndownService from 'turndown';
 import { ANSWER_BOOK_ENTRIES, FALLBACK_HISTORY_EVENTS, FALLBACK_POEMS } from './content';
+import {
+  type CodeLanguage,
+  type CodeObfuscateLevel,
+  type CodeProcessMode,
+  processCodeObfuscate,
+} from './code-obfuscate';
 
 type GeoIpRecord =
   | {
@@ -1079,6 +1085,25 @@ async function probePort(host: string, port: number, timeoutMs = 900) {
 
 async function runToolInternal(tool: string, payload: ToolPayload, requestHeaders: Headers) {
   switch (tool) {
+    case 'code-obfuscate': {
+      const code = getString(payload, 'code');
+      const language = getString(payload, 'language', 'javascript') as CodeLanguage;
+      const mode = getString(payload, 'mode', 'minify') as CodeProcessMode;
+      const level = getString(payload, 'level', 'normal') as CodeObfuscateLevel;
+
+      if (!['javascript', 'css', 'html'].includes(language)) {
+        throw new Error('不支持的语言类型。');
+      }
+      if (!['minify', 'obfuscate'].includes(mode)) {
+        throw new Error('不支持的处理模式。');
+      }
+      if (!['normal', 'strong'].includes(level)) {
+        throw new Error('不支持的混淆强度。');
+      }
+
+      return processCodeObfuscate({ code, language, mode, level });
+    }
+
     case 'md5': {
       const text = getString(payload, 'text');
       const expected = getString(payload, 'expected').toLowerCase();

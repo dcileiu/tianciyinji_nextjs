@@ -79,6 +79,7 @@ const toolCatalog = [
   { id: "random", title: "随机数 / 随机字符串", sectionId: "local-tools" },
   { id: "timestamp", title: "时间戳转换", sectionId: "local-tools" },
   { id: "json", title: "JSON 美化 / 压缩", sectionId: "local-tools" },
+  { id: "code-obfuscate", title: "代码混淆 / 压缩", sectionId: "local-tools" },
   { id: "params", title: "参数分析", sectionId: "local-tools" },
   { id: "sensitive", title: "敏感词快速检测", sectionId: "local-tools" },
   { id: "qrcode", title: "二维码生成", sectionId: "image-tools" },
@@ -661,6 +662,19 @@ export default function ToolsClientPage() {
   );
   const [jsonOutput, setJsonOutput] = useState("");
   const [jsonError, setJsonError] = useState("");
+
+  const [codeObfuscateInput, setCodeObfuscateInput] = useState(
+    "function greet(name) {\n  const message = `Hello, ${name}!`;\n  console.log(message);\n  return message;\n}\n\ngreet('World');",
+  );
+  const [codeObfuscateLanguage, setCodeObfuscateLanguage] = useState<
+    "javascript" | "css" | "html"
+  >("javascript");
+  const [codeObfuscateMode, setCodeObfuscateMode] = useState<
+    "minify" | "obfuscate"
+  >("minify");
+  const [codeObfuscateLevel, setCodeObfuscateLevel] = useState<
+    "normal" | "strong"
+  >("normal");
 
   const [paramsInput, setParamsInput] = useState(
     "https://example.com/search?q=blog&tag=next&tag=tools",
@@ -1481,6 +1495,170 @@ export default function ToolsClientPage() {
                     <pre className="whitespace-pre-wrap break-all font-mono">
                       {jsonOutput}
                     </pre>
+                  </OutputBox>
+                )}
+              </div>
+            </SectionCard>
+
+            <SectionCard
+              icon={FileCode2}
+              title="代码混淆 / 压缩"
+              description="支持 JavaScript 混淆与压缩，以及 CSS / HTML 压缩；混淆在服务端完成，适合脚本发布前处理。"
+              className={isToolVisible("code-obfuscate") ? "" : "hidden"}
+            >
+              <div className="space-y-3">
+                <textarea
+                  className={`${inputClass} min-h-[220px] resize-y font-mono text-[13px]`}
+                  value={codeObfuscateInput}
+                  onChange={(event) => setCodeObfuscateInput(event.target.value)}
+                  placeholder="粘贴 JavaScript、CSS 或 HTML 代码"
+                />
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <FancySelect
+                    ariaLabel="代码语言"
+                    value={codeObfuscateLanguage}
+                    onChange={(value) =>
+                      setCodeObfuscateLanguage(
+                        value as "javascript" | "css" | "html",
+                      )
+                    }
+                    options={[
+                      { value: "javascript", label: "JavaScript" },
+                      { value: "css", label: "CSS" },
+                      { value: "html", label: "HTML" },
+                    ]}
+                  />
+                  <FancySelect
+                    ariaLabel="处理模式"
+                    value={codeObfuscateMode}
+                    onChange={(value) =>
+                      setCodeObfuscateMode(value as "minify" | "obfuscate")
+                    }
+                    options={[
+                      { value: "minify", label: "仅压缩" },
+                      {
+                        value: "obfuscate",
+                        label:
+                          codeObfuscateLanguage === "javascript"
+                            ? "混淆 + 压缩"
+                            : "混淆 + 压缩（仅 JS）",
+                      },
+                    ]}
+                  />
+                  {codeObfuscateLanguage === "javascript" &&
+                  codeObfuscateMode === "obfuscate" ? (
+                    <FancySelect
+                      ariaLabel="混淆强度"
+                      value={codeObfuscateLevel}
+                      onChange={(value) =>
+                        setCodeObfuscateLevel(value as "normal" | "strong")
+                      }
+                      options={[
+                        { value: "normal", label: "标准混淆" },
+                        { value: "strong", label: "高强度混淆" },
+                      ]}
+                    />
+                  ) : (
+                    <div className="flex items-center rounded-2xl border border-dashed border-[#d9ccff] px-4 py-3 text-xs text-[#7b69a5] dark:border-[#3b2f59] dark:text-[#af9fda]">
+                      {codeObfuscateLanguage === "javascript"
+                        ? "选择「混淆 + 压缩」后可调节强度。"
+                        : "CSS / HTML 当前仅支持压缩。"}
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    onClick={() =>
+                      runServerTool("code-obfuscate", {
+                        code: codeObfuscateInput,
+                        language: codeObfuscateLanguage,
+                        mode: codeObfuscateMode,
+                        level: codeObfuscateLevel,
+                      })
+                    }
+                    disabled={loadingMap["code-obfuscate"]}
+                    className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
+                  >
+                    {loadingMap["code-obfuscate"] ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        处理中…
+                      </>
+                    ) : codeObfuscateMode === "obfuscate" &&
+                      codeObfuscateLanguage === "javascript" ? (
+                      "开始混淆"
+                    ) : (
+                      "开始压缩"
+                    )}
+                  </Button>
+                </div>
+                {serverErrors["code-obfuscate"] && (
+                  <OutputBox>{serverErrors["code-obfuscate"]}</OutputBox>
+                )}
+                {serverResults["code-obfuscate"] && (
+                  <OutputBox className="space-y-3">
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#7b69a5] dark:text-[#af9fda]">
+                      <span>
+                        原始：{formatBytes(serverResults["code-obfuscate"].stats.before)}
+                      </span>
+                      <span>
+                        结果：{formatBytes(serverResults["code-obfuscate"].stats.after)}
+                      </span>
+                      <span>
+                        体积比：{serverResults["code-obfuscate"].stats.ratio}
+                      </span>
+                      <span>
+                        模式：
+                        {serverResults["code-obfuscate"].mode === "obfuscate"
+                          ? "混淆"
+                          : "压缩"}
+                      </span>
+                    </div>
+                    <pre className="max-h-[360px] overflow-auto whitespace-pre-wrap break-all font-mono text-[12px] leading-6">
+                      {serverResults["code-obfuscate"].output}
+                    </pre>
+                    <div className="flex flex-wrap gap-3">
+                      <Button
+                        variant="outline"
+                        className={secondaryButtonClass}
+                        onClick={() =>
+                          copyGeneratedText(
+                            "code-obfuscate",
+                            serverResults["code-obfuscate"].output,
+                          )
+                        }
+                      >
+                        {copiedTool === "code-obfuscate" ? (
+                          <>
+                            <Check className="mr-2 h-4 w-4" />
+                            已复制
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="mr-2 h-4 w-4" />
+                            复制结果
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className={secondaryButtonClass}
+                        onClick={() =>
+                          downloadPlainText(
+                            `output.${
+                              serverResults["code-obfuscate"].language ===
+                              "javascript"
+                                ? "js"
+                                : serverResults["code-obfuscate"].language
+                            }`,
+                            serverResults["code-obfuscate"].output,
+                          )
+                        }
+                      >
+                        <Download className="mr-2 h-4 w-4" />
+                        下载文件
+                      </Button>
+                    </div>
                   </OutputBox>
                 )}
               </div>
