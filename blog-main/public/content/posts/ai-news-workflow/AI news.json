@@ -1,0 +1,1830 @@
+{
+  "name": "AI news",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://yunwu.ai/v1/chat/completions",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer sk-ExUKHvWOtOlCzQgyEV01csqDAedPO8imhJjrlrxDDvB0cUC3\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\nJSON.stringify({\n  model: \"gpt-5.1-thinking-all\",\n  messages: [\n    {\n      role: \"system\",\n      content:\n        \"你是新闻热度评估助手。任务：从给定候选新闻中选出当前热度最高的1篇。评估优先级：跨媒体关注度、事件影响范围、突发性、市场/政策关联、持续讨论度。必须先联网核验后再给结论。若页面受限（付费墙），可结合标题、可见摘要与其他媒体交叉信息判断。\"\n    },\n    {\n      role: \"user\",\n      content:\n        \"候选新闻如下（JSON数组）:\\n\" +\n        JSON.stringify($json.article_titles) +\n        \"输出必须严格为JSON对象，且只能包含以下两个字段即可，不得多也不得少：\\\n        1) top_hot_news_id: number（对应候选新闻的id）\\\n        2) reason: string（简要说明选择理由，中文即可）\\\n        严禁输出Markdown、代码块、解释性文字、前后缀文本。\"\n    }\n  ]\n})\n}}",
+        "options": {}
+      },
+      "name": "联网搜索筛选热点1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -400,
+        -320
+      ],
+      "id": "5dcccf43-3663-44c5-a0a2-cfd5e6187bf7",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "url": "https://www.nikkei.com/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "cookie",
+              "value": "atlasId=69deeac7.qjbgrdmxig6mgnvwgqvyy2ckf8tod5xd; _fbp=fb.1.1776216775262.829830844655281278; _ga=GA1.1.90935864.1776216776; _gcl_au=1.1.606008415.1776216776; _yjsu_yjad=1776837379.4ecf3335-a36f-4f7d-8641-83f8ef6b837a; _fsefo_user_id=Uf2LAOxJ; _twpid=tw.1776837381123.989660911725861484; NID-Serial-Cookie=8381246828; __Secure-NID-SMK=R6QBEXiQZfCUfNJa1122DC1gOh7KBpA3y7RQFf/RhhI=; __Secure-Former-DS-Login-NID-Fingerprint=8381246828; _rt.uid=8381246828; _rt.xd=bad07c30; NID-AUTHENTICATED-TIMESTAMP=TS:1777257098; NID-AUTHENTICATED=\"TS:2026-04-27 11:31:38\"; NID-Melissa-SSO=TS:1778487704; __Secure-NID-Signed-Serial=eyJ0eXAiOiJKV1QiLCJraWQiOiJQS0FoSHBhM2ZtakNuTGRRdmJ6djlXYkFzSkh0UlNIa0ZRYmpjZU93R3YiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiI4MzgxMjQ2ODI4IiwiaWF0IjoxNzc4NDg3NzA0LCJleHAiOjE3ODYyNjM3MDR9.7i5aKcjOusx9jlqrVAfvGTD5zdopugKhuRzt_9mTbzgI6V1g3VasI46SBNt0Wk-IjkfKlcmxEFqe-R9bL5cBGQ; RNikkeiAuth=eyJhbGciOiJFUzI1NiIsImtpZCI6IkVTMjU2LVg2TWlvOCIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJybmlra2VpX3dlYiIsImF1dGgiOiJuaWRfY29kZSIsImV4cCI6MTc3OTY5NzMwNiwiaWF0IjoxNzc4NDg3NzA2LCJpc3MiOiJhcGlndy5uOHMuanAiLCJqdGkiOiJXMlAyV3V1cSIsIm5rX29wdCI6InxEU1IzRjoxTTF8Iiwic3ViIjoiODM4MTI0NjgyOCIsInR5cCI6ImFjY2Vzc190b2tlbiJ9.nvTnQe616PYzXakcqAaUR6IcxZRY1NbdnOOu6M7Wj6cNdbtjFFL9BBeRtrztiJsC2zy-tQc4GLcqyL46Vnplxw; RNikkeiUserInfo=eyJhdWQiOiJybmlra2VpX3dlYiIsImF1dGgiOiJuaWRfY29kZSIsImV4cCI6MTc3OTY5NzMwNiwiaWF0IjoxNzc4NDg3NzA2LCJpc3MiOiJhcGlndy5uOHMuanAiLCJqdGkiOiJXMlAyV3V1cSIsIm5rX29wdCI6InxEU1IzRjoxTTF8Iiwic3ViIjoiODM4MTI0NjgyOCIsInR5cCI6ImFjY2Vzc190b2tlbiJ9; lux_uid=177848770833706251; opt_n_cid=SPTMG028; krt.vis=0i_KsiuX0k7DfN3; AMCV_961002BE53295BB70A490D4C%40AdobeOrg=-996416310%7CMCMID%7C15195468018632875432767810604487996562%7CMCAAMLH-1779092520%7C11%7CMCAAMB-1779092520%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCAID%7CNONE; s_cc=true; s_sq=%5B%5BB%5D%5D; _clck=1etwcm3%5E2%5Eg5y%5E0%5E2303; _uetsid=7ba175804d1211f18b711feb0ac69268; _uetvid=fc15d5303e0f11f1ab7ff3688896e95b; mprtcl-v4_BA3A2748={'gs':{'ie':1|'dt':'us2-b86e8d92ffc670429394e2541dac2809'|'cgid':'1d63d5b0-0f9b-46e4-461b-caebd2b233da'|'das':'b980d949-1bf8-4b17-2d50-b970ea5d9ff1'|'csm':'WyItMjQ5MTUwNTcxNTI4NjM3ODUwMCJd'|'sid':'ED0BA916-85B6-47B1-2092-C8FEC5B59B86'|'les':1778487721975|'ssd':1778487721004}|'l':0|'-2491505715286378500':{'fst':1776837381222}|'cu':'-2491505715286378500'}; __lt__cid=0f68434d-7141-4e93-9edb-41da3ff57909; __lt__sid=e0f7d3ad-4f77dd69; _clsk=15tnbgk%5E1778487722403%5E1%5E0%5Ea.clarity.ms%2Fcollect; cto_bundle=q_UChl9vME5jRGl3JTJGbFo4dzVyaXd2b283UlJOeGVZNU5CeDNFRnlZQUdQN2JsQ04zRyUyRmVsTmlXeCUyQmJwZUl2b1dzc2Y2T1FiUHYxYyUyRlZ5TXpTeWo4MjZUY0RyR2RRZTlmc3oxck1OakJqTjZnSUZHdHVZbG8lMkZWcnJpY2dtNUc0bEJobGRhaHRJaGJKTzVwbWVnM3Z1T0VlaGxBJTNEJTNE; _im_id.1010126=31187b00261c0db5.1778487723.; _im_ses.1010126=1; _im_vid=01KRB220VGM779HE6XRWNTKSDH; bypass_auid=48a2eb06-d836-447e-aae7-4b01f27b9343; _ga_PXS8451SBG=GS2.1.s1778487708$o48$g1$t1778487759$j9$l0$h0"
+            },
+            {
+              "name": "sec-ch-ua-platform-version",
+              "value": "\"19.0.0\""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "日本经济新闻1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -928,
+        -320
+      ],
+      "id": "6c51526a-649b-43f6-a7ad-66f710a508cd",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (JavaScript)\n\n// 1) 读取 HTML 字符串（按你实际节点字段可调整）\n// 常见来源：$json.body / $json.data / $json.html\nconst html =\n  $json.body ??\n  $json.data ??\n  $json.html ??\n  (typeof $json === 'string' ? $json : null);\n\nif (!html || typeof html !== 'string') {\n  throw new Error('未找到 HTML 字符串，请确认上游 GET 节点输出字段（如 body/data/html）。');\n}\n\n// 去掉标签并清理空白\nfunction cleanText(str) {\n  return str\n    .replace(/<script[\\s\\S]*?<\\/script>/gi, '')\n    .replace(/<style[\\s\\S]*?<\\/style>/gi, '')\n    .replace(/<[^>]+>/g, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim();\n}\n\n// 按 class 提取 a 标签 href + 文本\nfunction extractLinksByClass(className, limit = Infinity) {\n  const escapedClass = className.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');\n\n  // class 必须包含目标类名；href 可在 class 前后\n  const re = new RegExp(\n    `<a\\\\b(?=[^>]*\\\\bclass=[\"'][^\"']*\\\\b${escapedClass}\\\\b[^\"']*[\"'])[^>]*\\\\bhref=[\"']([^\"']+)[\"'][^>]*>([\\\\s\\\\S]*?)<\\\\/a>`,\n    'gi'\n  );\n\n  const out = [];\n  let m;\n  while ((m = re.exec(html)) !== null) {\n    out.push({\n      href: m[1].trim(),\n      text: cleanText(m[2]),\n    });\n    if (out.length >= limit) break;\n  }\n  return out;\n}\n\nconst result = {\n  blockLink_b1pjlb0j: extractLinksByClass('blockLink_b1pjlb0j'),\n  blockLink_b1rzlw4n: extractLinksByClass('blockLink_b1rzlw4n'),\n  blockLink_bzngw6j: extractLinksByClass('blockLink_bzngw6j', 8), // 只要前8个\n};\n\nreturn [{ json: result }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        -320
+      ],
+      "id": "16324c58-eb4b-40e1-aaae-bfac4ebe4feb",
+      "name": "提取区块URL1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 输入是你当前提取结果：\n// $json.blockLink_b1pjlb0j, $json.blockLink_b1rzlw4n, $json.blockLink_bzngw6j\nconst groups = [\n  $json.blockLink_b1pjlb0j || [],\n  $json.blockLink_b1rzlw4n || [],\n  $json.blockLink_bzngw6j || [],\n];\n\nconst articles = groups\n  .flat()\n  .filter(x => x && x.href && x.text)\n  .map((x, i) => ({\n    id: i + 1,\n    title: String(x.text).trim(),\n    url: x.href.startsWith('http') ? x.href : `https://www.nikkei.com${x.href}`,\n  }));\n\nconst article_titles = groups\n  .flat()\n  .filter(x => x && x.href && x.text)\n  .map((x, i) => ({\n    id: i + 1,\n    title: String(x.text).trim()\n  }));\n\nreturn [{ json: { article_titles,articles } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -576,
+        -320
+      ],
+      "id": "3a5c0e58-174f-459f-a482-bfc3fd9f7688",
+      "name": "整合URL1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "141c2de9-fbe5-4c81-9355-148346b68c93",
+              "leftValue": "={{ $json.title }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        128,
+        -320
+      ],
+      "id": "3f79c7ac-abe9-4882-affe-e0e66a2a50d7",
+      "name": "数据是否存在1"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        528,
+        -336
+      ],
+      "id": "101e6045-8d4f-48ca-9e71-0d3cf6c0d562",
+      "name": "Wait4",
+      "webhookId": "a9d1fdea-ac2a-48ae-95d8-0b0378df93fe"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('筛选').item.json.matched_article.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "cookie",
+              "value": "atlasId=69deeac7.qjbgrdmxig6mgnvwgqvyy2ckf8tod5xd; _fbp=fb.1.1776216775262.829830844655281278; _ga=GA1.1.90935864.1776216776; _gcl_au=1.1.606008415.1776216776; _yjsu_yjad=1776837379.4ecf3335-a36f-4f7d-8641-83f8ef6b837a; _fsefo_user_id=Uf2LAOxJ; _twpid=tw.1776837381123.989660911725861484; NID-Serial-Cookie=8381246828; __Secure-NID-SMK=R6QBEXiQZfCUfNJa1122DC1gOh7KBpA3y7RQFf/RhhI=; __Secure-Former-DS-Login-NID-Fingerprint=8381246828; _rt.uid=8381246828; _rt.xd=bad07c30; NID-AUTHENTICATED-TIMESTAMP=TS:1777257098; NID-AUTHENTICATED=\"TS:2026-04-27 11:31:38\"; NID-Melissa-SSO=TS:1778487704; __Secure-NID-Signed-Serial=eyJ0eXAiOiJKV1QiLCJraWQiOiJQS0FoSHBhM2ZtakNuTGRRdmJ6djlXYkFzSkh0UlNIa0ZRYmpjZU93R3YiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiI4MzgxMjQ2ODI4IiwiaWF0IjoxNzc4NDg3NzA0LCJleHAiOjE3ODYyNjM3MDR9.7i5aKcjOusx9jlqrVAfvGTD5zdopugKhuRzt_9mTbzgI6V1g3VasI46SBNt0Wk-IjkfKlcmxEFqe-R9bL5cBGQ; RNikkeiAuth=eyJhbGciOiJFUzI1NiIsImtpZCI6IkVTMjU2LVg2TWlvOCIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJybmlra2VpX3dlYiIsImF1dGgiOiJuaWRfY29kZSIsImV4cCI6MTc3OTY5NzMwNiwiaWF0IjoxNzc4NDg3NzA2LCJpc3MiOiJhcGlndy5uOHMuanAiLCJqdGkiOiJXMlAyV3V1cSIsIm5rX29wdCI6InxEU1IzRjoxTTF8Iiwic3ViIjoiODM4MTI0NjgyOCIsInR5cCI6ImFjY2Vzc190b2tlbiJ9.nvTnQe616PYzXakcqAaUR6IcxZRY1NbdnOOu6M7Wj6cNdbtjFFL9BBeRtrztiJsC2zy-tQc4GLcqyL46Vnplxw; RNikkeiUserInfo=eyJhdWQiOiJybmlra2VpX3dlYiIsImF1dGgiOiJuaWRfY29kZSIsImV4cCI6MTc3OTY5NzMwNiwiaWF0IjoxNzc4NDg3NzA2LCJpc3MiOiJhcGlndy5uOHMuanAiLCJqdGkiOiJXMlAyV3V1cSIsIm5rX29wdCI6InxEU1IzRjoxTTF8Iiwic3ViIjoiODM4MTI0NjgyOCIsInR5cCI6ImFjY2Vzc190b2tlbiJ9; lux_uid=177848770833706251; opt_n_cid=SPTMG028; krt.vis=0i_KsiuX0k7DfN3; AMCV_961002BE53295BB70A490D4C%40AdobeOrg=-996416310%7CMCMID%7C15195468018632875432767810604487996562%7CMCAAMLH-1779092520%7C11%7CMCAAMB-1779092520%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCAID%7CNONE; s_cc=true; s_sq=%5B%5BB%5D%5D; _clck=1etwcm3%5E2%5Eg5y%5E0%5E2303; _uetsid=7ba175804d1211f18b711feb0ac69268; _uetvid=fc15d5303e0f11f1ab7ff3688896e95b; mprtcl-v4_BA3A2748={'gs':{'ie':1|'dt':'us2-b86e8d92ffc670429394e2541dac2809'|'cgid':'1d63d5b0-0f9b-46e4-461b-caebd2b233da'|'das':'b980d949-1bf8-4b17-2d50-b970ea5d9ff1'|'csm':'WyItMjQ5MTUwNTcxNTI4NjM3ODUwMCJd'|'sid':'ED0BA916-85B6-47B1-2092-C8FEC5B59B86'|'les':1778487721975|'ssd':1778487721004}|'l':0|'-2491505715286378500':{'fst':1776837381222}|'cu':'-2491505715286378500'}; __lt__cid=0f68434d-7141-4e93-9edb-41da3ff57909; __lt__sid=e0f7d3ad-4f77dd69; _clsk=15tnbgk%5E1778487722403%5E1%5E0%5Ea.clarity.ms%2Fcollect; cto_bundle=q_UChl9vME5jRGl3JTJGbFo4dzVyaXd2b283UlJOeGVZNU5CeDNFRnlZQUdQN2JsQ04zRyUyRmVsTmlXeCUyQmJwZUl2b1dzc2Y2T1FiUHYxYyUyRlZ5TXpTeWo4MjZUY0RyR2RRZTlmc3oxck1OakJqTjZnSUZHdHVZbG8lMkZWcnJpY2dtNUc0bEJobGRhaHRJaGJKTzVwbWVnM3Z1T0VlaGxBJTNEJTNE; _im_id.1010126=31187b00261c0db5.1778487723.; _im_ses.1010126=1; _im_vid=01KRB220VGM779HE6XRWNTKSDH; bypass_auid=48a2eb06-d836-447e-aae7-4b01f27b9343; _ga_PXS8451SBG=GS2.1.s1778487708$o48$g1$t1778487759$j9$l0$h0"
+            },
+            {
+              "name": "sec-ch-ua-platform-version",
+              "value": "\"19.0.0\""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "获取新闻详情内容",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        352,
+        -144
+      ],
+      "id": "d5021fbe-2ae9-41e8-b2cf-015d270eb5ff",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "hot_topics_cache",
+        "columns": {
+          "column": [
+            {
+              "name": "url"
+            },
+            {
+              "name": "date"
+            },
+            {
+              "name": "title"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -1088,
+        -720
+      ],
+      "id": "cb59f6fc-c09b-4ca0-9d6c-e4b189a962b8",
+      "name": "Create a data table1"
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "delete",
+        "dataTableId": {
+          "__rl": true,
+          "value": "2a5toGRU4GY2qvjY",
+          "mode": "list",
+          "cachedResultName": "hot_topics_cache",
+          "cachedResultUrl": "/projects/L8gay1Gn2Ih7MFmK/datatables/2a5toGRU4GY2qvjY"
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -784,
+        -720
+      ],
+      "id": "8d43243c-92c6-402f-863c-6d91d871e69d",
+      "name": "Delete a data table1"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "LCNSPOdHH4TaBrkQ",
+          "mode": "list",
+          "cachedResultName": "hot_topics_cache",
+          "cachedResultUrl": "/projects/U0s63tsfz0AKYOgd/datatables/LCNSPOdHH4TaBrkQ"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "title": "测试",
+            "date": "={{ new Date().toISOString() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        -720
+      ],
+      "id": "b46530fe-a91b-4737-a59c-2cea307b0bf2",
+      "name": "Insert row3"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "si2x6OBLvO8f8GhD",
+          "mode": "list",
+          "cachedResultName": "hot_topics_cache",
+          "cachedResultUrl": "/projects/L8gay1Gn2Ih7MFmK/datatables/si2x6OBLvO8f8GhD"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "condition": "neq",
+              "keyValue": "0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        64,
+        -720
+      ],
+      "id": "b88a07e9-abc2-4e53-9f8b-0407ae78c413",
+      "name": "Delete row(s)1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "2a5toGRU4GY2qvjY",
+          "mode": "list",
+          "cachedResultName": "hot_topics_cache",
+          "cachedResultUrl": "/projects/L8gay1Gn2Ih7MFmK/datatables/2a5toGRU4GY2qvjY"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "url",
+              "keyValue": "春耕春管现场成为“科技主场”"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -480,
+        -720
+      ],
+      "id": "1442bea3-4859-4615-8fd1-f9c0d085f272",
+      "name": "Get row(s)5"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "si2x6OBLvO8f8GhD",
+          "mode": "list",
+          "cachedResultName": "hot_topics_cache",
+          "cachedResultUrl": "/projects/L8gay1Gn2Ih7MFmK/datatables/si2x6OBLvO8f8GhD"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -208,
+        -720
+      ],
+      "id": "6986ae87-382f-4c6a-a429-38dc9ed7166f",
+      "name": "查询全部1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const ts = $('整合URL1').first().json.article_titles || [];\nconst removeId = Number($('筛选').first().json.matched_article.id);\n\n// 先过滤，再映射\nreturn [{ json: { article_titles:ts\n  .filter((item) => Number(item.id) != removeId)\n  .map((item) => (item)) } }] ;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        -336
+      ],
+      "id": "70949be8-0dc1-405c-8f85-94b95e821a39",
+      "name": "返回移除了该条数据的新标题数组"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code 节点（Run Once for All Items）\n// 前提：AI文本一定可拿到，并且其中包含 \"top_hot_news_id\"\n\nconst rawText = $input.first().json.choices[\n    0\n].message.content || \"\";\n\n// 直接从文本里提取 top_hot_news_id\nconst topIdMatch = rawText.match(/\"top_hot_news_id\"\\s*:\\s*(\\d+)/);\nconst top_id = topIdMatch ? Number(topIdMatch[\n    1\n]) : null;\n\n// 在 articles 中找对应 id\nconst articles = Array.isArray($('整合URL1').first().json.articles) ? $('整合URL1').first().json.articles : [];\nconst matched_article =\n  top_id === null ? null : articles.find((a) => Number(a.id) === top_id) || null;\n\nreturn {\n  json: {\n    top_id,\n    matched_article,\n    matched_found: !!matched_article,\n    },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        -320
+      ],
+      "id": "f40ea18c-cce3-4423-a6af-ee02f57aefb0",
+      "name": "筛选"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://yunwu.ai/v1/chat/completions",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer sk-ExUKHvWOtOlCzQgyEV01csqDAedPO8imhJjrlrxDDvB0cUC3\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\nJSON.stringify({\n  model: \"gpt-5.4-mini\",\n  temperature: 0.7,\n  messages: [\n    {\n      role: \"system\",\n      content:\n        \"あなたは日本語の金融・国際報道リライター兼エディターです。与えられた記事本文を、事実関係を維持したまま自然に書き換え、最後に編集者視点で必ず推敲してください。\\\n\\\n出力要件（厳守）：\\\n- 元記事の核心事実・数値・固有名詞・時系列は維持\\\n- 文体のみ自然に再構成（語順・言い回し・文構造を刷新）\\\n- 逐語的な置換や直列コピーは禁止\\\n- 説明過多・教科書調・AI定型句（「まず、次に、最後に」等）は禁止\\\n- 文体は Bloomberg Japan / 日経 / Reuters 風の簡潔で硬質なニュース文\\\n- 見出しは事実ベースで簡潔、煽り表現を使わない（日本語、25〜45文字推奨）\\\n- 本文は小見出し付き構成にするが、小見出し数は本文の長さに応じて自動調整\\\n  （短文:1〜2 / 長文:2〜4 を目安）\\\n- 小見出しは1行のみ（10〜24文字程度）\\\n- 本文は日本語で出力\\\n\\\n削除ルール（必須）：\\\n- 記事冒頭や本文中の電頭・署名行を出力しない\\\n- 例：『【NQN=ニューヨーク=稲場三奈】』『【ロンドン=〇〇】』『【ワシントン=〇〇】』等の\\\n  「稿源 + 地点 + 記者」形式はすべて削除\\\n- 記者名のみの署名、通信社クレジット、配信元表記（AP/Reuters/NQN等）も本文から除外\\\n\\\n润色/推敲要求（必須）：\\\n- 専門的な金融ニュースの文体に最終調整する\\\n- 日本国内の金融報道で一般的な用語・言い回しに統一する\\\n- 日本語として不自然な語順・助詞・重複・冗長表現を除去する\\\n- 段落間の接続を滑らかにし、論旨の流れを明確化する\\\n- 事実を変えずに可読性だけを上げる\\\n\\\n新增字段要求（必须严格遵守）：\\\n- keywords：数组，输出5~8个日文关键词；仅保留名词或短语；不要句子；不要重复\\\n- meta_description：字符串，80~140字日文摘要；准确概括核心事实；不夸张、不营销\\\n- rewritten_news_h1：字符串，页面H1标题（日文，25〜45字推荐）；必须与 rewritten_news_title 表达稍有差异\\\n  （换语序/换措辞/换切入点），但事实、主体、数值不得改变；不得完全相同；不得仅差标点；\\\n  不得使用煽情/夸张/疑问/感叹语气\\\n\\\n字段约束（必须严格遵守）：\\\n- rewritten_news_plain：纯文本；只允许普通换行；不允许任何HTML/XML标签；禁止“<”和“>”\\\n- rewritten_news_plain 中的小标题必须是普通文本行，不得使用加粗标记（如 **、__、全角装饰符号）\\\n- rewritten_news_html：rewritten_news_plain 的HTML版本，文案必须一致，不得增删事实\\\n- rewritten_news_html 必须严格按结构输出：\\\n  * 小标题一律使用 <h2>小标题</h2>\\\n  * 正文段落一律使用 <p>段落</p>\\\n  * 仅当句内确需强调时才使用 <b>...</b>，且不得把整段或小标题用 <b> 包裹\\\n- rewritten_news_html 仅允许使用 h2 / p / b 三种标签；禁止其他标签与任何属性（class/style/id等）\\\n\\\n出力形式は厳格にJSONのみ。\\\n含めるフィールドは次の6つのみ：\\\n{ \\\"rewritten_news_title\\\": \\\"...\\\", \\\"rewritten_news_h1\\\": \\\"...\\\", \\\"rewritten_news_plain\\\": \\\"...\\\", \\\"rewritten_news_html\\\": \\\"...\\\", \\\"keywords\\\": [\\\"...\\\"], \\\"meta_description\\\": \\\"...\\\" }\\\nMarkdown、コードブロック、前置き、注釈は一切出力しない。\\\n\\\n出力前の最終セルフチェック（必須）：\\\n1) rewritten_news_plain に < または > が含まれていない\\\n2) rewritten_news_html のタグが h2/p/b 以外を含まない\\\n3) rewritten_news_html で小見出しが必ず <h2> になっている\\\n4) rewritten_news_html の本文が必ず <p> になっている\\\n5) 小見出しや段落全体を <b> で囲っていない\\\n6) 電頭・署名行（稿源/地点/記者）が残っていない\\\n7) 日本語として不自然な箇所が残っていない\\\n8) keywords は5〜8個で重複がない\\\n9) meta_description は80〜140字で事実誇張がない\\\n10) rewritten_news_h1 が rewritten_news_title と完全一致していない\\\n11) rewritten_news_h1 と rewritten_news_title は同じ事実・同じ主体を指している\"\n    },\n    {\n      role: \"user\",\n      content:\n        \"以下の記事本文を上記ルールで日本語リライトしてください。\\\n小見出し数は本文ボリュームと論点数に応じて最小限かつ自然に決めてください。\\\n\\n\\n\" +\n        ($('从html中提取内容').item.json.news_content_text || $('从html中提取内容').item.json.news_content || \"\")\n    }\n  ]\n})\n}}",
+        "options": {}
+      },
+      "name": "改写生成文章",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        848,
+        -128
+      ],
+      "id": "66c320d1-7140-47bc-885e-08333054fff8",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const html = $('获取新闻详情内容').first().json.data || \"\";\n\nlet news_content = \"\";\nlet news_content_html = \"\";\nlet image_urls = [];\n\n// 只匹配：<section class=\"... container_campx13 ...\">...</section>\nconst sectionMatch = html.match(\n  /<section\\b[^>]*class=\"[^\"]*\\bcontainer_campx13\\b[^\"]*\"[^>]*>([\\s\\S]*?)<\\/section>/i\n);\n\nif (sectionMatch) {\n  let inner = sectionMatch[1];\n\n  // 删除 section 内 class 含 container_cck592u 的元素（成对标签 + 自闭合）\n  inner = inner\n    .replace(/<([a-z0-9]+)\\b[^>]*class=\"[^\"]*\\bcontainer_cck592u\\b[^\"]*\"[^>]*>[\\s\\S]*?<\\/\\1>/gi, \"\")\n    .replace(/<([a-z0-9]+)\\b[^>]*class=\"[^\"]*\\bcontainer_cck592u\\b[^\"]*\"[^>]*\\/>/gi, \"\");\n\n  // 把每个 figure 压缩成 figure 内第一张 img（没有 img 就删除 figure）\n  inner = inner.replace(/<figure\\b[^>]*>[\\s\\S]*?<\\/figure>/gi, (figureHtml) => {\n    const imgMatch = figureHtml.match(/<img\\b[^>]*>/i);\n    return imgMatch ? imgMatch[0] : \"\";\n  });\n\n  news_content_html = inner.trim();\n\n  // 提取图片链接（src / data-src）\n  const imgRegex = /<img\\b[^>]*(?:src|data-src)=[\"']([^\"']+)[\"'][^>]*>/gi;\n  let m;\n  while ((m = imgRegex.exec(news_content_html)) !== null) {\n    image_urls.push(m[1]);\n  }\n  image_urls = [...new Set(image_urls)];\n\n  // 转纯文本（保留分段换行）\n  news_content = news_content_html\n    .replace(/<\\s*br\\s*\\/?>/gi, \"\\n\")\n    .replace(/<\\/\\s*(p|div|li|h2|h3|blockquote)\\s*>/gi, \"\\n\")\n    .replace(/<script[\\s\\S]*?<\\/script>/gi, \"\")\n    .replace(/<style[\\s\\S]*?<\\/style>/gi, \"\")\n    .replace(/<[^>]+>/g, \"\")\n    .replace(/&nbsp;/gi, \" \")\n    .replace(/&amp;/gi, \"&\")\n    .replace(/&lt;/gi, \"<\")\n    .replace(/&gt;/gi, \">\")\n    .replace(/&quot;/gi, '\"')\n    .replace(/&#39;/gi, \"'\")\n    .replace(/\\n{3,}/g, \"\\n\\n\")\n    .replace(/[ \\t]+\\n/g, \"\\n\")\n    .trim();\n}\n\nreturn [\n  {\n    json: {\n      news_content,       // 纯文本（保留换行）\n      news_content_html,  // HTML（figure 已压缩成 img）\n      image_urls,         // 图片链接数组\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        -144
+      ],
+      "id": "e8d87c8f-d015-4f2c-bf09-66aaa9443586",
+      "name": "从html中提取内容"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://yunwu.ai/v1/images/generations",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer sk-ExUKHvWOtOlCzQgyEV01csqDAedPO8imhJjrlrxDDvB0cUC3\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n(() => {\n  const content = $json.choices?.[0]?.message?.content || \"{}\";\n  let parsed = {};\n  try {\n    parsed = JSON.parse(content);\n  } catch (e) {\n    parsed = {};\n  }\n\n  return JSON.stringify({\n    model: \"gpt-image-2\",\n    size: \"1536x1024\",\n    output_format: \"jpeg\",\n    quality: \"medium\",\n    background: \"opaque\",\n    prompt:\n      \"请根据下面提供的新闻标题与正文，生成一张通用新闻封面图。\"\n      + \"整体风格：国际主流财经媒体封面风（Bloomberg/Reuters/Nikkei风格），真实摄影感、专业、克制、现代。\"\n      + \"构图要求：横版，主体明确，画面简洁，保留标题安全区（左上或上方留白），便于后续加字。\"\n      + \"视觉要求：根据新闻主题自动匹配场景与元素（如政治、经济、科技、市场、产业、社会等），但避免直白血腥或极端冲突画面。\"\n      + \"色彩要求：中性或冷色为主，对比清晰，不要过度饱和。\"\n      + \"禁止项：卡通风、二次元、夸张特效、文字水印、Logo、乱码文字、明显拼贴感、低清模糊。\"\n      + \"输出目标：可直接作为新闻文章封面图\"\n      + \"\\n\\n新闻标题：\\n\" + (parsed.rewritten_news_title || \"\")\n      + \"\\n\\n新闻正文：\\n\" + (parsed.rewritten_news || \"\")\n  });\n})()\n}}",
+        "options": {}
+      },
+      "name": "根据内容生成封面图",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1024,
+        -128
+      ],
+      "id": "cae6fa68-e3f6-41d7-8baf-61d88c9753f6",
+      "retryOnFail": true,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1) 读取“改写生成文章”节点输出（content 可能是 JSON 字符串）\nconst rewriteRaw = $('改写生成文章').first().json.choices?.[0]?.message?.content ?? \"{}\";\nlet contentObj = {};\ntry {\n  contentObj = typeof rewriteRaw === \"string\" ? JSON.parse(rewriteRaw) : (rewriteRaw || {});\n} catch (e) {\n  contentObj = {};\n}\n\n// 2) 读取“上传图片”节点输出\nconst coverImageSrc = $('上传封面图').first().json.data?.url || \"\";\n\n// 3) 安全处理标题（用于 alt）\nconst title = String(contentObj.rewritten_news_title || \"\").trim();\nconst safeTitle = title.replace(/\"/g, \"&quot;\");\n\n// 3) 安全处理h1标题（用于 alt）\nconst h1_title = String(contentObj.rewritten_news_h1 || \"\").trim();\n\n// 4) 安全提取关键词（兼容数组 / 字符串 / 缺失）\nlet keywords = [];\nconst rawKeywords = contentObj.keywords;\n\nif (Array.isArray(rawKeywords)) {\n  keywords = rawKeywords\n    .map(k => String(k || \"\").trim())\n    .filter(Boolean);\n} else if (typeof rawKeywords === \"string\") {\n  // 兼容 \"a,b,c\" 或 \"a，b，c\"\n  keywords = rawKeywords\n    .split(/[，,]/)\n    .map(k => k.trim())\n    .filter(Boolean);\n}\n\n// 去重\nkeywords = [...new Set(keywords)];\n\n// 5) 正文 HTML\nconst rewrittenHtml = String(contentObj.rewritten_news_html || \"\");\n\n// 6) 描述改为从 meta_description 安全提取\nconst description = String(\n  contentObj.meta_description ||\n  contentObj.rewritten_news_plain ||\n  \"\"\n).replace(/\\s+/g, \" \").trim();\n\n// 7) 生成 path：当前日期 + 时间戳\nconst now = new Date();\nconst yyyy = now.getFullYear();\nconst mm = String(now.getMonth() + 1).padStart(2, \"0\");\nconst dd = String(now.getDate()).padStart(2, \"0\");\nconst path = `${yyyy}${mm}${dd}${$('上传封面图').item.json.data.size}`;\n\n// 8) 组装最终文章 HTML\nconst content = `\n<h1>${h1_title}</h1>\n<div class=\"ryoex-article-meta\">\n  <div class=\"ryoex-article-date\">\n    <img src=\"https://ryoex.com/en/assets/image/news/ryoex-time.svg\" class=\"ryoex-date-icon\" alt=\"date\">\n    {{date_format sys.createdAt \"yyyy-MM-dd\"}}\n  </div>\n</div>\n${coverImageSrc ? `<img alt=\"${safeTitle}\" width=\"100%\" height=\"auto\" src=\"${coverImageSrc}\">` : \"\"}\n${rewrittenHtml}\n`;\n\n// 9) 输出\nreturn [\n  {\n    json: {\n      title,\n      content,\n      cover_image_src: coverImageSrc,\n      path,\n      description,\n      keywords,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1728,
+        -128
+      ],
+      "id": "f3059184-92c2-460e-85fc-0bae59c30073",
+      "name": "聚合封面图和内容"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cms.yalasuo.top/api/pages",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"templateId\": \"69faf3d82cfe43550b86e962\",\n    \"site\": \"690f676cc488c28e67f34868\",\n    \"fields\": {\n      \"page_title\": \"{{ $json.title }}\",\n      \"page_description\": \"{{ $json.description }}\",\n      \"page_keywords\": \"{{ $json.keywords }}\",\n      \"page_content\": {{ JSON.stringify($json.content) }},\n      \"cover_image\":\"{{ $('上传封面图').item.json.data.url }}\"\n    },\n    \"urlPath\": \"market-news/{{ $json.path }}\",\n    \"author\": \"691d766e1bb66a504091ebbb\",\n    \"isActive\": true,\n    \"articleCategoryId\":\"69faf3502cfe43550b86e4f9\",\n    \"createdBy\":\"69118e2c670de2ca3c71ce24\"\n  }",
+        "options": {}
+      },
+      "name": "创建新闻文章",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1888,
+        -128
+      ],
+      "id": "f4659ebf-f975-4583-83d0-b02bcb56c3f2",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 3
+            },
+            {
+              "triggerAtHour": 6
+            },
+            {
+              "triggerAtHour": 8
+            },
+            {
+              "triggerAtHour": 10
+            },
+            {
+              "triggerAtHour": 12
+            },
+            {
+              "triggerAtHour": 14
+            },
+            {
+              "triggerAtHour": 18
+            },
+            {
+              "triggerAtHour": 20
+            },
+            {
+              "triggerAtHour": 22
+            },
+            {
+              "triggerAtHour": 16
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1104,
+        -320
+      ],
+      "id": "c5777e3e-2f4c-4998-9328-b580052c41c4",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/files/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "image"
+            },
+            {
+              "name": "siteId",
+              "value": "690f676cc488c28e67f34868"
+            },
+            {
+              "name": "currentPath",
+              "value": "assets/image/market-news"
+            },
+            {
+              "name": "_id",
+              "value": "69118e2c670de2ca3c71ce24"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "上传封面图",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1376,
+        -128
+      ],
+      "id": "a01ef7fa-ef51-4a16-bf8b-8e35e747151c",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const first = $input.first().json;\nconst b64 = first?.data?.[0]?.b64_json;\n\nif (!b64) {\n  throw new Error(\"未找到 data[0].b64_json\");\n}\n\nreturn [{\n  json: { created: first.created },\n  binary: {\n    image: {\n      data: b64,\n      mimeType: \"image/jpeg\",\n      fileName: `market-news-cover-${Date.now()}.jpg`,\n    },\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        -128
+      ],
+      "id": "d2a651b1-3189-494f-9211-0d18075f8f11",
+      "name": "图片转换成二进制流"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/publish-tasks/{{ $json.taskId }}/publish",
+        "options": {}
+      },
+      "name": "发布图片到线上",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1568,
+        -128
+      ],
+      "id": "fb296fe8-d46d-4984-a109-169b6497234f",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1) 读取“改写生成文章”节点输出（content 可能是 JSON 字符串）\nconst rewriteRaw = $('改写为繁中').first().json.choices?.[0]?.message?.content ?? \"{}\";\nlet contentObj = {};\ntry {\n  contentObj = typeof rewriteRaw === \"string\" ? JSON.parse(rewriteRaw) : (rewriteRaw || {});\n} catch (e) {\n  contentObj = {};\n}\n\n// 2) 读取“上传图片”节点输出\nconst coverImageSrc = $('上传封面图').first().json.data?.url || \"\";\n\n// 3) 安全处理标题（用于 alt）\nconst title = String(contentObj.rewritten_news_title || \"\").trim();\nconst safeTitle = title.replace(/\"/g, \"&quot;\");\n\n// 3) 安全处理h1标题（用于 alt）\nconst h1_title = String(contentObj.rewritten_news_h1 || \"\").trim();\n\n// 4) 安全提取关键词（兼容数组 / 字符串 / 缺失）\nlet keywords = [];\nconst rawKeywords = contentObj.keywords;\n\nif (Array.isArray(rawKeywords)) {\n  keywords = rawKeywords\n    .map(k => String(k || \"\").trim())\n    .filter(Boolean);\n} else if (typeof rawKeywords === \"string\") {\n  // 兼容 \"a,b,c\" 或 \"a，b，c\"\n  keywords = rawKeywords\n    .split(/[，,]/)\n    .map(k => k.trim())\n    .filter(Boolean);\n}\n\n// 去重\nkeywords = [...new Set(keywords)];\n\n// 5) 正文 HTML\nconst rewrittenHtml = String(contentObj.rewritten_news_html || \"\");\n\n// 6) 描述改为从 meta_description 安全提取\nconst description = String(\n  contentObj.meta_description ||\n  contentObj.rewritten_news_plain ||\n  \"\"\n).replace(/\\s+/g, \" \").trim();\n\n// 7) 生成 path：当前日期 + 时间戳\nconst now = new Date();\nconst yyyy = now.getFullYear();\nconst mm = String(now.getMonth() + 1).padStart(2, \"0\");\nconst dd = String(now.getDate()).padStart(2, \"0\");\nconst path = `${yyyy}${mm}${dd}${$('上传封面图').item.json.data.size}`;\n\n// 8) 组装最终文章 HTML\nconst content = `\n<h1>${h1_title}</h1>\n<div class=\"ryoex-article-meta\">\n  <div class=\"ryoex-article-date\">\n    <img src=\"https://ryoex.com/en/assets/image/news/ryoex-time.svg\" class=\"ryoex-date-icon\" alt=\"date\">\n    {{date_format sys.createdAt \"yyyy-MM-dd\"}}\n  </div>\n</div>\n${coverImageSrc ? `<img alt=\"${safeTitle}\" width=\"100%\" height=\"auto\" src=\"${coverImageSrc}\">` : \"\"}\n${rewrittenHtml}\n`;\n\n// 9) 输出\nreturn [\n  {\n    json: {\n      title,\n      content,\n      cover_image_src: coverImageSrc,\n      path,\n      description,\n      keywords,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1728,
+        -288
+      ],
+      "id": "8b134314-6009-4801-8936-22fca0f028e8",
+      "name": "聚合封面图和内容1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cms.yalasuo.top/api/pages",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"templateId\": \"69fd9fa5d8453efc6f256349\",\n    \"site\": \"69130d2f803c30e219c774b0\",\n    \"fields\": {\n      \"page_title\": \"{{ $json.title }}\",\n      \"page_description\": \"{{ $json.description }}\",\n      \"page_keywords\": \"{{ $json.keywords }}\",\n      \"page_content\": {{ JSON.stringify($json.content) }},\n      \"cover_image\":\"{{ $('上传封面图').item.json.data.url }}\"\n    },\n    \"urlPath\": \"market-news/{{ $json.path }}\",\n    \"author\": \"6923c36137aa0327bbd3dd14\",\n    \"isActive\": true,\n    \"articleCategoryId\":\"69fda50cd8453efc6f2568a8\",\n    \"createdBy\":\"69118e2c670de2ca3c71ce24\"\n  }",
+        "options": {}
+      },
+      "name": "创建新闻文章1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1888,
+        -288
+      ],
+      "id": "9398de65-852b-4c88-8c91-f589fa1e5411",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1) 读取“改写生成文章”节点输出（content 可能是 JSON 字符串）\nconst rewriteRaw = $('改写为英文').first().json.choices?.[0]?.message?.content ?? \"{}\";\nlet contentObj = {};\ntry {\n  contentObj = typeof rewriteRaw === \"string\" ? JSON.parse(rewriteRaw) : (rewriteRaw || {});\n} catch (e) {\n  contentObj = {};\n}\n\n// 2) 读取“上传图片”节点输出\nconst coverImageSrc = $('上传封面图').first().json.data?.url || \"\";\n\n// 3) 安全处理标题（用于 alt）\nconst title = String(contentObj.rewritten_news_title || \"\").trim();\nconst safeTitle = title.replace(/\"/g, \"&quot;\");\n\n// 3) 安全处理h1标题（用于 alt）\nconst h1_title = String(contentObj.rewritten_news_h1 || \"\").trim();\n\n// 4) 安全提取关键词（兼容数组 / 字符串 / 缺失）\nlet keywords = [];\nconst rawKeywords = contentObj.keywords;\n\nif (Array.isArray(rawKeywords)) {\n  keywords = rawKeywords\n    .map(k => String(k || \"\").trim())\n    .filter(Boolean);\n} else if (typeof rawKeywords === \"string\") {\n  // 兼容 \"a,b,c\" 或 \"a，b，c\"\n  keywords = rawKeywords\n    .split(/[，,]/)\n    .map(k => k.trim())\n    .filter(Boolean);\n}\n\n// 去重\nkeywords = [...new Set(keywords)];\n\n// 5) 正文 HTML\nconst rewrittenHtml = String(contentObj.rewritten_news_html || \"\");\n\n// 6) 描述改为从 meta_description 安全提取\nconst description = String(\n  contentObj.meta_description ||\n  contentObj.rewritten_news_plain ||\n  \"\"\n).replace(/\\s+/g, \" \").trim();\n\n// 7) 生成 path：当前日期 + 时间戳\nconst now = new Date();\nconst yyyy = now.getFullYear();\nconst mm = String(now.getMonth() + 1).padStart(2, \"0\");\nconst dd = String(now.getDate()).padStart(2, \"0\");\nconst path = `${yyyy}${mm}${dd}${$('上传封面图').item.json.data.size}`;\n\n// 8) 组装最终文章 HTML\nconst content = `\n<h1>${h1_title}</h1>\n<div class=\"ryoex-article-meta\">\n  <div class=\"ryoex-article-date\">\n    <img src=\"https://ryoex.com/en/assets/image/news/ryoex-time.svg\" class=\"ryoex-date-icon\" alt=\"date\">\n    {{date_format sys.createdAt \"yyyy-MM-dd\"}}\n  </div>\n</div>\n${coverImageSrc ? `<img alt=\"${safeTitle}\" width=\"100%\" height=\"auto\" src=\"${coverImageSrc}\">` : \"\"}\n${rewrittenHtml}\n`;\n\n// 9) 输出\nreturn [\n  {\n    json: {\n      title,\n      content,\n      cover_image_src: coverImageSrc,\n      path,\n      description,\n      keywords,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1728,
+        32
+      ],
+      "id": "a97447c9-fcee-481a-898d-a3b87adfb889",
+      "name": "聚合封面图和内容2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cms.yalasuo.top/api/pages",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"templateId\": \"69fd9f9ed8453efc6f25630c\",\n    \"site\": \"690d5ca1e8c012636cb2a322\",\n    \"fields\": {\n      \"page_title\": \"{{ $json.title }}\",\n      \"page_description\": \"{{ $json.description }}\",\n      \"page_keywords\": \"{{ $json.keywords }}\",\n      \"page_content\": {{ JSON.stringify($json.content) }},\n      \"cover_image\":\"{{ $('上传封面图').item.json.data.url }}\"\n    },\n    \"urlPath\": \"market-news/{{ $json.path }}\",\n    \"author\": \"6923f36037aa0327bbd43711\",\n    \"isActive\": true,\n    \"articleCategoryId\":\"69fda38cd8453efc6f25665a\",\n    \"createdBy\":\"69118e2c670de2ca3c71ce24\"\n  }",
+        "options": {}
+      },
+      "name": "创建新闻文章2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1888,
+        32
+      ],
+      "id": "5c79e5bf-5f30-4447-94e7-75537e8dfe8e",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://yunwu.ai/v1/chat/completions",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer sk-ExUKHvWOtOlCzQgyEV01csqDAedPO8imhJjrlrxDDvB0cUC3\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\nJSON.stringify({\n  model: \"gpt-5.4-mini\",\n  temperature: 0.2,\n  response_format: { type: \"json_object\" },\n  messages: [\n    {\n      role: \"system\",\n      content:\n        \"你是专业翻译助手。任务：将用户提供的JSON对象中所有日语文案翻译为繁体中文。必须保持原有JSON结构、键名、层级、数组顺序、非日语内容（数字/URL/HTML标签）不变，符合繁体阅读习惯。只输出JSON对象，不要任何解释。\"\n    },\n    {\n      role: \"user\",\n      content:\n        \"请把这个对象里的全部日语文案翻译成繁体中文，并保持对象结构字段完全不变：\\n\\n\" +\n        $('改写生成文章').item.json.choices[0].message.content\n    }\n  ]\n})\n}}",
+        "options": {}
+      },
+      "name": "改写为繁中",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1568,
+        -288
+      ],
+      "id": "f9647d8f-8776-4cc6-9417-c0f8174133d7",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://yunwu.ai/v1/chat/completions",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer sk-ExUKHvWOtOlCzQgyEV01csqDAedPO8imhJjrlrxDDvB0cUC3\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\nJSON.stringify({\n  model: \"gpt-5.4-mini\",\n  temperature: 0.2,\n  response_format: { type: \"json_object\" },\n  messages: [\n    {\n      role: \"system\",\n      content:\n        \"你是专业翻译助手。任务：将用户提供的JSON对象中所有日语文案翻译为英文。必须保持原有JSON结构、键名、层级、数组顺序、非日语内容（数字/URL/HTML标签）不变，符合英文阅读习惯，标题简短一点尽量不超过12个单词。只输出JSON对象，不要任何解释。\"\n    },\n    {\n      role: \"user\",\n      content:\n        \"请把这个对象里的全部日语文案翻译成英文，并保持对象结构字段完全不变：\\n\\n\" +\n        $('改写生成文章').item.json.choices[0].message.content\n    }\n  ]\n})\n}}",
+        "options": {}
+      },
+      "name": "改写为英文",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1568,
+        32
+      ],
+      "id": "382c7279-7ab3-4a0d-881d-7fe57ef4c392",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "si2x6OBLvO8f8GhD",
+          "mode": "list",
+          "cachedResultName": "hot_topics_cache",
+          "cachedResultUrl": "/projects/L8gay1Gn2Ih7MFmK/datatables/si2x6OBLvO8f8GhD"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "url",
+              "keyValue": "={{ $json.matched_article.url }}"
+            }
+          ]
+        },
+        "limit": {},
+        "orderBy": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -48,
+        -320
+      ],
+      "id": "bdb05676-13c6-4ddb-b265-63f2873d9f82",
+      "name": "查库",
+      "alwaysOutputData": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/pages/69fd9f93d8453efc6f2562a1/generate",
+        "options": {}
+      },
+      "name": "生成聚合页2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2368,
+        32
+      ],
+      "id": "efd33e69-542a-4438-b64b-d47f3502e702",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/publish-tasks/{{ $json.data.publishTask.id }}/publish",
+        "options": {}
+      },
+      "name": "发布聚合页2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2528,
+        32
+      ],
+      "id": "07c631d0-9518-4102-a6f2-505314c33e96",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/pages/69fd9f98d8453efc6f2562de/generate",
+        "options": {}
+      },
+      "name": "生成聚合页1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2368,
+        -288
+      ],
+      "id": "86624e5d-502f-4a14-8ff2-db35d5cbaddb",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/publish-tasks/{{ $json.data.publishTask.id }}/publish",
+        "options": {}
+      },
+      "name": "发布聚合页1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2528,
+        -288
+      ],
+      "id": "7c4993ae-71e6-4680-8c58-554722daad05",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/pages/69faf36d2cfe43550b86e593/generate",
+        "options": {}
+      },
+      "name": "生成聚合页",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2368,
+        -128
+      ],
+      "id": "d9bb7e19-5468-496b-bbb9-aca5caf2f5db",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/publish-tasks/{{ $json.data.publishTask.id }}/publish",
+        "options": {}
+      },
+      "name": "发布聚合页",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2528,
+        -128
+      ],
+      "id": "37d9310a-182e-4777-9839-58d755fec0fd",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "si2x6OBLvO8f8GhD",
+          "mode": "list",
+          "cachedResultName": "hot_topics_cache",
+          "cachedResultUrl": "/projects/L8gay1Gn2Ih7MFmK/datatables/si2x6OBLvO8f8GhD"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $('筛选').item.json.matched_article.url }}",
+            "title": "={{ $('筛选').item.json.matched_article.title }}",
+            "date": "={{ new Date().toISOString() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3328,
+        32
+      ],
+      "id": "34882649-4c95-4676-884c-bab7b7a8c1c4",
+      "name": "入库完成结束",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/pages/{{$json.data._id}}/generate",
+        "options": {}
+      },
+      "name": "生成新闻页1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2048,
+        -288
+      ],
+      "id": "575740ef-3cc3-4fcd-9a02-daa351683848",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/pages/{{$json.data._id}}/generate",
+        "options": {}
+      },
+      "name": "生成新闻页",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2048,
+        -128
+      ],
+      "id": "587b2218-6ddc-46fb-984e-90107631ac51",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/pages/{{$json.data._id}}/generate",
+        "options": {}
+      },
+      "name": "生成新闻页2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2048,
+        32
+      ],
+      "id": "6f0e36a5-716a-4115-847c-e64058285ad3",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/publish-tasks/{{ $json.data.publishTask.id }}/publish",
+        "options": {}
+      },
+      "name": "发布新闻页1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2208,
+        -288
+      ],
+      "id": "c8f7a566-28c8-4fc7-aa74-acb8d28bcc56",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/publish-tasks/{{ $json.data.publishTask.id }}/publish",
+        "options": {}
+      },
+      "name": "发布新闻页",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2208,
+        -128
+      ],
+      "id": "17e4f74c-a111-4839-ab9c-3740389d67d4",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/publish-tasks/{{ $json.data.publishTask.id }}/publish",
+        "options": {}
+      },
+      "name": "发布新闻页2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2208,
+        32
+      ],
+      "id": "25eecc11-c77e-4b7a-aade-2cbdcb838deb",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "50c1025b-4abd-4b19-a7b3-e65c9e1d3b07",
+              "leftValue": "={{ $json.news_content }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        688,
+        -144
+      ],
+      "id": "e336016c-5187-4e82-b049-0aa4060431d0",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://oapi.dingtalk.com/robot/send?access_token=187a593a75dedbc6bbd1813add81117ac4ef98eb3c1b7fd6868e404328878674",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    msgtype: \"text\",\n    text: {\n      content:  `获取新闻失败,cookie过期`\n    }\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        848,
+        -272
+      ],
+      "id": "6df991e1-36e5-47ec-9d15-71574e990d93",
+      "name": "失败通知",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudflare.com/client/v4/zones/58c57dbeff4be72076478135629857a6/purge_cache",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer cfut_hQBL1Qq3Q8qmgZhgzIV4wacwneQpUgfCCnQ1UHI2c9f4d563\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"files\": [\n    \"https://www.ryoex.com/zh-hk/${$('创建新闻文章1').item.json.data.urlPath}/\",\n    \"https://www.ryoex.com/zh-hk/${$('创建新闻文章1').item.json.data.urlPath}/index.html\",\n    \"https://www.ryoex.com/zh-hk/sitemap.xml\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3008,
+        -288
+      ],
+      "id": "9f5cbc12-e6f6-4675-b6b5-2e659d6fb8b1",
+      "name": "清CF缓存zh"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://oapi.dingtalk.com/robot/send?access_token=187a593a75dedbc6bbd1813add81117ac4ef98eb3c1b7fd6868e404328878674",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    msgtype: \"text\",\n    text: {\n      content:  `预览繁中新闻：https://www.ryoex.com/zh-hk/${$('创建新闻文章1').item.json.data.urlPath}/`\n    }\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3168,
+        -288
+      ],
+      "id": "93514799-e0e0-4adc-a858-c3104dffb508",
+      "name": "发送通知到钉钉zh",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudflare.com/client/v4/zones/58c57dbeff4be72076478135629857a6/purge_cache",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer cfut_hQBL1Qq3Q8qmgZhgzIV4wacwneQpUgfCCnQ1UHI2c9f4d563\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"files\": [\n    \"https://www.ryoex.com/ja/${$('创建新闻文章').item.json.data.urlPath}/\",\n    \"https://www.ryoex.com/ja/${$('创建新闻文章').item.json.data.urlPath}/index.html\",\n    \"https://www.ryoex.com/ja/sitemap.xml\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3008,
+        -128
+      ],
+      "id": "1438a22d-41f7-4770-9fb5-08b38262ec93",
+      "name": "清CF缓存ja"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://oapi.dingtalk.com/robot/send?access_token=187a593a75dedbc6bbd1813add81117ac4ef98eb3c1b7fd6868e404328878674",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    msgtype: \"text\",\n    text: {\n      content:  `预览日语新闻：https://www.ryoex.com/ja/${$('创建新闻文章').item.json.data.urlPath}/`\n    }\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3168,
+        -128
+      ],
+      "id": "5c4bcd3e-9012-4eb5-8e96-8add2ce7fcc2",
+      "name": "发送通知到钉钉ja",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudflare.com/client/v4/zones/58c57dbeff4be72076478135629857a6/purge_cache",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer cfut_hQBL1Qq3Q8qmgZhgzIV4wacwneQpUgfCCnQ1UHI2c9f4d563\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"files\": [\n    \"https://www.ryoex.com/ja/market-news/\",\n    \"https://www.ryoex.com/ja/market-news/index.html\",\n    \"https://www.ryoex.com/en/market-news/\",\n    \"https://www.ryoex.com/en/market-news/index.html\",\n    \"https://www.ryoex.com/zh-hk/market-news/\",\n    \"https://www.ryoex.com/zh-hk/market-news/index.html\",\n    \"https://www.ryoex.com/en/${$('创建新闻文章2').item.json.data.urlPath}/\",\n    \"https://www.ryoex.com/en/${$('创建新闻文章2').item.json.data.urlPath}/index.html\",\n    \"https://www.ryoex.com/en/sitemap.xml\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3008,
+        32
+      ],
+      "id": "3352f51b-d016-465d-bd63-11a56ca16b7e",
+      "name": "清CF缓存en"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://oapi.dingtalk.com/robot/send?access_token=187a593a75dedbc6bbd1813add81117ac4ef98eb3c1b7fd6868e404328878674",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    msgtype: \"text\",\n    text: {\n      content:  `预览英文新闻：https://www.ryoex.com/en/${$('创建新闻文章2').item.json.data.urlPath}/`\n    }\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3168,
+        32
+      ],
+      "id": "8240d406-df3a-4d64-bc3d-699710bf9cdf",
+      "name": "发送通知到钉钉en",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/sites/69130d2f803c30e219c774b0/generate-sitemap",
+        "options": {}
+      },
+      "name": "生成站点地图zh",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2688,
+        -288
+      ],
+      "id": "cc88f077-6425-4007-b18a-53af7b08997e",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/publish-tasks/{{ $json.taskId }}/publish",
+        "options": {}
+      },
+      "name": "发布站点地图zh",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2848,
+        -288
+      ],
+      "id": "8f955047-d2cd-4789-98ba-2d1062420dce",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/sites/690f676cc488c28e67f34868/generate-sitemap",
+        "options": {}
+      },
+      "name": "生成站点地图ja",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2688,
+        -128
+      ],
+      "id": "88fd2785-ac8a-4cf7-aa38-024886dfa9ea",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/publish-tasks/{{ $json.taskId }}/publish",
+        "options": {}
+      },
+      "name": "发布站点地图ja",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2848,
+        -128
+      ],
+      "id": "964a9bfc-8f08-4243-98f7-b7108a1af4aa",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/sites/690d5ca1e8c012636cb2a322/generate-sitemap",
+        "options": {}
+      },
+      "name": "生成站点地图en",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2688,
+        32
+      ],
+      "id": "f3527bf1-6600-4200-92b3-167c3f12455e",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://cms.yalasuo.top/api/publish-tasks/{{ $json.taskId }}/publish",
+        "options": {}
+      },
+      "name": "发布站点地图en",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2848,
+        32
+      ],
+      "id": "7cff02b6-53ba-4d42-a74b-493a345564b5",
+      "retryOnFail": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "日本经济新闻1": {
+      "main": [
+        [
+          {
+            "node": "提取区块URL1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "提取区块URL1": {
+      "main": [
+        [
+          {
+            "node": "整合URL1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "整合URL1": {
+      "main": [
+        [
+          {
+            "node": "联网搜索筛选热点1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "联网搜索筛选热点1": {
+      "main": [
+        [
+          {
+            "node": "筛选",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "数据是否存在1": {
+      "main": [
+        [
+          {
+            "node": "返回移除了该条数据的新标题数组",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "获取新闻详情内容",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取新闻详情内容": {
+      "main": [
+        [
+          {
+            "node": "从html中提取内容",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "返回移除了该条数据的新标题数组": {
+      "main": [
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "筛选": {
+      "main": [
+        [
+          {
+            "node": "查库",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "联网搜索筛选热点1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "从html中提取内容": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "改写生成文章": {
+      "main": [
+        [
+          {
+            "node": "根据内容生成封面图",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "根据内容生成封面图": {
+      "main": [
+        [
+          {
+            "node": "图片转换成二进制流",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "聚合封面图和内容": {
+      "main": [
+        [
+          {
+            "node": "创建新闻文章",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "创建新闻文章": {
+      "main": [
+        [
+          {
+            "node": "生成新闻页",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "日本经济新闻1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "上传封面图": {
+      "main": [
+        [
+          {
+            "node": "发布图片到线上",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "改写为繁中",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "改写为英文",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "图片转换成二进制流": {
+      "main": [
+        [
+          {
+            "node": "上传封面图",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发布图片到线上": {
+      "main": [
+        [
+          {
+            "node": "聚合封面图和内容",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "聚合封面图和内容1": {
+      "main": [
+        [
+          {
+            "node": "创建新闻文章1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "创建新闻文章1": {
+      "main": [
+        [
+          {
+            "node": "生成新闻页1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "聚合封面图和内容2": {
+      "main": [
+        [
+          {
+            "node": "创建新闻文章2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "创建新闻文章2": {
+      "main": [
+        [
+          {
+            "node": "生成新闻页2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "改写为繁中": {
+      "main": [
+        [
+          {
+            "node": "聚合封面图和内容1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "改写为英文": {
+      "main": [
+        [
+          {
+            "node": "聚合封面图和内容2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "查库": {
+      "main": [
+        [
+          {
+            "node": "数据是否存在1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成聚合页2": {
+      "main": [
+        [
+          {
+            "node": "发布聚合页2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发布聚合页2": {
+      "main": [
+        [
+          {
+            "node": "生成站点地图en",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成聚合页1": {
+      "main": [
+        [
+          {
+            "node": "发布聚合页1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发布聚合页1": {
+      "main": [
+        [
+          {
+            "node": "生成站点地图zh",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成聚合页": {
+      "main": [
+        [
+          {
+            "node": "发布聚合页",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发布聚合页": {
+      "main": [
+        [
+          {
+            "node": "生成站点地图ja",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成新闻页1": {
+      "main": [
+        [
+          {
+            "node": "发布新闻页1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成新闻页": {
+      "main": [
+        [
+          {
+            "node": "发布新闻页",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成新闻页2": {
+      "main": [
+        [
+          {
+            "node": "发布新闻页2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发布新闻页1": {
+      "main": [
+        [
+          {
+            "node": "生成聚合页1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发布新闻页": {
+      "main": [
+        [
+          {
+            "node": "生成聚合页",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发布新闻页2": {
+      "main": [
+        [
+          {
+            "node": "生成聚合页2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "失败通知",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "改写生成文章",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "入库完成结束": {
+      "main": [
+        []
+      ]
+    },
+    "清CF缓存zh": {
+      "main": [
+        [
+          {
+            "node": "发送通知到钉钉zh",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发送通知到钉钉zh": {
+      "main": [
+        []
+      ]
+    },
+    "清CF缓存ja": {
+      "main": [
+        [
+          {
+            "node": "发送通知到钉钉ja",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发送通知到钉钉ja": {
+      "main": [
+        []
+      ]
+    },
+    "清CF缓存en": {
+      "main": [
+        [
+          {
+            "node": "发送通知到钉钉en",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发送通知到钉钉en": {
+      "main": [
+        [
+          {
+            "node": "入库完成结束",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成站点地图zh": {
+      "main": [
+        [
+          {
+            "node": "发布站点地图zh",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发布站点地图zh": {
+      "main": [
+        [
+          {
+            "node": "清CF缓存zh",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成站点地图ja": {
+      "main": [
+        [
+          {
+            "node": "发布站点地图ja",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发布站点地图ja": {
+      "main": [
+        [
+          {
+            "node": "清CF缓存ja",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成站点地图en": {
+      "main": [
+        [
+          {
+            "node": "发布站点地图en",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发布站点地图en": {
+      "main": [
+        [
+          {
+            "node": "清CF缓存en",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Shanghai",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "37c0d43b-4eb6-4170-8d7a-0adec4129ad5",
+  "meta": {
+    "instanceId": "c9dc89e6ac39f511a33e9463cbfccc08c5ce69786e09d1e36c744f812c125b52"
+  },
+  "id": "G9kJgm8gBomAa6Wj",
+  "tags": []
+}
