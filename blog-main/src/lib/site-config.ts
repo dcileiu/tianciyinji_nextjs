@@ -82,6 +82,7 @@ export const primaryNavItems: NavItem[] = [
     href: '/tools',
     enabled: true,
     children: [
+      { label: '去水印', href: '/tools/dewatermark', enabled: true },
       { label: '纯本地工具', href: '/tools#local-tools', enabled: true },
       { label: '图片处理', href: '/tools#image-tools', enabled: true },
       { label: '网络基础', href: '/tools#network-tools', enabled: true },
