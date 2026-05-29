@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { ChevronDown, ChevronRight, X } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import type { NavItem } from '@/lib/types';
@@ -19,11 +19,16 @@ export function Sidebar({ isOpen, navItems, onClose }: SidebarProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  // 移动端展开的子菜单（按 label 记录）
+  const [expandedLabel, setExpandedLabel] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       setShouldRender(true);
       setIsAnimating(false);
+    } else {
+      // 关闭时收起所有展开的子菜单
+      setExpandedLabel(null);
     }
   }, [isOpen]);
 
@@ -65,6 +70,8 @@ export function Sidebar({ isOpen, navItems, onClose }: SidebarProps) {
     }
   };
 
+  const visibleItems = navItems.filter((item) => item.enabled);
+
   return (
     <>
       {/* 桌面端侧边栏 */}
@@ -83,24 +90,72 @@ export function Sidebar({ isOpen, navItems, onClose }: SidebarProps) {
       >
         <nav className="flex h-full flex-col items-start justify-center px-3 lg:px-4">
           <ul className="space-y-2">
-            {navItems
-              .filter((item) => item.enabled)
-              .map((item) => (
-                <li key={item.label}>
+            {visibleItems.map((item) => {
+              const children = item.children?.filter((child) => child.enabled) ?? [];
+              const hasChildren = children.length > 0;
+
+              return (
+                <li key={item.label} className="group/navitem relative">
                   <Link
                     href={item.href as any}
                     className={cn(
-                      'group inline-flex h-9 w-fit min-w-0 items-center rounded-md px-3 text-sm whitespace-nowrap',
+                      'group inline-flex h-9 w-fit min-w-0 items-center gap-1 rounded-md px-3 text-sm whitespace-nowrap',
                       'text-[#34265d] dark:text-[#efeaff]',
                       'hover:bg-[#eee7ff] dark:hover:bg-[#221b37]',
                       'hover:text-[#4f31d7] dark:hover:text-[#ffffff]',
-                      'transition-colors duration-200'
+                      'transition-colors duration-200',
+                      hasChildren && 'group-hover/navitem:bg-[#eee7ff] dark:group-hover/navitem:bg-[#221b37]'
                     )}
                   >
                     <span>{item.label}</span>
+                    {hasChildren && (
+                      <ChevronRight
+                        className="h-3.5 w-3.5 opacity-50 transition-transform duration-200 group-hover/navitem:translate-x-0.5"
+                        aria-hidden="true"
+                      />
+                    )}
                   </Link>
+
+                  {/* 桌面端：悬停在右侧展开的子菜单 */}
+                  {hasChildren && (
+                    <div
+                      className={cn(
+                        'invisible absolute left-full top-0 z-50 pl-2 opacity-0',
+                        'translate-x-1 transition-all duration-200',
+                        'group-hover/navitem:visible group-hover/navitem:translate-x-0 group-hover/navitem:opacity-100',
+                        'group-focus-within/navitem:visible group-focus-within/navitem:translate-x-0 group-focus-within/navitem:opacity-100'
+                      )}
+                    >
+                      <ul
+                        className={cn(
+                          'min-w-[11rem] rounded-xl p-1.5',
+                          'bg-popover text-popover-foreground',
+                          'border border-border',
+                          'shadow-[0_12px_40px_rgba(63,42,143,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)]',
+                          'backdrop-blur-xl'
+                        )}
+                      >
+                        {children.map((child) => (
+                          <li key={child.label}>
+                            <Link
+                              href={child.href as any}
+                              className={cn(
+                                'block rounded-lg px-3 py-2 text-sm whitespace-nowrap',
+                                'text-foreground/80',
+                                'hover:bg-accent hover:text-accent-foreground',
+                                'transition-colors duration-150'
+                              )}
+                            >
+                              {child.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </li>
-              ))}
+              );
+            })}
           </ul>
         </nav>
       </aside>
@@ -121,19 +176,22 @@ export function Sidebar({ isOpen, navItems, onClose }: SidebarProps) {
             }}
             onAnimationComplete={handleAnimationComplete}
             // @ts-ignore - framer-motion type issue
-            className={cn('md:hidden', 'fixed inset-0 z-50', 'bg-[#fbf8ff]/95 dark:bg-[#120f1f]/96', 'backdrop-blur-3xl')}
+            className={cn('md:hidden', 'fixed inset-0 z-50', 'bg-background text-foreground', 'backdrop-blur-3xl')}
             onMouseDown={handleClose}
           >
             {/* 侧边栏内容区域 */}
-            <div className="h-full w-[min(20rem,82vw)]" onMouseDown={(e: any) => e.stopPropagation()}>
+            <div
+              className="h-full w-[min(20rem,82vw)] overflow-y-auto overscroll-contain"
+              onMouseDown={(e: any) => e.stopPropagation()}
+            >
               {/* 关闭按钮 - 右上角 */}
               <div className="absolute top-6 right-6">
                 <button
                   onClick={handleClose}
                   className={cn(
                     'p-2 rounded-full',
-                    'text-[#75689e] dark:text-[#b8a9e4]',
-                    'hover:bg-[#ece5ff] dark:hover:bg-[#231c38]',
+                    'text-foreground/70',
+                    'hover:bg-accent hover:text-foreground',
                     'transition-colors duration-200'
                   )}
                   aria-label="关闭菜单"
@@ -143,31 +201,101 @@ export function Sidebar({ isOpen, navItems, onClose }: SidebarProps) {
               </div>
 
               {/* 导航内容 */}
-              <nav className="flex h-full flex-col justify-center px-8 py-20">
-                <ul className="space-y-2">
-                  {navItems
-                    .filter((item) => item.enabled)
-                    .map((item) => (
+              <nav className="flex min-h-full flex-col justify-center px-8 py-20">
+                <ul className="space-y-1">
+                  {visibleItems.map((item) => {
+                    const children = item.children?.filter((child) => child.enabled) ?? [];
+                    const hasChildren = children.length > 0;
+                    const isExpanded = expandedLabel === item.label;
+
+                    return (
                       <li key={item.label}>
-                        <Link
-                          href={item.href as any}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleClose();
-                          }}
-                          className={cn(
-                            'block w-full py-3 px-4',
-                            'text-3xl font-bold text-left',
-                            'text-[#2f2154] dark:text-[#f1ebff]',
-                            'rounded-lg',
-                            'hover:bg-[#eee7ff] dark:hover:bg-[#221b37]',
-                            'transition-all duration-200'
+                        <div className="flex items-center">
+                          <Link
+                            href={item.href as any}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleClose();
+                            }}
+                            className={cn(
+                              'block flex-1 py-3 px-4',
+                              'text-3xl font-bold text-left',
+                              'text-foreground',
+                              'rounded-lg',
+                              'hover:bg-accent',
+                              'transition-colors duration-200'
+                            )}
+                          >
+                            {item.label}
+                          </Link>
+
+                          {hasChildren && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                triggerHaptic(HapticFeedback.Light);
+                                setExpandedLabel((prev) => (prev === item.label ? null : item.label));
+                              }}
+                              className={cn(
+                                'ml-1 flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg',
+                                'text-foreground/70',
+                                'hover:bg-accent hover:text-foreground',
+                                'transition-colors duration-200'
+                              )}
+                              aria-label={isExpanded ? `收起${item.label}子菜单` : `展开${item.label}子菜单`}
+                              aria-expanded={isExpanded}
+                            >
+                              <ChevronDown
+                                className={cn(
+                                  'h-6 w-6 transition-transform duration-200',
+                                  isExpanded && 'rotate-180'
+                                )}
+                              />
+                            </button>
                           )}
-                        >
-                          {item.label}
-                        </Link>
+                        </div>
+
+                        {/* 移动端子菜单（手风琴展开） */}
+                        {hasChildren && (
+                          <AnimatePresence initial={false}>
+                            {isExpanded && (
+                              <motion.ul
+                                key={`${item.label}-children`}
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.22, ease: 'easeOut' }}
+                                // @ts-ignore - framer-motion type issue
+                                className="overflow-hidden pl-4"
+                              >
+                                {children.map((child) => (
+                                  <li key={child.label}>
+                                    <Link
+                                      href={child.href as any}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleClose();
+                                      }}
+                                      className={cn(
+                                        'block rounded-lg px-4 py-2.5',
+                                        'text-lg font-medium',
+                                        'text-foreground/75',
+                                        'hover:bg-accent hover:text-foreground',
+                                        'transition-colors duration-200'
+                                      )}
+                                    >
+                                      {child.label}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </motion.ul>
+                            )}
+                          </AnimatePresence>
+                        )}
                       </li>
-                    ))}
+                    );
+                  })}
                 </ul>
               </nav>
             </div>

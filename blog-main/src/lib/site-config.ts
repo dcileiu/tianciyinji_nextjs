@@ -77,7 +77,17 @@ export const primaryNavItems: NavItem[] = [
   { label: '首页', href: '/', enabled: true },
   { label: '归档', href: '/archive', enabled: true },
   { label: '作品', href: '/works', enabled: true },
-  { label: '工具', href: '/tools', enabled: true },
+  {
+    label: '工具',
+    href: '/tools',
+    enabled: true,
+    children: [
+      { label: '纯本地工具', href: '/tools#local-tools', enabled: true },
+      { label: '图片处理', href: '/tools#image-tools', enabled: true },
+      { label: '网络基础', href: '/tools#network-tools', enabled: true },
+      { label: '公开数据', href: '/tools#public-data-tools', enabled: true },
+    ],
+  },
   { label: '资源', href: '/resources', enabled: true },
   { label: '关于', href: '/about', enabled: true },
 ];

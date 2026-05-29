@@ -80,35 +80,39 @@ export default function HomeTitleTyper({ className, lines }: HomeTitleTyperProps
     setPhase('typing');
   }, [activeLine, safeLines.length]);
 
-  const renderedLines = safeLines.map((line, index) => {
-    if (phase === 'resetting') return '';
-    if (index < activeLine) return line;
-    if (index === activeLine) return line.slice(0, visibleChars);
-    return '';
-  });
+  const typedLengthFor = (index: number) => {
+    if (phase === 'resetting') return 0;
+    if (index < activeLine) return safeLines[index].length;
+    if (index === activeLine) return visibleChars;
+    return 0;
+  };
 
   const cursorLineIndex = phase === 'holding' ? safeLines.length - 1 : activeLine;
 
   if (safeLines.length === 0) return null;
 
+  const gradientClass =
+    'bg-gradient-to-r from-[#4f31d7] via-[#7f5cff] to-[#b79bff] bg-clip-text text-transparent dark:from-[#d6cbff] dark:via-[#b79bff] dark:to-[#efe9ff] drop-shadow-[0_10px_24px_rgba(103,70,255,0.18)]';
+
   return (
     <div className={className}>
       <div className="space-y-2 sm:space-y-3 md:space-y-4">
         {safeLines.map((line, index) => {
-          const displayText = renderedLines[index] ?? '';
+          const typedText = line.slice(0, typedLengthFor(index));
           const isCursorLine = cursorLineIndex === index && phase !== 'resetting';
           const lineStyle = LINE_STYLES[index] ?? LINE_STYLES[LINE_STYLES.length - 1];
+          const isGradient = index === 1;
 
           return (
-            <div key={`${index}-${line}`} className={lineStyle}>
-              <span
-                className={
-                  index === 1
-                    ? 'bg-gradient-to-r from-[#4f31d7] via-[#7f5cff] to-[#b79bff] bg-clip-text text-transparent dark:from-[#d6cbff] dark:via-[#b79bff] dark:to-[#efe9ff] drop-shadow-[0_10px_24px_rgba(103,70,255,0.18)]'
-                    : ''
-                }
-              >
-                {displayText}
+            <div key={`${index}-${line}`} className={`relative ${lineStyle}`}>
+              {/* 占位层：始终按完整文案撑开高度，避免打字过程中高度跳动导致下方内容位移 */}
+              <span className="invisible block" aria-hidden="true">
+                {line}
+              </span>
+
+              {/* 显示层：覆盖在占位层之上，仅渲染已打出的文字 */}
+              <span className="absolute inset-0 block">
+                <span className={isGradient ? gradientClass : ''}>{typedText}</span>
                 {isCursorLine && (
                   <span
                     aria-hidden="true"

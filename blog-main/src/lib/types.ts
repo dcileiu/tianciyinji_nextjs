@@ -17,6 +17,8 @@ export interface NavItem {
   label: string;
   href: string;
   enabled: boolean;
+  // 子菜单：桌面端鼠标悬停在右侧展开，移动端点击展开
+  children?: NavItem[];
 }
 
 // 音乐相关类型
