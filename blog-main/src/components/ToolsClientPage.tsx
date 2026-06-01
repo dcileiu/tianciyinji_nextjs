@@ -27,6 +27,7 @@ import {
   Sparkles,
   SquareTerminal,
   Swords,
+  Upload,
   Wand2,
   Wifi,
 } from "lucide-react";
@@ -38,6 +39,7 @@ import {
 } from "@/components/ui/simple-dropdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import SiteTrafficTool from "@/components/SiteTrafficTool";
 import { SENSITIVE_WORDS } from "@/lib/tools/content";
 import { cn } from "@/lib/utils";
 
@@ -68,6 +70,12 @@ const sectionMeta = [
     title: "公开数据",
     description: "基于公开协议或免费数据源组合出来的实用信息查询工具。",
   },
+  {
+    id: "seo-geo-tools",
+    title: "SEO | GEO 工具",
+    description:
+      "面向搜索引擎（SEO）与生成式 AI（GEO）的优化工具：llms.txt、Meta 标签 / TDK、robots.txt、结构化数据 JSON-LD 与关键词密度分析。",
+  },
 ] as const;
 
 type SectionId = (typeof sectionMeta)[number]["id"];
@@ -87,7 +95,12 @@ const toolCatalog = [
   { id: "svg-image", title: "SVG 转图片", sectionId: "image-tools" },
   { id: "image-compress", title: "图片压缩", sectionId: "image-tools" },
   { id: "pet-gif", title: "摸头 GIF（图片上传版）", sectionId: "image-tools" },
-  { id: "llms-txt", title: "llms.txt 生成器", sectionId: "network-tools" },
+  { id: "llms-txt", title: "llms.txt 生成器", sectionId: "seo-geo-tools" },
+  { id: "meta-tags", title: "Meta 标签 / TDK 生成", sectionId: "seo-geo-tools" },
+  { id: "robots-txt", title: "robots.txt 生成器", sectionId: "seo-geo-tools" },
+  { id: "json-ld", title: "结构化数据 JSON-LD", sectionId: "seo-geo-tools" },
+  { id: "keyword-density", title: "关键词密度分析", sectionId: "seo-geo-tools" },
+  { id: "site-traffic", title: "网站流量分析", sectionId: "seo-geo-tools" },
   { id: "client-ip", title: "客户端 IP", sectionId: "network-tools" },
   { id: "dns-lookup", title: "DNS 查询", sectionId: "network-tools" },
   { id: "ping", title: "Ping（TCP 连通性）", sectionId: "network-tools" },
@@ -523,6 +536,143 @@ function downloadPlainText(filename: string, content: string) {
   window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1200);
 }
 
+function escapeMetaAttr(value: string) {
+  return value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function buildSeoMetaTags(d: {
+  title: string;
+  description: string;
+  keywords: string;
+  url: string;
+  image: string;
+  siteName: string;
+}) {
+  const e = escapeMetaAttr;
+  const lines: string[] = [];
+  if (d.title) lines.push(`<title>${e(d.title)}</title>`);
+  if (d.description) lines.push(`<meta name="description" content="${e(d.description)}" />`);
+  if (d.keywords) lines.push(`<meta name="keywords" content="${e(d.keywords)}" />`);
+  if (d.url) lines.push(`<link rel="canonical" href="${e(d.url)}" />`);
+  lines.push("");
+  lines.push(`<meta property="og:type" content="website" />`);
+  if (d.title) lines.push(`<meta property="og:title" content="${e(d.title)}" />`);
+  if (d.description) lines.push(`<meta property="og:description" content="${e(d.description)}" />`);
+  if (d.url) lines.push(`<meta property="og:url" content="${e(d.url)}" />`);
+  if (d.siteName) lines.push(`<meta property="og:site_name" content="${e(d.siteName)}" />`);
+  if (d.image) lines.push(`<meta property="og:image" content="${e(d.image)}" />`);
+  lines.push("");
+  lines.push(`<meta name="twitter:card" content="${d.image ? "summary_large_image" : "summary"}" />`);
+  if (d.title) lines.push(`<meta name="twitter:title" content="${e(d.title)}" />`);
+  if (d.description) lines.push(`<meta name="twitter:description" content="${e(d.description)}" />`);
+  if (d.image) lines.push(`<meta name="twitter:image" content="${e(d.image)}" />`);
+  return lines.join("\n").trim();
+}
+
+function buildRobotsTxt(d: {
+  userAgent: string;
+  allow: string;
+  disallow: string;
+  sitemap: string;
+}) {
+  const toList = (value: string) =>
+    value
+      .split(/\r?\n/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  const lines: string[] = [];
+  lines.push(`User-agent: ${d.userAgent.trim() || "*"}`);
+  const allow = toList(d.allow);
+  const disallow = toList(d.disallow);
+  allow.forEach((path) => lines.push(`Allow: ${path}`));
+  disallow.forEach((path) => lines.push(`Disallow: ${path}`));
+  if (allow.length === 0 && disallow.length === 0) lines.push("Disallow:");
+  const sitemaps = toList(d.sitemap);
+  if (sitemaps.length > 0) {
+    lines.push("");
+    sitemaps.forEach((url) => lines.push(`Sitemap: ${url}`));
+  }
+  return lines.join("\n");
+}
+
+function buildJsonLd(
+  type: "Article" | "WebSite" | "Organization",
+  d: {
+    name: string;
+    url: string;
+    description: string;
+    author: string;
+    image: string;
+    date: string;
+  },
+) {
+  let obj: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": type,
+  };
+  if (type === "Article") {
+    obj = {
+      ...obj,
+      headline: d.name || undefined,
+      description: d.description || undefined,
+      image: d.image || undefined,
+      datePublished: d.date || undefined,
+      author: d.author ? { "@type": "Person", name: d.author } : undefined,
+      mainEntityOfPage: d.url || undefined,
+    };
+  } else if (type === "Organization") {
+    obj = {
+      ...obj,
+      name: d.name || undefined,
+      url: d.url || undefined,
+      logo: d.image || undefined,
+      description: d.description || undefined,
+    };
+  } else {
+    obj = {
+      ...obj,
+      name: d.name || undefined,
+      url: d.url || undefined,
+      description: d.description || undefined,
+    };
+  }
+  const clean = JSON.parse(JSON.stringify(obj));
+  return `<script type="application/ld+json">\n${JSON.stringify(clean, null, 2)}\n</script>`;
+}
+
+function analyzeKeywordDensity(text: string, keyword: string) {
+  const chars = text.replace(/\s/g, "").length;
+  const tokens = text
+    .toLowerCase()
+    .split(/[\s,.;:!?，。、；：！？\n\r\t()[\]{}"'`/\\|]+/)
+    .filter((token) => token.length >= 2);
+  const total = tokens.length;
+  const freq = new Map<string, number>();
+  tokens.forEach((token) => freq.set(token, (freq.get(token) || 0) + 1));
+  const top = Array.from(freq.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12)
+    .map(([word, count]) => ({
+      word,
+      count,
+      ratio: total ? count / total : 0,
+    }));
+
+  let keywordStat: { keyword: string; occurrences: number; density: number } | null = null;
+  const trimmedKeyword = keyword.trim();
+  if (trimmedKeyword) {
+    const escaped = trimmedKeyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const occurrences = (text.match(new RegExp(escaped, "gi")) || []).length;
+    keywordStat = {
+      keyword: trimmedKeyword,
+      occurrences,
+      density: chars ? (occurrences * trimmedKeyword.length) / chars : 0,
+    };
+  }
+
+  return { chars, totalTokens: total, top, keyword: keywordStat };
+}
+
 function FancySelect<T extends string>({
   value,
   options,
@@ -621,12 +771,91 @@ function FancyCheckbox({
   );
 }
 
-export default function ToolsClientPage() {
+function ToolFileInput({
+  accept,
+  onChange,
+  hint,
+}: {
+  accept?: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  hint?: string;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [fileName, setFileName] = useState("");
+  const [dragging, setDragging] = useState(false);
+
+  return (
+    <label
+      onDragOver={(event) => {
+        event.preventDefault();
+        setDragging(true);
+      }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={(event) => {
+        event.preventDefault();
+        setDragging(false);
+        const files = event.dataTransfer.files;
+        if (files && files.length && inputRef.current) {
+          inputRef.current.files = files;
+          setFileName(files[0]?.name ?? "");
+          onChange({
+            target: inputRef.current,
+          } as unknown as React.ChangeEvent<HTMLInputElement>);
+        }
+      }}
+      className={cn(
+        "group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-4 py-6 text-center transition",
+        dragging
+          ? "border-[#8b6bff] bg-[#f1ebff] dark:border-[#8b6bff] dark:bg-white/[0.06]"
+          : "border-[#cdbcff] bg-white/60 hover:border-[#8b6bff] hover:bg-[#f5f0ff] dark:border-[#3a2f58] dark:bg-white/[0.03] dark:hover:border-[#8b6bff] dark:hover:bg-white/[0.05]",
+      )}
+    >
+      <input
+        ref={inputRef}
+        type="file"
+        accept={accept}
+        className="hidden"
+        onChange={(event) => {
+          setFileName(event.target.files?.[0]?.name ?? "");
+          onChange(event);
+        }}
+      />
+      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#ece3ff] text-[#5b3df5] transition group-hover:scale-105 dark:bg-[#2b1f43] dark:text-[#cbbcff]">
+        <Upload className="h-5 w-5" />
+      </span>
+      <span className="text-sm font-medium text-[#4f31d7] dark:text-[#cbbcff]">
+        {fileName || "点击或拖拽文件到此处"}
+      </span>
+      <span className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
+        {hint || "支持点击选择或拖拽上传"}
+      </span>
+    </label>
+  );
+}
+
+export default function ToolsClientPage({
+  section,
+  initialTool,
+}: {
+  section?: SectionId;
+  initialTool?: string;
+}) {
+  const validInitialTool: ToolFilter =
+    initialTool &&
+    toolCatalog.some(
+      (tool) =>
+        tool.id === initialTool && (!section || tool.sectionId === section),
+    )
+      ? (initialTool as ToolFilter)
+      : "all";
+
   const [loadingMap, setLoadingMap] = useState<LoadingMap>({});
   const [serverResults, setServerResults] = useState<ServerResultMap>({});
   const [serverErrors, setServerErrors] = useState<ServerErrorMap>({});
-  const [selectedTool, setSelectedTool] = useState<ToolFilter>("all");
-  const [selectedSection, setSelectedSection] = useState<SectionFilter>("all");
+  const [selectedTool, setSelectedTool] = useState<ToolFilter>(validInitialTool);
+  const [selectedSection, setSelectedSection] = useState<SectionFilter>(
+    section ?? "all",
+  );
 
   const [aesMode, setAesMode] = useState<"encrypt" | "decrypt">("encrypt");
   const [aesText, setAesText] = useState("");
@@ -739,6 +968,30 @@ export default function ToolsClientPage() {
   const [markdownUrlInput, setMarkdownUrlInput] =
     useState("https://openai.com");
   const [llmsUrlInput, setLlmsUrlInput] = useState("https://itianci.cn");
+
+  // SEO | GEO 工具
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [seoKeywords, setSeoKeywords] = useState("");
+  const [seoUrl, setSeoUrl] = useState("https://itianci.cn");
+  const [seoImage, setSeoImage] = useState("");
+  const [seoSiteName, setSeoSiteName] = useState("");
+
+  const [robotsUserAgent, setRobotsUserAgent] = useState("*");
+  const [robotsAllow, setRobotsAllow] = useState("");
+  const [robotsDisallow, setRobotsDisallow] = useState("/admin\n/api");
+  const [robotsSitemap, setRobotsSitemap] = useState("https://itianci.cn/sitemap.xml");
+
+  const [jsonLdType, setJsonLdType] = useState<"Article" | "WebSite" | "Organization">("Article");
+  const [jsonLdName, setJsonLdName] = useState("");
+  const [jsonLdUrl, setJsonLdUrl] = useState("https://itianci.cn");
+  const [jsonLdDesc, setJsonLdDesc] = useState("");
+  const [jsonLdAuthor, setJsonLdAuthor] = useState("");
+  const [jsonLdImage, setJsonLdImage] = useState("");
+  const [jsonLdDate, setJsonLdDate] = useState("");
+
+  const [densityText, setDensityText] = useState("");
+  const [densityKeyword, setDensityKeyword] = useState("");
   const [copiedTool, setCopiedTool] = useState("");
 
   const [minecraftPlayerInput, setMinecraftPlayerInput] = useState("Notch");
@@ -768,6 +1021,30 @@ export default function ToolsClientPage() {
   }, []);
 
   const sensitiveMatches = detectSensitiveWords(deferredSensitiveInput);
+
+  const metaTagsOutput = buildSeoMetaTags({
+    title: seoTitle,
+    description: seoDescription,
+    keywords: seoKeywords,
+    url: seoUrl,
+    image: seoImage,
+    siteName: seoSiteName,
+  });
+  const robotsOutput = buildRobotsTxt({
+    userAgent: robotsUserAgent,
+    allow: robotsAllow,
+    disallow: robotsDisallow,
+    sitemap: robotsSitemap,
+  });
+  const jsonLdOutput = buildJsonLd(jsonLdType, {
+    name: jsonLdName,
+    url: jsonLdUrl,
+    description: jsonLdDesc,
+    author: jsonLdAuthor,
+    image: jsonLdImage,
+    date: jsonLdDate,
+  });
+  const densityResult = analyzeKeywordDensity(densityText, densityKeyword);
   const activeTool =
     selectedTool === "all"
       ? null
@@ -1066,6 +1343,41 @@ export default function ToolsClientPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:py-20">
+      {section && (
+        <div className="mb-6 flex items-center gap-2 text-sm text-[#7b69a5] dark:text-[#af9fda]">
+          <Link
+            href="/tools"
+            className="inline-flex items-center gap-1.5 rounded-full border border-[#ddd0ff] bg-white/70 px-3.5 py-1.5 font-medium text-[#5b3df5] transition hover:border-[#8b6bff] hover:bg-[#f3edff] dark:border-[#3a2f58] dark:bg-white/[0.05] dark:text-[#cbbcff] dark:hover:bg-white/[0.08]"
+          >
+            <ChevronDown className="h-4 w-4 rotate-90" />
+            返回工具菜单
+          </Link>
+          <span className="text-[#c2b6e6] dark:text-[#6f6196]">/</span>
+          <span className="text-[#5c4a88] dark:text-[#d2c6f3]">
+            {sections.find((item) => item.id === section)?.title}
+          </span>
+        </div>
+      )}
+
+      {section && selectedTool !== "all" && (
+        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-[#ddd0ff] bg-[#f3edff]/70 px-4 py-3 text-sm dark:border-[#3a2f58] dark:bg-white/[0.04]">
+          <span className="text-[#5c4a88] dark:text-[#d2c6f3]">
+            正在聚焦：
+            <span className="font-semibold text-[#4f31d7] dark:text-[#cbbcff]">
+              {activeTool?.title}
+            </span>
+          </span>
+          <button
+            type="button"
+            onClick={() => setSelectedTool("all")}
+            className="ml-auto inline-flex items-center gap-1 rounded-full bg-[#5b3df5] px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-[#4f31d7]"
+          >
+            显示该模块全部工具
+          </button>
+        </div>
+      )}
+
+      {!section && (
       <header className="relative overflow-hidden rounded-[34px] border border-[#e4d8ff] bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(244,237,255,0.94))] px-6 py-8 shadow-[0_24px_80px_rgba(91,61,245,0.10)] sm:px-8 sm:py-10 md:px-10 md:py-12 dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.92),rgba(15,11,27,0.96))]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(130,96,255,0.16),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(218,208,255,0.18),transparent_30%)]" />
         <div className="relative">
@@ -1208,6 +1520,7 @@ export default function ToolsClientPage() {
           </div>
         </div>
       </header>
+      )}
 
       {isSectionVisible("local-tools") && (
         <section id="local-tools" className="scroll-mt-28 pt-12 sm:pt-16">
@@ -1814,11 +2127,10 @@ export default function ToolsClientPage() {
               className={isToolVisible("image-base64") ? "" : "hidden"}
             >
               <div className="space-y-3">
-                <input
-                  type="file"
+                <ToolFileInput
                   accept="image/*"
                   onChange={handleImageFileToBase64}
-                  className="text-sm text-[#6c5b98] dark:text-[#b9aadf]"
+                  hint="支持 PNG / JPG / WebP 等图片，转换完全在本地完成"
                 />
                 <textarea
                   className={`${inputClass} min-h-[150px] resize-y font-mono`}
@@ -1902,11 +2214,10 @@ export default function ToolsClientPage() {
               className={isToolVisible("image-compress") ? "" : "hidden"}
             >
               <div className="space-y-3">
-                <input
-                  type="file"
+                <ToolFileInput
                   accept="image/*"
                   onChange={handleCompressImage}
-                  className="text-sm text-[#6c5b98] dark:text-[#b9aadf]"
+                  hint="选择要压缩的图片，可调整质量、最大宽度与导出格式"
                 />
                 <div className="grid gap-3 sm:grid-cols-3">
                   <Input
@@ -1965,11 +2276,10 @@ export default function ToolsClientPage() {
               className={isToolVisible("pet-gif") ? "" : "hidden"}
             >
               <div className="space-y-3">
-                <input
-                  type="file"
+                <ToolFileInput
                   accept="image/*"
                   onChange={handleGeneratePetGif}
-                  className="text-sm text-[#6c5b98] dark:text-[#b9aadf]"
+                  hint="上传一张头像/图片，生成透明背景的摸头 GIF"
                 />
                 <div className="text-xs leading-6 text-[#7b69a5] dark:text-[#af9fda]">
                   这版是站内自制的极简摸头动效，不依赖外部服务，会生成透明背景
@@ -2006,14 +2316,14 @@ export default function ToolsClientPage() {
         </section>
       )}
 
-      {isSectionVisible("network-tools") && (
-        <section id="network-tools" className="scroll-mt-28 pt-12 sm:pt-16">
+      {isSectionVisible("seo-geo-tools") && (
+        <section id="seo-geo-tools" className="scroll-mt-28 pt-12 sm:pt-16">
           <div className="mb-6">
             <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
-              {sections[2].title}
+              {sections[4].title}
             </h2>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">
-              {sections[2].description}
+              {sections[4].description}
             </p>
           </div>
 
@@ -2198,6 +2508,333 @@ export default function ToolsClientPage() {
               </div>
             </SectionCard>
 
+            <SectionCard
+              icon={ScanSearch}
+              title="Meta 标签 / TDK 生成"
+              description="填好标题、描述、关键词与社交分享信息，一键生成可直接粘贴到 <head> 的 SEO 与 Open Graph / Twitter 卡片标签。"
+              className={isToolVisible("meta-tags") ? "" : "hidden"}
+            >
+              <div className="space-y-3">
+                <div>
+                  <Input
+                    className={inputClass}
+                    value={seoTitle}
+                    onChange={(event) => setSeoTitle(event.target.value)}
+                    placeholder="页面标题 Title"
+                  />
+                  <div
+                    className={cn(
+                      "mt-1 text-xs",
+                      seoTitle.length > 60
+                        ? "text-[#d8453f] dark:text-[#ff9b95]"
+                        : "text-[#7b69a5] dark:text-[#af9fda]",
+                    )}
+                  >
+                    标题 {seoTitle.length} 字符（建议 ≤ 60）
+                  </div>
+                </div>
+                <div>
+                  <textarea
+                    className={`${inputClass} min-h-[88px] resize-y`}
+                    value={seoDescription}
+                    onChange={(event) => setSeoDescription(event.target.value)}
+                    placeholder="页面描述 Description"
+                  />
+                  <div
+                    className={cn(
+                      "mt-1 text-xs",
+                      seoDescription.length > 160
+                        ? "text-[#d8453f] dark:text-[#ff9b95]"
+                        : "text-[#7b69a5] dark:text-[#af9fda]",
+                    )}
+                  >
+                    描述 {seoDescription.length} 字符（建议 ≤ 160）
+                  </div>
+                </div>
+                <Input
+                  className={inputClass}
+                  value={seoKeywords}
+                  onChange={(event) => setSeoKeywords(event.target.value)}
+                  placeholder="关键词，逗号分隔（可选）"
+                />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Input
+                    className={inputClass}
+                    value={seoUrl}
+                    onChange={(event) => setSeoUrl(event.target.value)}
+                    placeholder="规范链接 URL"
+                  />
+                  <Input
+                    className={inputClass}
+                    value={seoSiteName}
+                    onChange={(event) => setSeoSiteName(event.target.value)}
+                    placeholder="站点名称（可选）"
+                  />
+                </div>
+                <Input
+                  className={inputClass}
+                  value={seoImage}
+                  onChange={(event) => setSeoImage(event.target.value)}
+                  placeholder="社交分享图 URL（可选）"
+                />
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => copyGeneratedText("meta-tags", metaTagsOutput)}
+                    className={secondaryButtonClass}
+                    disabled={!metaTagsOutput}
+                  >
+                    {copiedTool === "meta-tags" ? (
+                      <Check className="mr-2 h-4 w-4" />
+                    ) : (
+                      <Copy className="mr-2 h-4 w-4" />
+                    )}
+                    {copiedTool === "meta-tags" ? "已复制" : "复制标签"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => downloadPlainText("meta-tags.html", metaTagsOutput)}
+                    className={secondaryButtonClass}
+                    disabled={!metaTagsOutput}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    下载
+                  </Button>
+                </div>
+                {metaTagsOutput && (
+                  <textarea
+                    className={`${inputClass} min-h-[200px] resize-y font-mono text-xs leading-6`}
+                    value={metaTagsOutput}
+                    readOnly
+                  />
+                )}
+              </div>
+            </SectionCard>
+
+            <SectionCard
+              icon={ScrollText}
+              title="robots.txt 生成器"
+              description="按 User-agent、Allow / Disallow 规则与 Sitemap 地址生成标准 robots.txt，控制搜索引擎与 AI 爬虫的抓取范围。"
+              className={isToolVisible("robots-txt") ? "" : "hidden"}
+            >
+              <div className="space-y-3">
+                <Input
+                  className={inputClass}
+                  value={robotsUserAgent}
+                  onChange={(event) => setRobotsUserAgent(event.target.value)}
+                  placeholder="User-agent（默认 *）"
+                />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <textarea
+                    className={`${inputClass} min-h-[96px] resize-y font-mono text-xs`}
+                    value={robotsAllow}
+                    onChange={(event) => setRobotsAllow(event.target.value)}
+                    placeholder={"Allow 路径，每行一个\n例如 /"}
+                  />
+                  <textarea
+                    className={`${inputClass} min-h-[96px] resize-y font-mono text-xs`}
+                    value={robotsDisallow}
+                    onChange={(event) => setRobotsDisallow(event.target.value)}
+                    placeholder={"Disallow 路径，每行一个\n例如 /admin"}
+                  />
+                </div>
+                <textarea
+                  className={`${inputClass} min-h-[64px] resize-y font-mono text-xs`}
+                  value={robotsSitemap}
+                  onChange={(event) => setRobotsSitemap(event.target.value)}
+                  placeholder="Sitemap 地址，每行一个（可选）"
+                />
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => copyGeneratedText("robots-txt", robotsOutput)}
+                    className={secondaryButtonClass}
+                  >
+                    {copiedTool === "robots-txt" ? (
+                      <Check className="mr-2 h-4 w-4" />
+                    ) : (
+                      <Copy className="mr-2 h-4 w-4" />
+                    )}
+                    {copiedTool === "robots-txt" ? "已复制" : "复制"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => downloadPlainText("robots.txt", robotsOutput)}
+                    className={secondaryButtonClass}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    下载 robots.txt
+                  </Button>
+                </div>
+                <textarea
+                  className={`${inputClass} min-h-[160px] resize-y font-mono text-xs leading-6`}
+                  value={robotsOutput}
+                  readOnly
+                />
+              </div>
+            </SectionCard>
+
+            <SectionCard
+              icon={FileJson2}
+              title="结构化数据 JSON-LD"
+              description="生成 schema.org 结构化数据，帮助搜索引擎与 AI 更准确地理解页面，支持文章、网站与组织三种常见类型。"
+              className={isToolVisible("json-ld") ? "" : "hidden"}
+            >
+              <div className="space-y-3">
+                <FancySelect
+                  ariaLabel="选择结构化数据类型"
+                  value={jsonLdType}
+                  onChange={(value) => setJsonLdType(value)}
+                  options={[
+                    { value: "Article", label: "文章 Article" },
+                    { value: "WebSite", label: "网站 WebSite" },
+                    { value: "Organization", label: "组织 Organization" },
+                  ]}
+                />
+                <Input
+                  className={inputClass}
+                  value={jsonLdName}
+                  onChange={(event) => setJsonLdName(event.target.value)}
+                  placeholder={jsonLdType === "Article" ? "文章标题 headline" : "名称 name"}
+                />
+                <Input
+                  className={inputClass}
+                  value={jsonLdUrl}
+                  onChange={(event) => setJsonLdUrl(event.target.value)}
+                  placeholder="URL"
+                />
+                <textarea
+                  className={`${inputClass} min-h-[72px] resize-y`}
+                  value={jsonLdDesc}
+                  onChange={(event) => setJsonLdDesc(event.target.value)}
+                  placeholder="描述 description（可选）"
+                />
+                {jsonLdType === "Article" && (
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Input
+                      className={inputClass}
+                      value={jsonLdAuthor}
+                      onChange={(event) => setJsonLdAuthor(event.target.value)}
+                      placeholder="作者 author（可选）"
+                    />
+                    <Input
+                      className={inputClass}
+                      type="date"
+                      value={jsonLdDate}
+                      onChange={(event) => setJsonLdDate(event.target.value)}
+                      placeholder="发布日期"
+                    />
+                  </div>
+                )}
+                <Input
+                  className={inputClass}
+                  value={jsonLdImage}
+                  onChange={(event) => setJsonLdImage(event.target.value)}
+                  placeholder={jsonLdType === "Organization" ? "Logo 图片 URL（可选）" : "图片 URL（可选）"}
+                />
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => copyGeneratedText("json-ld", jsonLdOutput)}
+                    className={secondaryButtonClass}
+                  >
+                    {copiedTool === "json-ld" ? (
+                      <Check className="mr-2 h-4 w-4" />
+                    ) : (
+                      <Copy className="mr-2 h-4 w-4" />
+                    )}
+                    {copiedTool === "json-ld" ? "已复制" : "复制 JSON-LD"}
+                  </Button>
+                </div>
+                <textarea
+                  className={`${inputClass} min-h-[200px] resize-y font-mono text-xs leading-6`}
+                  value={jsonLdOutput}
+                  readOnly
+                />
+              </div>
+            </SectionCard>
+
+            <SectionCard
+              icon={Hash}
+              title="关键词密度分析"
+              description="粘贴正文，统计字数与高频词，并可针对目标关键词计算出现次数与密度，辅助判断内容是否堆砌或覆盖不足。"
+              className={isToolVisible("keyword-density") ? "" : "hidden"}
+            >
+              <div className="space-y-3">
+                <textarea
+                  className={`${inputClass} min-h-[150px] resize-y`}
+                  value={densityText}
+                  onChange={(event) => setDensityText(event.target.value)}
+                  placeholder="粘贴要分析的正文内容"
+                />
+                <Input
+                  className={inputClass}
+                  value={densityKeyword}
+                  onChange={(event) => setDensityKeyword(event.target.value)}
+                  placeholder="目标关键词（可选）"
+                />
+                {densityText.trim() && (
+                  <OutputBox className="space-y-3">
+                    <div className="grid gap-2 text-sm sm:grid-cols-2">
+                      <div>总字数（去空白）：{densityResult.chars}</div>
+                      <div>分词数：{densityResult.totalTokens}</div>
+                    </div>
+                    {densityResult.keyword && (
+                      <div className="rounded-2xl border border-[#ddd0ff] bg-white/60 px-3 py-2 text-sm dark:border-[#392d56] dark:bg-white/[0.03]">
+                        关键词「{densityResult.keyword.keyword}」出现{" "}
+                        {densityResult.keyword.occurrences} 次，密度约{" "}
+                        {(densityResult.keyword.density * 100).toFixed(2)}%
+                      </div>
+                    )}
+                    {densityResult.top.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="text-xs uppercase tracking-[0.18em] text-[#7f71ab] dark:text-[#ab9cd8]">
+                          高频词 Top {densityResult.top.length}
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {densityResult.top.map((item) => (
+                            <span
+                              key={item.word}
+                              className="rounded-full border border-[#dacdff] bg-[#f7f1ff] px-3 py-1 text-xs text-[#543c8f] dark:border-[#392d56] dark:bg-[#211834] dark:text-[#d8ccff]"
+                            >
+                              {item.word}
+                              <span className="ml-1 text-[#876fc4] dark:text-[#bbaef0]">
+                                {item.count}（{(item.ratio * 100).toFixed(1)}%）
+                              </span>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </OutputBox>
+                )}
+              </div>
+            </SectionCard>
+
+            <SectionCard
+              icon={Globe}
+              title="网站流量分析"
+              description="输入域名，基于 SimilarWeb 公开估算数据查看月访问量、平均时长、跳出率、全球排名、访问趋势、流量来源与主要地区分布。"
+              className={isToolVisible("site-traffic") ? "" : "hidden"}
+            >
+              <SiteTrafficTool />
+            </SectionCard>
+          </div>
+        </section>
+      )}
+
+      {isSectionVisible("network-tools") && (
+        <section id="network-tools" className="scroll-mt-28 pt-12 sm:pt-16">
+          <div className="mb-6">
+            <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
+              {sections[2].title}
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">
+              {sections[2].description}
+            </p>
+          </div>
+
+          <div className="grid gap-5 lg:grid-cols-2">
             <SectionCard
               icon={Globe}
               title="客户端 IP"

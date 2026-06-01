@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import JsonLd from '@/components/JsonLd';
-import ToolsClientPage from '@/components/ToolsClientPage';
+import ToolsHub from '@/components/ToolsHub';
 import { pageTitle } from '@/lib/site-config';
 import { buildCollectionPageJsonLd, buildPageMetadata } from '@/lib/seo';
 
@@ -66,7 +66,7 @@ export default function ToolsPage() {
           path: '/tools',
         })}
       />
-      <ToolsClientPage />
+      <ToolsHub />
     </>
   );
 }
