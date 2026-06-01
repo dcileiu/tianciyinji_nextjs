@@ -1341,6 +1341,37 @@ export default function ToolsClientPage({
     }
   }
 
+  const renderToolTabs = (sectionId: SectionId) => {
+    const toolsInSection = toolCatalog.filter((tool) => tool.sectionId === sectionId);
+    if (toolsInSection.length <= 1) return null;
+    const tabBase = "rounded-full border px-4 py-2 text-sm transition";
+    const tabActive =
+      "border-[#5b3df5] bg-[#5b3df5] text-white shadow-[0_12px_30px_rgba(91,61,245,0.22)]";
+    const tabInactive =
+      "border-[#d9ccff] bg-white/75 text-[#5c4a88] hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#362b53] dark:bg-white/[0.04] dark:text-[#d2c6f3]";
+    return (
+      <div className="mb-6 flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => setSelectedTool("all")}
+          className={cn(tabBase, selectedTool === "all" ? tabActive : tabInactive)}
+        >
+          全部
+        </button>
+        {toolsInSection.map((tool) => (
+          <button
+            key={tool.id}
+            type="button"
+            onClick={() => setSelectedTool(tool.id)}
+            className={cn(tabBase, selectedTool === tool.id ? tabActive : tabInactive)}
+          >
+            {tool.title}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:py-20">
       {section && (
@@ -1356,24 +1387,6 @@ export default function ToolsClientPage({
           <span className="text-[#5c4a88] dark:text-[#d2c6f3]">
             {sections.find((item) => item.id === section)?.title}
           </span>
-        </div>
-      )}
-
-      {section && selectedTool !== "all" && (
-        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-[#ddd0ff] bg-[#f3edff]/70 px-4 py-3 text-sm dark:border-[#3a2f58] dark:bg-white/[0.04]">
-          <span className="text-[#5c4a88] dark:text-[#d2c6f3]">
-            正在聚焦：
-            <span className="font-semibold text-[#4f31d7] dark:text-[#cbbcff]">
-              {activeTool?.title}
-            </span>
-          </span>
-          <button
-            type="button"
-            onClick={() => setSelectedTool("all")}
-            className="ml-auto inline-flex items-center gap-1 rounded-full bg-[#5b3df5] px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-[#4f31d7]"
-          >
-            显示该模块全部工具
-          </button>
         </div>
       )}
 
@@ -1532,6 +1545,8 @@ export default function ToolsClientPage({
               {sections[0].description}
             </p>
           </div>
+
+          {renderToolTabs("local-tools")}
 
           <div className="grid gap-5 lg:grid-cols-2">
             <SectionCard
@@ -2080,6 +2095,8 @@ export default function ToolsClientPage({
             </p>
           </div>
 
+          {renderToolTabs("image-tools")}
+
           <div className="grid gap-5 lg:grid-cols-2">
             <SectionCard
               icon={QrCode}
@@ -2327,6 +2344,8 @@ export default function ToolsClientPage({
             </p>
           </div>
 
+          {renderToolTabs("seo-geo-tools")}
+
           <div className="grid gap-5 lg:grid-cols-2">
             <SectionCard
               icon={FileCode2}
@@ -2506,6 +2525,15 @@ export default function ToolsClientPage({
                   </OutputBox>
                 )}
               </div>
+            </SectionCard>
+
+            <SectionCard
+              icon={Globe}
+              title="网站流量分析"
+              description="输入域名，基于 SimilarWeb 公开估算数据查看月访问量、平均时长、跳出率、全球排名、访问趋势、流量来源与主要地区分布。"
+              className={isToolVisible("site-traffic") ? "" : "hidden"}
+            >
+              <SiteTrafficTool />
             </SectionCard>
 
             <SectionCard
@@ -2810,15 +2838,6 @@ export default function ToolsClientPage({
                 )}
               </div>
             </SectionCard>
-
-            <SectionCard
-              icon={Globe}
-              title="网站流量分析"
-              description="输入域名，基于 SimilarWeb 公开估算数据查看月访问量、平均时长、跳出率、全球排名、访问趋势、流量来源与主要地区分布。"
-              className={isToolVisible("site-traffic") ? "" : "hidden"}
-            >
-              <SiteTrafficTool />
-            </SectionCard>
           </div>
         </section>
       )}
@@ -2833,6 +2852,8 @@ export default function ToolsClientPage({
               {sections[2].description}
             </p>
           </div>
+
+          {renderToolTabs("network-tools")}
 
           <div className="grid gap-5 lg:grid-cols-2">
             <SectionCard
@@ -3277,6 +3298,8 @@ export default function ToolsClientPage({
               {sections[3].description}
             </p>
           </div>
+
+          {renderToolTabs("public-data-tools")}
 
           <div className="grid gap-5 lg:grid-cols-2">
             <SectionCard
