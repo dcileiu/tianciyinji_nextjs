@@ -12,7 +12,7 @@ tags:
   - 洛克王国万能助手
   - 远行商人
   - 孵蛋
-coverImage: /content/posts/roco-assistant/洛克王国万能助手1.png
+coverImage: /content/posts/roco-utools-tools/洛克王国万能助手1.png
 ---
 
 以前想瞄一眼洛克王国「远行商人」今天卖啥，要么开 WeGame、要么翻群里的截图。人在公司、地铁上、或者双屏一边写代码一边想规划一下洛克贝怎么花——挺折腾的。
@@ -25,7 +25,7 @@ coverImage: /content/posts/roco-assistant/洛克王国万能助手1.png
 
 打开 uTools 的 **插件应用市场**，搜 **「洛克」** 两个字就行，一般第一个就是「洛克王国万能助手」，点获取安装。
 
-![在插件市场搜索「洛克」](/content/posts/roco-assistant/洛克王国万能助手1.png)
+![在插件市场搜索「洛克」](/content/posts/roco-utools-tools/洛克王国万能助手1.png)
 
 装好后，可以：
 
@@ -43,7 +43,7 @@ coverImage: /content/posts/roco-assistant/洛克王国万能助手1.png
 
 刷新按钮点一下就行，不用挂游戏。加班写代码的间隙瞄一眼，心里有个数。
 
-![远行商人商品列表](/content/posts/roco-assistant/洛克王国万能助手2.png)
+![远行商人商品列表](/content/posts/roco-utools-tools/洛克王国万能助手2.png)
 
 ---
 
@@ -53,7 +53,7 @@ coverImage: /content/posts/roco-assistant/洛克王国万能助手1.png
 
 不用再去翻表格、也不用开第二个网页找计算器——对喜欢孵蛋、又懒得切窗口的人来说够用了。
 
-![孵蛋查询：直径与重量](/content/posts/roco-assistant/洛克王国万能助手3.png)
+![孵蛋查询：直径与重量](/content/posts/roco-utools-tools/洛克王国万能助手3.png)
 
 ---
 
@@ -79,7 +79,7 @@ coverImage: /content/posts/roco-assistant/洛克王国万能助手1.png
 
 阵容和交换大厅在插件里做成了 **UI 卡片**，不是纯 JSON，手机上扫一眼也能看懂。
 
-![账号与扫码登录](/content/posts/roco-assistant/洛克王国万能助手4.png)
+![账号与扫码登录](/content/posts/roco-utools-tools/洛克王国万能助手4.png)
 
 ---
 
