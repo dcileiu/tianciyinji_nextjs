@@ -1,22 +1,16 @@
 "use client";
 
-import QRCode from "qrcode";
 import {
   BookOpenText,
-  Check,
   ChevronDown,
   Clock3,
-  Copy,
   DatabaseZap,
-  Download,
-  ExternalLink,
   FileCode2,
   FileJson2,
   Filter,
   Globe,
   Hash,
   ImageIcon,
-  Loader2,
   MapPinned,
   Network,
   QrCode,
@@ -27,25 +21,100 @@ import {
   Sparkles,
   SquareTerminal,
   Swords,
-  Upload,
   Wand2,
   Wifi,
 } from "lucide-react";
 import Link from "next/link";
-import { useDeferredValue, useEffect, useRef, useState } from "react";
-import {
-  SimpleDropdown,
-  SimpleDropdownItem,
-} from "@/components/ui/simple-dropdown";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import SiteTrafficTool from "@/components/SiteTrafficTool";
-import { SENSITIVE_WORDS } from "@/lib/tools/content";
+import {
+  ColorTool,
+  DataConvertTool,
+  FaviconTool,
+  RegexTesterTool,
+  RmbCapitalTool,
+  WordCountTool,
+} from "@/components/tools/basic-tools";
+import {
+  BaseConvertTool,
+  CaseConvertTool,
+  CronTool,
+  JwtDecodeTool,
+  ShaHashTool,
+  TextDiffTool,
+} from "@/components/tools/dev-tools";
+import {
+  ColorExtractTool,
+  ImageConvertTool,
+  ImageResizeTool,
+  ImageWatermarkTool,
+} from "@/components/tools/image-tools";
+import {
+  BmiTool,
+  DateDiffTool,
+  IncomeTaxTool,
+  LoanCalcTool,
+  UnitConvertTool,
+} from "@/components/tools/calc-tools";
+import {
+  ChineseFakerTool,
+  HanziConvertTool,
+  PinyinTool,
+} from "@/components/tools/chinese-tools";
+import {
+  BorderRadiusTool,
+  BoxShadowTool,
+  CssGradientTool,
+  PaletteTool,
+} from "@/components/tools/css-tools";
+import { SectionCard } from "@/components/tools/tool-ui";
+import {
+  AesTool,
+  Base64Tool,
+  CodeObfuscateTool,
+  JsonTool,
+  Md5Tool,
+  ParamsTool,
+  RandomStringTool,
+  SensitiveTool,
+  TimestampTool,
+} from "@/components/tools/local-classic-tools";
+import {
+  ClientIpTool,
+  DnsLookupTool,
+  PingTool,
+  PortScanTool,
+  UrlStatusTool,
+  WebImagesTool,
+  WebMarkdownTool,
+  WebMetadataTool,
+} from "@/components/tools/network-tools";
+import {
+  ImageBase64Tool,
+  ImageCompressTool,
+  PetGifTool,
+  QrcodeTool,
+  SvgToImageTool,
+} from "@/components/tools/image-classic-tools";
+import {
+  JsonLdTool,
+  KeywordDensityTool,
+  LlmsTxtTool,
+  MetaTagsTool,
+  RobotsTxtTool,
+} from "@/components/tools/seo-tools";
+import {
+  BingWallpaperTool,
+  ContentTools,
+  GithubRepoTool,
+  GravatarTool,
+  IpGeoTool,
+  MinecraftPlayerTool,
+  MinecraftServerTool,
+  MobileAreaTool,
+} from "@/components/tools/data-tools";
 import { cn } from "@/lib/utils";
-
-type ServerResultMap = Record<string, any>;
-type ServerErrorMap = Record<string, string>;
-type LoadingMap = Record<string, boolean>;
 
 const sectionMeta = [
   {
@@ -76,11 +145,40 @@ const sectionMeta = [
     description:
       "面向搜索引擎（SEO）与生成式 AI（GEO）的优化工具：llms.txt、Meta 标签 / TDK、robots.txt、结构化数据 JSON-LD 与关键词密度分析。",
   },
+  {
+    id: "calc-tools",
+    title: "计算换算",
+    description:
+      "贴近生活与工作的计算器：房贷、个税、BMI、日期间隔与常用单位换算，输入即算，结果仅供参考。",
+  },
+  {
+    id: "cn-tools",
+    title: "中文工具",
+    description:
+      "面向中文场景的实用工具：简繁体转换、汉字转拼音与中文测试假数据生成。",
+  },
+  {
+    id: "css-tools",
+    title: "前端 / CSS",
+    description:
+      "面向前端与设计的可视化生成器：CSS 渐变、box-shadow 阴影、圆角与调色板，所见即所得并一键复制代码。",
+  },
 ] as const;
 
 type SectionId = (typeof sectionMeta)[number]["id"];
 
 const toolCatalog = [
+  { id: "word-count", title: "字数统计", sectionId: "local-tools" },
+  { id: "rmb-capital", title: "人民币金额大写", sectionId: "local-tools" },
+  { id: "regex-tester", title: "正则表达式测试", sectionId: "local-tools" },
+  { id: "color-tool", title: "颜色工具 / 渐变", sectionId: "local-tools" },
+  { id: "data-convert", title: "JSON ↔ CSV 互转", sectionId: "local-tools" },
+  { id: "jwt-decode", title: "JWT 解码", sectionId: "local-tools" },
+  { id: "cron", title: "Cron 表达式解析", sectionId: "local-tools" },
+  { id: "sha-hash", title: "SHA 哈希", sectionId: "local-tools" },
+  { id: "base-convert", title: "进制转换", sectionId: "local-tools" },
+  { id: "text-diff", title: "文本 Diff 对比", sectionId: "local-tools" },
+  { id: "case-convert", title: "命名 / 大小写转换", sectionId: "local-tools" },
   { id: "aes", title: "AES 加解密", sectionId: "local-tools" },
   { id: "base64", title: "Base64 编解码", sectionId: "local-tools" },
   { id: "md5", title: "MD5 计算与校验", sectionId: "local-tools" },
@@ -90,6 +188,11 @@ const toolCatalog = [
   { id: "code-obfuscate", title: "代码混淆 / 压缩", sectionId: "local-tools" },
   { id: "params", title: "参数分析", sectionId: "local-tools" },
   { id: "sensitive", title: "敏感词快速检测", sectionId: "local-tools" },
+  { id: "favicon", title: "Favicon 生成器", sectionId: "image-tools" },
+  { id: "image-convert", title: "图片格式转换", sectionId: "image-tools" },
+  { id: "image-resize", title: "图片裁剪 / 改尺寸", sectionId: "image-tools" },
+  { id: "image-watermark", title: "图片加水印", sectionId: "image-tools" },
+  { id: "color-extract", title: "图片主色调提取", sectionId: "image-tools" },
   { id: "qrcode", title: "二维码生成", sectionId: "image-tools" },
   { id: "image-base64", title: "图片与 Base64 互转", sectionId: "image-tools" },
   { id: "svg-image", title: "SVG 转图片", sectionId: "image-tools" },
@@ -137,6 +240,18 @@ const toolCatalog = [
     title: "答案之书 / 诗词 / 历史今天",
     sectionId: "public-data-tools",
   },
+  { id: "loan", title: "房贷计算器", sectionId: "calc-tools" },
+  { id: "income-tax", title: "个税计算器", sectionId: "calc-tools" },
+  { id: "bmi", title: "BMI 计算器", sectionId: "calc-tools" },
+  { id: "date-diff", title: "日期间隔计算", sectionId: "calc-tools" },
+  { id: "unit-convert", title: "单位换算", sectionId: "calc-tools" },
+  { id: "hanzi-convert", title: "简繁体转换", sectionId: "cn-tools" },
+  { id: "pinyin", title: "汉字转拼音", sectionId: "cn-tools" },
+  { id: "chinese-faker", title: "中文假数据生成", sectionId: "cn-tools" },
+  { id: "css-gradient", title: "CSS 渐变生成", sectionId: "css-tools" },
+  { id: "box-shadow", title: "box-shadow 生成", sectionId: "css-tools" },
+  { id: "border-radius", title: "圆角生成", sectionId: "css-tools" },
+  { id: "palette", title: "调色板生成", sectionId: "css-tools" },
 ] as const satisfies ReadonlyArray<{
   id: string;
   title: string;
@@ -152,686 +267,6 @@ const sections = sectionMeta.map((section) => ({
   count: toolCatalog.filter((tool) => tool.sectionId === section.id).length,
   tools: toolCatalog.filter((tool) => tool.sectionId === section.id),
 }));
-
-const inputClass =
-  "w-full rounded-2xl border border-[#dfd3ff] bg-white/80 px-4 py-3 text-sm text-[#2f2154] placeholder:text-[#75689e] dark:placeholder:text-[#ae9fda] shadow-sm outline-none transition focus:border-[#8b6bff] focus:ring-2 focus:ring-[#8b6bff]/20 dark:border-[#33274f] dark:bg-[#140f22]/90 dark:text-[#f4efff]";
-
-const cardClass =
-  "rounded-[28px] border border-[#e4d8ff] bg-[linear-gradient(135deg,rgba(255,255,255,0.97),rgba(247,242,255,0.92))] p-5 shadow-[0_22px_70px_rgba(91,61,245,0.08)] dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.92),rgba(15,11,27,0.96))]";
-
-const outputClass =
-  "rounded-2xl border border-dashed border-[#d9ccff] bg-[#faf7ff] px-4 py-3 text-sm text-[#4d3f77] dark:border-[#3b2f59] dark:bg-[#181127] dark:text-[#d9ccff]";
-
-const secondaryButtonClass =
-  "rounded-full border-[#b9a3ff] bg-[#f7f1ff] text-[#4b2fd0] shadow-[0_12px_32px_rgba(91,61,245,0.12)] hover:border-[#8b6bff] hover:bg-[#eee3ff] hover:text-[#3c22c3] dark:border-[#5a4492] dark:bg-[#1d1533] dark:text-[#efe9ff] dark:hover:border-[#8b6bff] dark:hover:bg-[#291e45]";
-
-function bytesToBase64(bytes: Uint8Array) {
-  let binary = "";
-  bytes.forEach((byte) => {
-    binary += String.fromCharCode(byte);
-  });
-  return btoa(binary);
-}
-
-function toStrictArrayBuffer(bytes: Uint8Array) {
-  const buffer = new ArrayBuffer(bytes.byteLength);
-  new Uint8Array(buffer).set(bytes);
-  return buffer;
-}
-
-function base64ToBytes(value: string) {
-  const normalized = value
-    .replace(/^data:[^;]+;base64,/, "")
-    .replace(/\s+/g, "");
-  const binary = atob(normalized);
-  const bytes = new Uint8Array(binary.length);
-  for (let index = 0; index < binary.length; index += 1) {
-    bytes[index] = binary.charCodeAt(index);
-  }
-  return bytes;
-}
-
-async function deriveAesKey(password: string, salt: Uint8Array) {
-  const encoder = new TextEncoder();
-  const keyMaterial = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(password),
-    "PBKDF2",
-    false,
-    ["deriveKey"],
-  );
-  return crypto.subtle.deriveKey(
-    {
-      name: "PBKDF2",
-      salt: toStrictArrayBuffer(salt),
-      iterations: 120000,
-      hash: "SHA-256",
-    },
-    keyMaterial,
-    { name: "AES-GCM", length: 256 },
-    false,
-    ["encrypt", "decrypt"],
-  );
-}
-
-async function encryptAesGcm(text: string, password: string) {
-  const encoder = new TextEncoder();
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const key = await deriveAesKey(password, salt);
-  const encrypted = await crypto.subtle.encrypt(
-    { name: "AES-GCM", iv },
-    key,
-    encoder.encode(text),
-  );
-  return `aesgcm.${bytesToBase64(salt)}.${bytesToBase64(iv)}.${bytesToBase64(new Uint8Array(encrypted))}`;
-}
-
-async function decryptAesGcm(payload: string, password: string) {
-  const parts = payload.split(".");
-  if (parts.length !== 4 || parts[0] !== "aesgcm") {
-    throw new Error("密文格式不正确，应为 aesgcm.salt.iv.cipher。");
-  }
-
-  const [, saltRaw, ivRaw, cipherRaw] = parts;
-  const salt = base64ToBytes(saltRaw);
-  const iv = base64ToBytes(ivRaw);
-  const cipher = base64ToBytes(cipherRaw);
-  const key = await deriveAesKey(password, salt);
-  const decrypted = await crypto.subtle.decrypt(
-    { name: "AES-GCM", iv },
-    key,
-    cipher,
-  );
-  return new TextDecoder().decode(decrypted);
-}
-
-function encodeTextToBase64(text: string) {
-  return bytesToBase64(new TextEncoder().encode(text));
-}
-
-function decodeBase64ToText(value: string) {
-  return new TextDecoder().decode(base64ToBytes(value));
-}
-
-function formatBytes(bytes: number) {
-  if (!Number.isFinite(bytes)) return "-";
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-}
-
-function dataUrlByteSize(dataUrl: string) {
-  const base64 = dataUrl.split(",")[1] || "";
-  const padding = base64.match(/=+$/)?.[0].length || 0;
-  return Math.floor((base64.length * 3) / 4) - padding;
-}
-
-function parseTimestampInput(input: string) {
-  const raw = input.trim();
-  if (!raw) return new Date();
-  if (/^\d{10}$/.test(raw)) return new Date(Number(raw) * 1000);
-  if (/^\d{13}$/.test(raw)) return new Date(Number(raw));
-  const parsed = new Date(raw);
-  if (Number.isNaN(parsed.getTime()))
-    throw new Error("无法识别这个时间戳或日期。");
-  return parsed;
-}
-
-function analyzeParameters(input: string) {
-  const raw = input.trim();
-  if (!raw)
-    return {
-      entries: [],
-      summary: { total: 0, duplicates: 0 },
-      pathname: "",
-      hash: "",
-    };
-
-  let params: URLSearchParams;
-  let pathname = "";
-  let hash = "";
-
-  if (raw.includes("://")) {
-    const url = new URL(raw);
-    params = new URLSearchParams(url.search);
-    pathname = url.pathname;
-    hash = url.hash;
-  } else if (raw.startsWith("{")) {
-    const parsed = JSON.parse(raw) as Record<string, unknown>;
-    const entries = Object.entries(parsed).map(([key, value]) => ({
-      key,
-      values: [typeof value === "string" ? value : JSON.stringify(value)],
-    }));
-    return {
-      entries,
-      summary: {
-        total: entries.length,
-        duplicates: 0,
-      },
-      pathname: "",
-      hash: "",
-    };
-  } else {
-    params = new URLSearchParams(raw.startsWith("?") ? raw.slice(1) : raw);
-  }
-
-  const grouped = new Map<string, string[]>();
-  params.forEach((value, key) => {
-    const values = grouped.get(key) || [];
-    values.push(value);
-    grouped.set(key, values);
-  });
-
-  const entries = Array.from(grouped.entries()).map(([key, values]) => ({
-    key,
-    values,
-  }));
-  return {
-    entries,
-    summary: {
-      total: entries.length,
-      duplicates: entries.filter((item) => item.values.length > 1).length,
-    },
-    pathname,
-    hash,
-  };
-}
-
-function detectSensitiveWords(input: string) {
-  const text = input.trim();
-  if (!text) return [];
-  return SENSITIVE_WORDS.map((word) => {
-    const count = text.split(word).length - 1;
-    return count > 0 ? { word, count } : null;
-  }).filter(Boolean) as Array<{ word: string; count: number }>;
-}
-
-function generateRandomString(length: number, alphabet: string) {
-  const bytes = crypto.getRandomValues(new Uint8Array(length));
-  return Array.from(bytes, (byte) => alphabet[byte % alphabet.length]).join("");
-}
-
-function readFileAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ""));
-    reader.onerror = () => reject(new Error("读取文件失败。"));
-    reader.readAsDataURL(file);
-  });
-}
-
-function loadImageElement(src: string) {
-  return new Promise<HTMLImageElement>((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error("图片加载失败。"));
-    image.src = src;
-  });
-}
-
-function drawRoundedRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  radius: number,
-) {
-  const r = Math.min(radius, width / 2, height / 2);
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + width, y, x + width, y + height, r);
-  ctx.arcTo(x + width, y + height, x, y + height, r);
-  ctx.arcTo(x, y + height, x, y, r);
-  ctx.arcTo(x, y, x + width, y, r);
-  ctx.closePath();
-}
-
-function drawPetHand(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(-0.16);
-  ctx.fillStyle = "#fffefc";
-  ctx.shadowColor = "rgba(0,0,0,0.16)";
-  ctx.shadowBlur = 16;
-  ctx.shadowOffsetY = 4;
-
-  drawRoundedRect(ctx, 0, 18, width * 0.42, height * 0.52, 16);
-  ctx.fill();
-
-  drawRoundedRect(ctx, width * 0.14, 0, width * 0.22, height * 0.28, 12);
-  ctx.fill();
-  drawRoundedRect(ctx, width * 0.26, 2, width * 0.2, height * 0.26, 11);
-  ctx.fill();
-  drawRoundedRect(ctx, width * 0.37, 6, width * 0.18, height * 0.24, 10);
-  ctx.fill();
-  drawRoundedRect(ctx, width * 0.47, 12, width * 0.16, height * 0.22, 10);
-  ctx.fill();
-
-  drawRoundedRect(
-    ctx,
-    width * 0.38,
-    height * 0.3,
-    width * 0.42,
-    height * 0.16,
-    10,
-  );
-  ctx.fill();
-  ctx.restore();
-}
-
-async function generatePetGifFromDataUrl(dataUrl: string) {
-  const [{ GIFEncoder, quantize, applyPalette }, sourceImage] =
-    await Promise.all([import("gifenc"), loadImageElement(dataUrl)]);
-  const width = 220;
-  const height = 220;
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("无法初始化画布。");
-
-  const gif = GIFEncoder();
-  const frameOffsets = [-6, -2, 2, 6, 4, 1, -1, -4, -2, 2];
-
-  for (const offset of frameOffsets) {
-    ctx.clearRect(0, 0, width, height);
-
-    ctx.save();
-    ctx.translate(110, 138 + offset * 0.3);
-    ctx.scale(1.02, 0.98 - Math.max(offset, 0) * 0.01);
-    drawRoundedRect(ctx, -52, -52, 104, 104, 26);
-    ctx.clip();
-    ctx.drawImage(sourceImage, -52, -52, 104, 104);
-    ctx.restore();
-
-    ctx.fillStyle = "rgba(255,255,255,0.12)";
-    ctx.beginPath();
-    ctx.ellipse(110, 190, 42, 10, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    drawPetHand(ctx, 114, 34 + offset, 92, 86);
-
-    const imageData = ctx.getImageData(0, 0, width, height);
-    const palette = quantize(imageData.data, 256, {
-      format: "rgba4444",
-      oneBitAlpha: true,
-      clearAlpha: true,
-    });
-    const index = applyPalette(imageData.data, palette, "rgba4444");
-    const transparentIndex = palette.findIndex(
-      (color: number[]) => color[3] === 0,
-    );
-    gif.writeFrame(index, width, height, {
-      palette,
-      delay: 80,
-      repeat: 0,
-      dispose: 2,
-      transparent: transparentIndex >= 0,
-      transparentIndex: transparentIndex >= 0 ? transparentIndex : 0,
-    });
-  }
-
-  gif.finish();
-  return new Blob([gif.bytes()], { type: "image/gif" });
-}
-
-function SectionCard({
-  icon: Icon,
-  title,
-  description,
-  children,
-  className = "",
-}: {
-  icon: any;
-  title: string;
-  description: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <article className={`${cardClass} ${className}`}>
-      <div className="mb-4 flex items-start gap-3">
-        <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]">
-          <Icon className="h-5 w-5" />
-        </span>
-        <div>
-          <h3 className="text-lg font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff]">
-            {title}
-          </h3>
-          <p className="mt-1 text-sm leading-6 text-[#6c5b98] dark:text-[#b9aadf]">
-            {description}
-          </p>
-        </div>
-      </div>
-      {children}
-    </article>
-  );
-}
-
-function OutputBox({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return <div className={`${outputClass} ${className}`}>{children}</div>;
-}
-
-function downloadPlainText(filename: string, content: string) {
-  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-  const objectUrl = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = objectUrl;
-  link.download = filename;
-  link.click();
-  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1200);
-}
-
-function escapeMetaAttr(value: string) {
-  return value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-function buildSeoMetaTags(d: {
-  title: string;
-  description: string;
-  keywords: string;
-  url: string;
-  image: string;
-  siteName: string;
-}) {
-  const e = escapeMetaAttr;
-  const lines: string[] = [];
-  if (d.title) lines.push(`<title>${e(d.title)}</title>`);
-  if (d.description) lines.push(`<meta name="description" content="${e(d.description)}" />`);
-  if (d.keywords) lines.push(`<meta name="keywords" content="${e(d.keywords)}" />`);
-  if (d.url) lines.push(`<link rel="canonical" href="${e(d.url)}" />`);
-  lines.push("");
-  lines.push(`<meta property="og:type" content="website" />`);
-  if (d.title) lines.push(`<meta property="og:title" content="${e(d.title)}" />`);
-  if (d.description) lines.push(`<meta property="og:description" content="${e(d.description)}" />`);
-  if (d.url) lines.push(`<meta property="og:url" content="${e(d.url)}" />`);
-  if (d.siteName) lines.push(`<meta property="og:site_name" content="${e(d.siteName)}" />`);
-  if (d.image) lines.push(`<meta property="og:image" content="${e(d.image)}" />`);
-  lines.push("");
-  lines.push(`<meta name="twitter:card" content="${d.image ? "summary_large_image" : "summary"}" />`);
-  if (d.title) lines.push(`<meta name="twitter:title" content="${e(d.title)}" />`);
-  if (d.description) lines.push(`<meta name="twitter:description" content="${e(d.description)}" />`);
-  if (d.image) lines.push(`<meta name="twitter:image" content="${e(d.image)}" />`);
-  return lines.join("\n").trim();
-}
-
-function buildRobotsTxt(d: {
-  userAgent: string;
-  allow: string;
-  disallow: string;
-  sitemap: string;
-}) {
-  const toList = (value: string) =>
-    value
-      .split(/\r?\n/)
-      .map((item) => item.trim())
-      .filter(Boolean);
-  const lines: string[] = [];
-  lines.push(`User-agent: ${d.userAgent.trim() || "*"}`);
-  const allow = toList(d.allow);
-  const disallow = toList(d.disallow);
-  allow.forEach((path) => lines.push(`Allow: ${path}`));
-  disallow.forEach((path) => lines.push(`Disallow: ${path}`));
-  if (allow.length === 0 && disallow.length === 0) lines.push("Disallow:");
-  const sitemaps = toList(d.sitemap);
-  if (sitemaps.length > 0) {
-    lines.push("");
-    sitemaps.forEach((url) => lines.push(`Sitemap: ${url}`));
-  }
-  return lines.join("\n");
-}
-
-function buildJsonLd(
-  type: "Article" | "WebSite" | "Organization",
-  d: {
-    name: string;
-    url: string;
-    description: string;
-    author: string;
-    image: string;
-    date: string;
-  },
-) {
-  let obj: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": type,
-  };
-  if (type === "Article") {
-    obj = {
-      ...obj,
-      headline: d.name || undefined,
-      description: d.description || undefined,
-      image: d.image || undefined,
-      datePublished: d.date || undefined,
-      author: d.author ? { "@type": "Person", name: d.author } : undefined,
-      mainEntityOfPage: d.url || undefined,
-    };
-  } else if (type === "Organization") {
-    obj = {
-      ...obj,
-      name: d.name || undefined,
-      url: d.url || undefined,
-      logo: d.image || undefined,
-      description: d.description || undefined,
-    };
-  } else {
-    obj = {
-      ...obj,
-      name: d.name || undefined,
-      url: d.url || undefined,
-      description: d.description || undefined,
-    };
-  }
-  const clean = JSON.parse(JSON.stringify(obj));
-  return `<script type="application/ld+json">\n${JSON.stringify(clean, null, 2)}\n</script>`;
-}
-
-function analyzeKeywordDensity(text: string, keyword: string) {
-  const chars = text.replace(/\s/g, "").length;
-  const tokens = text
-    .toLowerCase()
-    .split(/[\s,.;:!?，。、；：！？\n\r\t()[\]{}"'`/\\|]+/)
-    .filter((token) => token.length >= 2);
-  const total = tokens.length;
-  const freq = new Map<string, number>();
-  tokens.forEach((token) => freq.set(token, (freq.get(token) || 0) + 1));
-  const top = Array.from(freq.entries())
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 12)
-    .map(([word, count]) => ({
-      word,
-      count,
-      ratio: total ? count / total : 0,
-    }));
-
-  let keywordStat: { keyword: string; occurrences: number; density: number } | null = null;
-  const trimmedKeyword = keyword.trim();
-  if (trimmedKeyword) {
-    const escaped = trimmedKeyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const occurrences = (text.match(new RegExp(escaped, "gi")) || []).length;
-    keywordStat = {
-      keyword: trimmedKeyword,
-      occurrences,
-      density: chars ? (occurrences * trimmedKeyword.length) / chars : 0,
-    };
-  }
-
-  return { chars, totalTokens: total, top, keyword: keywordStat };
-}
-
-function FancySelect<T extends string>({
-  value,
-  options,
-  onChange,
-  ariaLabel,
-}: {
-  value: T;
-  options: Array<{ value: T; label: string }>;
-  onChange: (value: T) => void;
-  ariaLabel: string;
-}) {
-  const currentOption = options.find((option) => option.value === value);
-
-  return (
-    <SimpleDropdown
-      align="start"
-      className="min-w-[13rem] rounded-[22px] border border-[#dacdff] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,239,255,0.96))] p-2 shadow-[0_24px_70px_rgba(91,61,245,0.18)] dark:border-[#3a2f58] dark:bg-[linear-gradient(180deg,rgba(30,23,49,0.98),rgba(18,13,30,0.98))]"
-      trigger={
-        <button
-          type="button"
-          aria-label={ariaLabel}
-          className="flex h-9 w-full items-center justify-between rounded-2xl border border-[#dfd3ff] bg-white/80 px-4 py-1 text-left text-sm text-[#2f2154] shadow-sm transition hover:border-[#b99fff] focus-visible:border-[#8b6bff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8b6bff]/20 dark:border-[#33274f] dark:bg-[#140f22]/90 dark:text-[#f4efff]"
-        >
-          <span className="truncate font-medium">
-            {currentOption?.label || ariaLabel}
-          </span>
-          <ChevronDown className="h-4 w-4 shrink-0 text-[#745da9] dark:text-[#c7baf1]" />
-        </button>
-      }
-    >
-      {options.map((option) => (
-        <SimpleDropdownItem
-          key={option.value}
-          onClick={() => onChange(option.value)}
-          active={option.value === value}
-          className={cn(
-            "rounded-2xl px-3 py-2.5 text-[#2f2154] dark:text-[#f4efff]",
-            option.value === value
-              ? "bg-[#ece3ff] text-[#4f31d7] dark:bg-[#2b1f43] dark:text-[#efe9ff]"
-              : "hover:text-[#4f31d7] dark:hover:text-[#ffffff]",
-          )}
-        >
-          <span className="text-sm font-medium">{option.label}</span>
-          {option.value === value ? (
-            <Check className="h-4 w-4" />
-          ) : (
-            <span className="h-4 w-4" />
-          )}
-        </SimpleDropdownItem>
-      ))}
-    </SimpleDropdown>
-  );
-}
-
-function FancyCheckbox({
-  checked,
-  label,
-  onChange,
-}: {
-  checked: boolean;
-  label: string;
-  onChange: (checked: boolean) => void;
-}) {
-  return (
-    <label
-      className={cn(
-        "group flex cursor-pointer items-center gap-3 rounded-2xl border px-3 py-2.5 transition select-none",
-        checked
-          ? "border-[#b69cff] bg-[linear-gradient(135deg,rgba(240,231,255,0.96),rgba(234,224,255,0.88))] text-[#4327ba] shadow-[0_14px_36px_rgba(91,61,245,0.12)] dark:border-[#7454cf] dark:bg-[linear-gradient(135deg,rgba(40,28,69,0.94),rgba(31,22,53,0.9))] dark:text-[#f2edff]"
-          : "border-[#ded2ff] bg-white/55 text-[#5e4f8a] hover:border-[#b99fff] hover:bg-[#f7f2ff] dark:border-[#382d55] dark:bg-white/[0.03] dark:text-[#cbbff0] dark:hover:border-[#7156c8] dark:hover:bg-white/[0.05]",
-      )}
-    >
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(event) => onChange(event.target.checked)}
-        className="sr-only"
-      />
-      <span
-        className={cn(
-          "flex h-5 w-5 shrink-0 items-center justify-center rounded-[8px] border transition",
-          checked
-            ? "border-[#6d46ff] bg-[#5b3df5] text-white shadow-[0_8px_18px_rgba(91,61,245,0.24)] dark:border-[#a58eff] dark:bg-[#8e72ff]"
-            : "border-[#bfaeff] bg-white/90 text-transparent dark:border-[#54407f] dark:bg-[#1a132d]",
-        )}
-      >
-        <Check
-          className={cn(
-            "h-3.5 w-3.5 transition",
-            checked ? "scale-100 opacity-100" : "scale-75 opacity-0",
-          )}
-        />
-      </span>
-      <span className="text-sm font-medium">{label}</span>
-    </label>
-  );
-}
-
-function ToolFileInput({
-  accept,
-  onChange,
-  hint,
-}: {
-  accept?: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  hint?: string;
-}) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [fileName, setFileName] = useState("");
-  const [dragging, setDragging] = useState(false);
-
-  return (
-    <label
-      onDragOver={(event) => {
-        event.preventDefault();
-        setDragging(true);
-      }}
-      onDragLeave={() => setDragging(false)}
-      onDrop={(event) => {
-        event.preventDefault();
-        setDragging(false);
-        const files = event.dataTransfer.files;
-        if (files && files.length && inputRef.current) {
-          inputRef.current.files = files;
-          setFileName(files[0]?.name ?? "");
-          onChange({
-            target: inputRef.current,
-          } as unknown as React.ChangeEvent<HTMLInputElement>);
-        }
-      }}
-      className={cn(
-        "group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-4 py-6 text-center transition",
-        dragging
-          ? "border-[#8b6bff] bg-[#f1ebff] dark:border-[#8b6bff] dark:bg-white/[0.06]"
-          : "border-[#cdbcff] bg-white/60 hover:border-[#8b6bff] hover:bg-[#f5f0ff] dark:border-[#3a2f58] dark:bg-white/[0.03] dark:hover:border-[#8b6bff] dark:hover:bg-white/[0.05]",
-      )}
-    >
-      <input
-        ref={inputRef}
-        type="file"
-        accept={accept}
-        className="hidden"
-        onChange={(event) => {
-          setFileName(event.target.files?.[0]?.name ?? "");
-          onChange(event);
-        }}
-      />
-      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#ece3ff] text-[#5b3df5] transition group-hover:scale-105 dark:bg-[#2b1f43] dark:text-[#cbbcff]">
-        <Upload className="h-5 w-5" />
-      </span>
-      <span className="text-sm font-medium text-[#4f31d7] dark:text-[#cbbcff]">
-        {fileName || "点击或拖拽文件到此处"}
-      </span>
-      <span className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-        {hint || "支持点击选择或拖拽上传"}
-      </span>
-    </label>
-  );
-}
 
 export default function ToolsClientPage({
   section,
@@ -849,202 +284,11 @@ export default function ToolsClientPage({
       ? (initialTool as ToolFilter)
       : "all";
 
-  const [loadingMap, setLoadingMap] = useState<LoadingMap>({});
-  const [serverResults, setServerResults] = useState<ServerResultMap>({});
-  const [serverErrors, setServerErrors] = useState<ServerErrorMap>({});
   const [selectedTool, setSelectedTool] = useState<ToolFilter>(validInitialTool);
   const [selectedSection, setSelectedSection] = useState<SectionFilter>(
     section ?? "all",
   );
 
-  const [aesMode, setAesMode] = useState<"encrypt" | "decrypt">("encrypt");
-  const [aesText, setAesText] = useState("");
-  const [aesPassword, setAesPassword] = useState("");
-  const [aesOutput, setAesOutput] = useState("");
-  const [aesError, setAesError] = useState("");
-
-  const [base64Input, setBase64Input] = useState("");
-  const [base64Output, setBase64Output] = useState("");
-  const [base64Error, setBase64Error] = useState("");
-
-  const [md5Text, setMd5Text] = useState("");
-  const [md5Expected, setMd5Expected] = useState("");
-
-  const [randomLength, setRandomLength] = useState("16");
-  const [randomValue, setRandomValue] = useState("");
-  const [randomIncludeUppercase, setRandomIncludeUppercase] = useState(true);
-  const [randomIncludeLowercase, setRandomIncludeLowercase] = useState(true);
-  const [randomIncludeNumbers, setRandomIncludeNumbers] = useState(true);
-  const [randomIncludeSymbols, setRandomIncludeSymbols] = useState(false);
-
-  const [timestampInput, setTimestampInput] = useState(String(Date.now()));
-  const [timestampOutput, setTimestampOutput] = useState<{
-    local: string;
-    iso: string;
-    seconds: number;
-    milliseconds: number;
-  } | null>(null);
-  const [timestampError, setTimestampError] = useState("");
-
-  const [jsonInput, setJsonInput] = useState(
-    '{\n  "name": "Dci",\n  "stack": ["Next.js", "TypeScript"]\n}',
-  );
-  const [jsonOutput, setJsonOutput] = useState("");
-  const [jsonError, setJsonError] = useState("");
-
-  const [codeObfuscateInput, setCodeObfuscateInput] = useState(
-    "function greet(name) {\n  const message = `Hello, ${name}!`;\n  console.log(message);\n  return message;\n}\n\ngreet('World');",
-  );
-  const [codeObfuscateLanguage, setCodeObfuscateLanguage] = useState<
-    "javascript" | "css" | "html"
-  >("javascript");
-  const [codeObfuscateMode, setCodeObfuscateMode] = useState<
-    "minify" | "obfuscate"
-  >("minify");
-  const [codeObfuscateLevel, setCodeObfuscateLevel] = useState<
-    "normal" | "strong"
-  >("normal");
-
-  const [paramsInput, setParamsInput] = useState(
-    "https://example.com/search?q=blog&tag=next&tag=tools",
-  );
-  const [paramsResult, setParamsResult] = useState<{
-    entries: Array<{ key: string; values: string[] }>;
-    summary: { total: number; duplicates: number };
-    pathname: string;
-    hash: string;
-  } | null>(null);
-  const [paramsError, setParamsError] = useState("");
-
-  const [sensitiveInput, setSensitiveInput] = useState("");
-  const deferredSensitiveInput = useDeferredValue(sensitiveInput);
-
-  const [qrText, setQrText] = useState("https://github.com/dcileiu");
-  const [qrDataUrl, setQrDataUrl] = useState("");
-  const [qrError, setQrError] = useState("");
-
-  const [imageBase64Value, setImageBase64Value] = useState("");
-  const [imageBase64Preview, setImageBase64Preview] = useState("");
-  const [imageBase64Info, setImageBase64Info] = useState<{
-    name?: string;
-    size?: number;
-  } | null>(null);
-  const [imageBase64Error, setImageBase64Error] = useState("");
-
-  const [svgInput, setSvgInput] = useState(
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><rect width="160" height="160" rx="32" fill="#2e2150"/><path d="M52 24h46l-8 68H44l8-68Z" fill="#fff"/><path d="M90 80h52l-6 28H84l6-28Z" fill="#d9ccff"/></svg>',
-  );
-  const [svgPngUrl, setSvgPngUrl] = useState("");
-  const [svgError, setSvgError] = useState("");
-
-  const [compressDataUrl, setCompressDataUrl] = useState("");
-  const [compressInfo, setCompressInfo] = useState<{
-    before: number;
-    after: number;
-    type: string;
-  } | null>(null);
-  const [compressError, setCompressError] = useState("");
-  const [compressQuality, setCompressQuality] = useState("0.78");
-  const [compressMaxWidth, setCompressMaxWidth] = useState("1600");
-  const [compressType, setCompressType] = useState<"image/jpeg" | "image/webp">(
-    "image/webp",
-  );
-
-  const [petGifUrl, setPetGifUrl] = useState("");
-  const [petGifError, setPetGifError] = useState("");
-  const [petGifBusy, setPetGifBusy] = useState(false);
-  const petGifObjectUrlRef = useRef<string | null>(null);
-
-  const [dnsHost, setDnsHost] = useState("openai.com");
-  const [pingHost, setPingHost] = useState("openai.com");
-  const [pingPort, setPingPort] = useState("443");
-  const [portHost, setPortHost] = useState("openai.com");
-  const [portExpression, setPortExpression] = useState("80,443,3000-3002");
-  const [urlStatusInput, setUrlStatusInput] = useState("https://openai.com");
-  const [metadataUrlInput, setMetadataUrlInput] =
-    useState("https://openai.com");
-  const [imageExtractUrlInput, setImageExtractUrlInput] =
-    useState("https://openai.com");
-  const [markdownUrlInput, setMarkdownUrlInput] =
-    useState("https://openai.com");
-  const [llmsUrlInput, setLlmsUrlInput] = useState("https://itianci.cn");
-
-  // SEO | GEO 工具
-  const [seoTitle, setSeoTitle] = useState("");
-  const [seoDescription, setSeoDescription] = useState("");
-  const [seoKeywords, setSeoKeywords] = useState("");
-  const [seoUrl, setSeoUrl] = useState("https://itianci.cn");
-  const [seoImage, setSeoImage] = useState("");
-  const [seoSiteName, setSeoSiteName] = useState("");
-
-  const [robotsUserAgent, setRobotsUserAgent] = useState("*");
-  const [robotsAllow, setRobotsAllow] = useState("");
-  const [robotsDisallow, setRobotsDisallow] = useState("/admin\n/api");
-  const [robotsSitemap, setRobotsSitemap] = useState("https://itianci.cn/sitemap.xml");
-
-  const [jsonLdType, setJsonLdType] = useState<"Article" | "WebSite" | "Organization">("Article");
-  const [jsonLdName, setJsonLdName] = useState("");
-  const [jsonLdUrl, setJsonLdUrl] = useState("https://itianci.cn");
-  const [jsonLdDesc, setJsonLdDesc] = useState("");
-  const [jsonLdAuthor, setJsonLdAuthor] = useState("");
-  const [jsonLdImage, setJsonLdImage] = useState("");
-  const [jsonLdDate, setJsonLdDate] = useState("");
-
-  const [densityText, setDensityText] = useState("");
-  const [densityKeyword, setDensityKeyword] = useState("");
-  const [copiedTool, setCopiedTool] = useState("");
-
-  const [minecraftPlayerInput, setMinecraftPlayerInput] = useState("Notch");
-  const [minecraftServerInput, setMinecraftServerInput] =
-    useState("mc.hypixel.net");
-  const [minecraftEdition, setMinecraftEdition] = useState<"java" | "bedrock">(
-    "java",
-  );
-  const [githubRepoInput, setGithubRepoInput] = useState("vercel/next.js");
-  const [gravatarEmail, setGravatarEmail] = useState("dcileiu@outlook.com");
-  const [geoIpInput, setGeoIpInput] = useState("");
-  const [phoneInput, setPhoneInput] = useState("13800138000");
-  const [bingMarket, setBingMarket] = useState("zh-CN");
-  const [answerQuestion, setAnswerQuestion] =
-    useState("我该不该继续把这个博客做成长期项目？");
-  const [historyMonth, setHistoryMonth] = useState(
-    String(new Date().getMonth() + 1),
-  );
-  const [historyDay, setHistoryDay] = useState(String(new Date().getDate()));
-
-  useEffect(() => {
-    return () => {
-      if (petGifObjectUrlRef.current) {
-        URL.revokeObjectURL(petGifObjectUrlRef.current);
-      }
-    };
-  }, []);
-
-  const sensitiveMatches = detectSensitiveWords(deferredSensitiveInput);
-
-  const metaTagsOutput = buildSeoMetaTags({
-    title: seoTitle,
-    description: seoDescription,
-    keywords: seoKeywords,
-    url: seoUrl,
-    image: seoImage,
-    siteName: seoSiteName,
-  });
-  const robotsOutput = buildRobotsTxt({
-    userAgent: robotsUserAgent,
-    allow: robotsAllow,
-    disallow: robotsDisallow,
-    sitemap: robotsSitemap,
-  });
-  const jsonLdOutput = buildJsonLd(jsonLdType, {
-    name: jsonLdName,
-    url: jsonLdUrl,
-    description: jsonLdDesc,
-    author: jsonLdAuthor,
-    image: jsonLdImage,
-    date: jsonLdDate,
-  });
-  const densityResult = analyzeKeywordDensity(densityText, densityKeyword);
   const activeTool =
     selectedTool === "all"
       ? null
@@ -1061,285 +305,6 @@ export default function ToolsClientPage({
     selectedTool !== "all"
       ? activeTool?.sectionId === sectionId
       : selectedSection === "all" || selectedSection === sectionId;
-
-  async function runServerTool(
-    tool: string,
-    payload?: Record<string, unknown>,
-  ) {
-    setLoadingMap((current) => ({ ...current, [tool]: true }));
-    setServerErrors((current) => ({ ...current, [tool]: "" }));
-
-    try {
-      const response = await fetch("/api/tools", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ tool, payload }),
-      });
-      const data = await response.json();
-      if (!response.ok || !data.ok) {
-        throw new Error(data.error || "请求失败。");
-      }
-      setServerResults((current) => ({ ...current, [tool]: data.data }));
-      return data.data;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "请求失败。";
-      setServerErrors((current) => ({ ...current, [tool]: message }));
-      return null;
-    } finally {
-      setLoadingMap((current) => ({ ...current, [tool]: false }));
-    }
-  }
-
-  async function copyGeneratedText(tool: string, text: string) {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedTool(tool);
-      window.setTimeout(() => {
-        setCopiedTool((current) => (current === tool ? "" : current));
-      }, 1800);
-    } catch {
-      setServerErrors((current) => ({
-        ...current,
-        [tool]: "复制失败，请手动选中文本复制。",
-      }));
-    }
-  }
-
-  async function handleAesSubmit() {
-    setAesError("");
-    setAesOutput("");
-    try {
-      if (!aesText.trim())
-        throw new Error(
-          aesMode === "encrypt"
-            ? "请输入要加密的内容。"
-            : "请输入要解密的密文。",
-        );
-      if (!aesPassword.trim()) throw new Error("请输入密码。");
-      const result =
-        aesMode === "encrypt"
-          ? await encryptAesGcm(aesText, aesPassword)
-          : await decryptAesGcm(aesText, aesPassword);
-      setAesOutput(result);
-    } catch (error) {
-      setAesError(error instanceof Error ? error.message : "AES 处理失败。");
-    }
-  }
-
-  function handleBase64Encode() {
-    setBase64Error("");
-    try {
-      setBase64Output(encodeTextToBase64(base64Input));
-    } catch (error) {
-      setBase64Error(
-        error instanceof Error ? error.message : "Base64 编码失败。",
-      );
-    }
-  }
-
-  function handleBase64Decode() {
-    setBase64Error("");
-    try {
-      setBase64Output(decodeBase64ToText(base64Input));
-    } catch (error) {
-      setBase64Error(
-        error instanceof Error
-          ? error.message
-          : "Base64 解码失败，请检查输入。",
-      );
-    }
-  }
-
-  function handleRandomGenerate() {
-    const length = Number(randomLength);
-    let alphabet = "";
-    if (randomIncludeUppercase) alphabet += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    if (randomIncludeLowercase) alphabet += "abcdefghijklmnopqrstuvwxyz";
-    if (randomIncludeNumbers) alphabet += "0123456789";
-    if (randomIncludeSymbols) alphabet += "!@#$%^&*_-+=?";
-    if (!alphabet) {
-      setRandomValue("请至少勾选一种字符集。");
-      return;
-    }
-    if (!Number.isInteger(length) || length <= 0 || length > 256) {
-      setRandomValue("长度需在 1 到 256 之间。");
-      return;
-    }
-    setRandomValue(generateRandomString(length, alphabet));
-  }
-
-  function handleTimestampConvert() {
-    setTimestampError("");
-    try {
-      const date = parseTimestampInput(timestampInput);
-      setTimestampOutput({
-        local: date.toLocaleString("zh-CN", { hour12: false }),
-        iso: date.toISOString(),
-        seconds: Math.floor(date.getTime() / 1000),
-        milliseconds: date.getTime(),
-      });
-    } catch (error) {
-      setTimestampError(error instanceof Error ? error.message : "转换失败。");
-    }
-  }
-
-  function handleJsonBeautify(compact = false) {
-    setJsonError("");
-    try {
-      const parsed = JSON.parse(jsonInput);
-      setJsonOutput(
-        compact ? JSON.stringify(parsed) : JSON.stringify(parsed, null, 2),
-      );
-    } catch (error) {
-      setJsonError(error instanceof Error ? error.message : "JSON 解析失败。");
-    }
-  }
-
-  function handleParamsAnalyze() {
-    setParamsError("");
-    try {
-      setParamsResult(analyzeParameters(paramsInput));
-    } catch (error) {
-      setParamsError(error instanceof Error ? error.message : "参数分析失败。");
-    }
-  }
-
-  async function handleQrGenerate() {
-    setQrError("");
-    try {
-      if (!qrText.trim()) throw new Error("请输入二维码内容。");
-      const url = await QRCode.toDataURL(qrText, {
-        width: 360,
-        margin: 1,
-        color: {
-          dark: "#2e2150",
-          light: "#0000",
-        },
-      });
-      setQrDataUrl(url);
-    } catch (error) {
-      setQrError(error instanceof Error ? error.message : "二维码生成失败。");
-    }
-  }
-
-  async function handleImageFileToBase64(
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setImageBase64Error("");
-    try {
-      const dataUrl = await readFileAsDataUrl(file);
-      setImageBase64Value(dataUrl);
-      setImageBase64Preview(dataUrl);
-      setImageBase64Info({ name: file.name, size: file.size });
-    } catch (error) {
-      setImageBase64Error(
-        error instanceof Error ? error.message : "图片读取失败。",
-      );
-    }
-  }
-
-  function handleBase64ToImagePreview() {
-    setImageBase64Error("");
-    try {
-      if (!imageBase64Value.trim()) throw new Error("请输入 Base64 内容。");
-      const normalized = imageBase64Value.startsWith("data:")
-        ? imageBase64Value
-        : `data:image/png;base64,${imageBase64Value.replace(/\s+/g, "")}`;
-      base64ToBytes(normalized);
-      setImageBase64Preview(normalized);
-      setImageBase64Info({ size: dataUrlByteSize(normalized) });
-    } catch (error) {
-      setImageBase64Error(
-        error instanceof Error ? error.message : "Base64 图片内容无效。",
-      );
-    }
-  }
-
-  async function handleSvgConvert() {
-    setSvgError("");
-    try {
-      if (!svgInput.includes("<svg"))
-        throw new Error("请输入完整的 SVG 代码。");
-      const svgBlob = new Blob([svgInput], {
-        type: "image/svg+xml;charset=utf-8",
-      });
-      const url = URL.createObjectURL(svgBlob);
-      const image = await loadImageElement(url);
-      const canvas = document.createElement("canvas");
-      canvas.width = image.naturalWidth || 512;
-      canvas.height = image.naturalHeight || 512;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("无法初始化画布。");
-      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-      setSvgPngUrl(canvas.toDataURL("image/png"));
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      setSvgError(error instanceof Error ? error.message : "SVG 转图片失败。");
-    }
-  }
-
-  async function handleCompressImage(
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setCompressError("");
-    try {
-      const dataUrl = await readFileAsDataUrl(file);
-      const image = await loadImageElement(dataUrl);
-      const maxWidth = Math.max(320, Number(compressMaxWidth) || 1600);
-      const quality = Math.min(
-        Math.max(Number(compressQuality) || 0.78, 0.3),
-        0.95,
-      );
-      const scale = Math.min(1, maxWidth / image.width);
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.round(image.width * scale);
-      canvas.height = Math.round(image.height * scale);
-      const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("无法初始化画布。");
-      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-      const compressed = canvas.toDataURL(compressType, quality);
-      setCompressDataUrl(compressed);
-      setCompressInfo({
-        before: file.size,
-        after: dataUrlByteSize(compressed),
-        type: compressType,
-      });
-    } catch (error) {
-      setCompressError(
-        error instanceof Error ? error.message : "图片压缩失败。",
-      );
-    }
-  }
-
-  async function handleGeneratePetGif(
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setPetGifBusy(true);
-    setPetGifError("");
-    try {
-      const dataUrl = await readFileAsDataUrl(file);
-      const blob = await generatePetGifFromDataUrl(dataUrl);
-      if (petGifObjectUrlRef.current)
-        URL.revokeObjectURL(petGifObjectUrlRef.current);
-      const objectUrl = URL.createObjectURL(blob);
-      petGifObjectUrlRef.current = objectUrl;
-      setPetGifUrl(objectUrl);
-    } catch (error) {
-      setPetGifError(
-        error instanceof Error ? error.message : "摸头 GIF 生成失败。",
-      );
-    } finally {
-      setPetGifBusy(false);
-    }
-  }
 
   const sectionGridClass = cn(
     "grid gap-5",
@@ -1558,60 +523,111 @@ export default function ToolsClientPage({
 
           <div className={sectionGridClass}>
             <SectionCard
+              icon={Hash}
+              title="字数统计"
+              description="实时统计总字符数、不含空格字符、中文字数、英文单词、标点、行数与段落，写文章和投稿凑字数都方便。"
+              className={isToolVisible("word-count") ? "" : "hidden"}
+            >
+              <WordCountTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={ScrollText}
+              title="人民币金额大写"
+              description="输入阿拉伯数字金额，自动转换成规范的人民币中文大写（含角分），开发票、合同、财务记账都用得上。"
+              className={isToolVisible("rmb-capital") ? "" : "hidden"}
+            >
+              <RmbCapitalTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={ScanSearch}
+              title="正则表达式测试"
+              description="在线测试正则表达式，支持 g/i/m/s/u 标志，实时显示匹配结果，调试与学习正则的常用工具。"
+              className={isToolVisible("regex-tester") ? "" : "hidden"}
+            >
+              <RegexTesterTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={Sparkles}
+              title="颜色工具 / 渐变"
+              description="HEX / RGB / HSL 互转、取色器、WCAG 对比度检测与 CSS 渐变生成，前端与设计常用。"
+              className={isToolVisible("color-tool") ? "" : "hidden"}
+            >
+              <ColorTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={FileJson2}
+              title="JSON ↔ CSV 互转"
+              description="JSON 数组与 CSV 表格互相转换，导入导出表格数据、清洗数据时很方便。"
+              className={isToolVisible("data-convert") ? "" : "hidden"}
+            >
+              <DataConvertTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={FileCode2}
+              title="JWT 解码"
+              description="在线解析 JWT Token，解码 Header 与 Payload，并直观显示签发 / 过期时间，方便调试登录态。"
+              className={isToolVisible("jwt-decode") ? "" : "hidden"}
+            >
+              <JwtDecodeTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={Clock3}
+              title="Cron 表达式解析"
+              description="解析标准 5 段 cron 表达式，计算接下来的执行时间，写定时任务时不再靠猜。"
+              className={isToolVisible("cron") ? "" : "hidden"}
+            >
+              <CronTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={Hash}
+              title="SHA 哈希"
+              description="基于浏览器 Web Crypto 计算 SHA-1 / SHA-256 / SHA-384 / SHA-512，本地完成，不上传内容。"
+              className={isToolVisible("sha-hash") ? "" : "hidden"}
+            >
+              <ShaHashTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={DatabaseZap}
+              title="进制转换"
+              description="二进制 / 八进制 / 十进制 / 十六进制（支持 2-36 进制）互转，基于 BigInt 大数也不丢精度。"
+              className={isToolVisible("base-convert") ? "" : "hidden"}
+            >
+              <BaseConvertTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={ScanSearch}
+              title="文本 Diff 对比"
+              description="逐行对比两段文本，高亮新增与删除行，核对版本、改动与配置差异很方便。"
+              className={isToolVisible("text-diff") ? "" : "hidden"}
+            >
+              <TextDiffTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={FileCode2}
+              title="命名 / 大小写转换"
+              description="一键在 camelCase、PascalCase、snake_case、kebab-case、CONSTANT_CASE、Title Case 之间转换。"
+              className={isToolVisible("case-convert") ? "" : "hidden"}
+            >
+              <CaseConvertTool />
+            </SectionCard>
+
+            <SectionCard
               icon={ShieldAlert}
               title="AES 加解密"
               description="使用浏览器内建的 Web Crypto 实现 AES-GCM，本地完成，不上传明文。"
               className={isToolVisible("aes") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setAesMode("encrypt")}
-                    className={`rounded-full px-4 py-2 text-sm transition ${aesMode === "encrypt" ? "bg-[#5b3df5] text-white" : "bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]"}`}
-                  >
-                    加密
-                  </button>
-                  <button
-                    onClick={() => setAesMode("decrypt")}
-                    className={`rounded-full px-4 py-2 text-sm transition ${aesMode === "decrypt" ? "bg-[#5b3df5] text-white" : "bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]"}`}
-                  >
-                    解密
-                  </button>
-                </div>
-                <textarea
-                  className={`${inputClass} min-h-[132px] resize-y`}
-                  value={aesText}
-                  onChange={(event) => setAesText(event.target.value)}
-                  placeholder={
-                    aesMode === "encrypt"
-                      ? "输入要加密的文本"
-                      : "粘贴 aesgcm.salt.iv.cipher 格式密文"
-                  }
-                />
-                <Input
-                  className={inputClass}
-                  type="password"
-                  value={aesPassword}
-                  onChange={(event) => setAesPassword(event.target.value)}
-                  placeholder="输入密码"
-                />
-                <div className="flex gap-3">
-                  <Button
-                    onClick={handleAesSubmit}
-                    className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                  >
-                    立即处理
-                  </Button>
-                </div>
-                {aesError && <OutputBox>{aesError}</OutputBox>}
-                {aesOutput && (
-                  <OutputBox>
-                    <pre className="whitespace-pre-wrap break-all">
-                      {aesOutput}
-                    </pre>
-                  </OutputBox>
-                )}
-              </div>
+              <AesTool />
             </SectionCard>
 
             <SectionCard
@@ -1620,37 +636,7 @@ export default function ToolsClientPage({
               description="支持 Unicode 文本安全编码，也可直接拿来测试接口参数。"
               className={isToolVisible("base64") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <textarea
-                  className={`${inputClass} min-h-[132px] resize-y`}
-                  value={base64Input}
-                  onChange={(event) => setBase64Input(event.target.value)}
-                  placeholder="输入文本或 Base64 内容"
-                />
-                <div className="flex flex-wrap gap-3">
-                  <Button
-                    onClick={handleBase64Encode}
-                    className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                  >
-                    编码
-                  </Button>
-                  <Button
-                    onClick={handleBase64Decode}
-                    variant="outline"
-                    className={secondaryButtonClass}
-                  >
-                    解码
-                  </Button>
-                </div>
-                {base64Error && <OutputBox>{base64Error}</OutputBox>}
-                {base64Output && (
-                  <OutputBox>
-                    <pre className="whitespace-pre-wrap break-all">
-                      {base64Output}
-                    </pre>
-                  </OutputBox>
-                )}
-              </div>
+              <Base64Tool />
             </SectionCard>
 
             <SectionCard
@@ -1659,52 +645,7 @@ export default function ToolsClientPage({
               description="服务端本地计算 MD5，可选输入目标哈希做快速校验。"
               className={isToolVisible("md5") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <textarea
-                  className={`${inputClass} min-h-[118px] resize-y`}
-                  value={md5Text}
-                  onChange={(event) => setMd5Text(event.target.value)}
-                  placeholder="输入待计算文本"
-                />
-                <Input
-                  className={inputClass}
-                  value={md5Expected}
-                  onChange={(event) => setMd5Expected(event.target.value)}
-                  placeholder="可选：输入预期 MD5 做比对"
-                />
-                <Button
-                  onClick={() =>
-                    runServerTool("md5", {
-                      text: md5Text,
-                      expected: md5Expected,
-                    })
-                  }
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap.md5 ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "计算 MD5"
-                  )}
-                </Button>
-                {serverErrors.md5 && <OutputBox>{serverErrors.md5}</OutputBox>}
-                {serverResults.md5 && (
-                  <OutputBox>
-                    <div className="space-y-2">
-                      <div className="break-all font-mono">
-                        {serverResults.md5.hash}
-                      </div>
-                      {serverResults.md5.matches !== null && (
-                        <div>
-                          {serverResults.md5.matches
-                            ? "与预期哈希一致。"
-                            : "与预期哈希不一致。"}
-                        </div>
-                      )}
-                    </div>
-                  </OutputBox>
-                )}
-              </div>
+              <Md5Tool />
             </SectionCard>
 
             <SectionCard
@@ -1713,47 +654,7 @@ export default function ToolsClientPage({
               description="快速生成测试用随机串，可自由切换字符集。"
               className={isToolVisible("random") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={randomLength}
-                  onChange={(event) => setRandomLength(event.target.value)}
-                  placeholder="长度，例如 16"
-                />
-                <div className="grid grid-cols-2 gap-3">
-                  <FancyCheckbox
-                    checked={randomIncludeUppercase}
-                    onChange={setRandomIncludeUppercase}
-                    label="大写字母"
-                  />
-                  <FancyCheckbox
-                    checked={randomIncludeLowercase}
-                    onChange={setRandomIncludeLowercase}
-                    label="小写字母"
-                  />
-                  <FancyCheckbox
-                    checked={randomIncludeNumbers}
-                    onChange={setRandomIncludeNumbers}
-                    label="数字"
-                  />
-                  <FancyCheckbox
-                    checked={randomIncludeSymbols}
-                    onChange={setRandomIncludeSymbols}
-                    label="符号"
-                  />
-                </div>
-                <Button
-                  onClick={handleRandomGenerate}
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  生成随机串
-                </Button>
-                {randomValue && (
-                  <OutputBox>
-                    <div className="break-all font-mono">{randomValue}</div>
-                  </OutputBox>
-                )}
-              </div>
+              <RandomStringTool />
             </SectionCard>
 
             <SectionCard
@@ -1762,40 +663,7 @@ export default function ToolsClientPage({
               description="支持秒、毫秒时间戳和可解析日期串，快速换算本地时间与 ISO。"
               className={isToolVisible("timestamp") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={timestampInput}
-                  onChange={(event) => setTimestampInput(event.target.value)}
-                  placeholder="例如 1715664000000 或 2026-05-14 12:00:00"
-                />
-                <div className="flex flex-wrap gap-3">
-                  <Button
-                    onClick={handleTimestampConvert}
-                    className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                  >
-                    转换
-                  </Button>
-                  <Button
-                    onClick={() => setTimestampInput(String(Date.now()))}
-                    variant="outline"
-                    className={secondaryButtonClass}
-                  >
-                    使用当前时间
-                  </Button>
-                </div>
-                {timestampError && <OutputBox>{timestampError}</OutputBox>}
-                {timestampOutput && (
-                  <OutputBox>
-                    <div className="space-y-2">
-                      <div>本地时间：{timestampOutput.local}</div>
-                      <div>ISO：{timestampOutput.iso}</div>
-                      <div>秒：{timestampOutput.seconds}</div>
-                      <div>毫秒：{timestampOutput.milliseconds}</div>
-                    </div>
-                  </OutputBox>
-                )}
-              </div>
+              <TimestampTool />
             </SectionCard>
 
             <SectionCard
@@ -1804,36 +672,7 @@ export default function ToolsClientPage({
               description="把 JSON 变得更好读，或者压成一行方便塞进配置与请求里。"
               className={isToolVisible("json") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <textarea
-                  className={`${inputClass} min-h-[180px] resize-y font-mono`}
-                  value={jsonInput}
-                  onChange={(event) => setJsonInput(event.target.value)}
-                />
-                <div className="flex flex-wrap gap-3">
-                  <Button
-                    onClick={() => handleJsonBeautify(false)}
-                    className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                  >
-                    美化
-                  </Button>
-                  <Button
-                    onClick={() => handleJsonBeautify(true)}
-                    variant="outline"
-                    className={secondaryButtonClass}
-                  >
-                    压缩
-                  </Button>
-                </div>
-                {jsonError && <OutputBox>{jsonError}</OutputBox>}
-                {jsonOutput && (
-                  <OutputBox>
-                    <pre className="whitespace-pre-wrap break-all font-mono">
-                      {jsonOutput}
-                    </pre>
-                  </OutputBox>
-                )}
-              </div>
+              <JsonTool />
             </SectionCard>
 
             <SectionCard
@@ -1842,162 +681,7 @@ export default function ToolsClientPage({
               description="支持 JavaScript 混淆与压缩，以及 CSS / HTML 压缩；混淆在服务端完成，适合脚本发布前处理。"
               className={isToolVisible("code-obfuscate") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <textarea
-                  className={`${inputClass} min-h-[220px] resize-y font-mono text-[13px]`}
-                  value={codeObfuscateInput}
-                  onChange={(event) => setCodeObfuscateInput(event.target.value)}
-                  placeholder="粘贴 JavaScript、CSS 或 HTML 代码"
-                />
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  <FancySelect
-                    ariaLabel="代码语言"
-                    value={codeObfuscateLanguage}
-                    onChange={(value) =>
-                      setCodeObfuscateLanguage(
-                        value as "javascript" | "css" | "html",
-                      )
-                    }
-                    options={[
-                      { value: "javascript", label: "JavaScript" },
-                      { value: "css", label: "CSS" },
-                      { value: "html", label: "HTML" },
-                    ]}
-                  />
-                  <FancySelect
-                    ariaLabel="处理模式"
-                    value={codeObfuscateMode}
-                    onChange={(value) =>
-                      setCodeObfuscateMode(value as "minify" | "obfuscate")
-                    }
-                    options={[
-                      { value: "minify", label: "仅压缩" },
-                      {
-                        value: "obfuscate",
-                        label:
-                          codeObfuscateLanguage === "javascript"
-                            ? "混淆 + 压缩"
-                            : "混淆 + 压缩（仅 JS）",
-                      },
-                    ]}
-                  />
-                  {codeObfuscateLanguage === "javascript" &&
-                  codeObfuscateMode === "obfuscate" ? (
-                    <FancySelect
-                      ariaLabel="混淆强度"
-                      value={codeObfuscateLevel}
-                      onChange={(value) =>
-                        setCodeObfuscateLevel(value as "normal" | "strong")
-                      }
-                      options={[
-                        { value: "normal", label: "标准混淆" },
-                        { value: "strong", label: "高强度混淆" },
-                      ]}
-                    />
-                  ) : (
-                    <div className="flex items-center rounded-2xl border border-dashed border-[#d9ccff] px-4 py-3 text-xs text-[#7b69a5] dark:border-[#3b2f59] dark:text-[#af9fda]">
-                      {codeObfuscateLanguage === "javascript"
-                        ? "选择「混淆 + 压缩」后可调节强度。"
-                        : "CSS / HTML 当前仅支持压缩。"}
-                    </div>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <Button
-                    onClick={() =>
-                      runServerTool("code-obfuscate", {
-                        code: codeObfuscateInput,
-                        language: codeObfuscateLanguage,
-                        mode: codeObfuscateMode,
-                        level: codeObfuscateLevel,
-                      })
-                    }
-                    disabled={loadingMap["code-obfuscate"]}
-                    className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                  >
-                    {loadingMap["code-obfuscate"] ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        处理中…
-                      </>
-                    ) : codeObfuscateMode === "obfuscate" &&
-                      codeObfuscateLanguage === "javascript" ? (
-                      "开始混淆"
-                    ) : (
-                      "开始压缩"
-                    )}
-                  </Button>
-                </div>
-                {serverErrors["code-obfuscate"] && (
-                  <OutputBox>{serverErrors["code-obfuscate"]}</OutputBox>
-                )}
-                {serverResults["code-obfuscate"] && (
-                  <OutputBox className="space-y-3">
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#7b69a5] dark:text-[#af9fda]">
-                      <span>
-                        原始：{formatBytes(serverResults["code-obfuscate"].stats.before)}
-                      </span>
-                      <span>
-                        结果：{formatBytes(serverResults["code-obfuscate"].stats.after)}
-                      </span>
-                      <span>
-                        体积比：{serverResults["code-obfuscate"].stats.ratio}
-                      </span>
-                      <span>
-                        模式：
-                        {serverResults["code-obfuscate"].mode === "obfuscate"
-                          ? "混淆"
-                          : "压缩"}
-                      </span>
-                    </div>
-                    <pre className="max-h-[360px] overflow-auto whitespace-pre-wrap break-all font-mono text-[12px] leading-6">
-                      {serverResults["code-obfuscate"].output}
-                    </pre>
-                    <div className="flex flex-wrap gap-3">
-                      <Button
-                        variant="outline"
-                        className={secondaryButtonClass}
-                        onClick={() =>
-                          copyGeneratedText(
-                            "code-obfuscate",
-                            serverResults["code-obfuscate"].output,
-                          )
-                        }
-                      >
-                        {copiedTool === "code-obfuscate" ? (
-                          <>
-                            <Check className="mr-2 h-4 w-4" />
-                            已复制
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="mr-2 h-4 w-4" />
-                            复制结果
-                          </>
-                        )}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className={secondaryButtonClass}
-                        onClick={() =>
-                          downloadPlainText(
-                            `output.${
-                              serverResults["code-obfuscate"].language ===
-                              "javascript"
-                                ? "js"
-                                : serverResults["code-obfuscate"].language
-                            }`,
-                            serverResults["code-obfuscate"].output,
-                          )
-                        }
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        下载文件
-                      </Button>
-                    </div>
-                  </OutputBox>
-                )}
-              </div>
+              <CodeObfuscateTool />
             </SectionCard>
 
             <SectionCard
@@ -2006,52 +690,7 @@ export default function ToolsClientPage({
               description="识别 URL 查询串、表单参数或 JSON 键值，方便快速排查请求结构。"
               className={isToolVisible("params") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <textarea
-                  className={`${inputClass} min-h-[148px] resize-y`}
-                  value={paramsInput}
-                  onChange={(event) => setParamsInput(event.target.value)}
-                  placeholder="粘贴完整 URL、a=1&b=2 或 JSON"
-                />
-                <Button
-                  onClick={handleParamsAnalyze}
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  解析参数
-                </Button>
-                {paramsError && <OutputBox>{paramsError}</OutputBox>}
-                {paramsResult && (
-                  <OutputBox className="space-y-3">
-                    {(paramsResult.pathname || paramsResult.hash) && (
-                      <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-                        路径：{paramsResult.pathname || "/"}{" "}
-                        {paramsResult.hash
-                          ? `| 哈希：${paramsResult.hash}`
-                          : ""}
-                      </div>
-                    )}
-                    <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-                      共 {paramsResult.summary.total} 个字段，重复键{" "}
-                      {paramsResult.summary.duplicates} 个
-                    </div>
-                    <div className="space-y-2">
-                      {paramsResult.entries.map((entry) => (
-                        <div
-                          key={entry.key}
-                          className="rounded-xl border border-[#e3d7ff] bg-white/60 px-3 py-2 dark:border-[#34294f] dark:bg-white/[0.03]"
-                        >
-                          <div className="font-medium text-[#3d2d67] dark:text-[#efe9ff]">
-                            {entry.key}
-                          </div>
-                          <div className="mt-1 break-all text-sm text-[#685890] dark:text-[#c5b8ea]">
-                            {entry.values.join(" | ")}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </OutputBox>
-                )}
-              </div>
+              <ParamsTool />
             </SectionCard>
 
             <SectionCard
@@ -2060,33 +699,7 @@ export default function ToolsClientPage({
               description="使用内置轻量词表做快速扫描，适合草稿或提交前的第一轮自查。"
               className={isToolVisible("sensitive") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <textarea
-                  className={`${inputClass} min-h-[164px] resize-y`}
-                  value={sensitiveInput}
-                  onChange={(event) => setSensitiveInput(event.target.value)}
-                  placeholder="把要检测的文本贴进来"
-                />
-                <OutputBox>
-                  {sensitiveMatches.length === 0 ? (
-                    <div>当前没有命中内置词表。</div>
-                  ) : (
-                    <div className="space-y-2">
-                      <div>命中 {sensitiveMatches.length} 个词条：</div>
-                      <div className="flex flex-wrap gap-2">
-                        {sensitiveMatches.map((item) => (
-                          <span
-                            key={item.word}
-                            className="rounded-full bg-[#f1eaff] px-3 py-1 text-xs text-[#5b3df5] dark:bg-[#241739] dark:text-[#d9ccff]"
-                          >
-                            {item.word} × {item.count}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </OutputBox>
-              </div>
+              <SensitiveTool />
             </SectionCard>
           </div>
         </section>
@@ -2107,42 +720,57 @@ export default function ToolsClientPage({
 
           <div className={sectionGridClass}>
             <SectionCard
+              icon={ImageIcon}
+              title="Favicon 生成器"
+              description="上传一张图片，本地生成 16 / 32 / 48 / 64 / 180 / 512 多种尺寸的 PNG 网站图标，并附带 <head> 引用代码。"
+              className={isToolVisible("favicon") ? "" : "hidden"}
+            >
+              <FaviconTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={RefreshCcw}
+              title="图片格式转换"
+              description="PNG / JPG / WebP 之间互相转换，可调输出质量，转换在浏览器本地完成不上传。"
+              className={isToolVisible("image-convert") ? "" : "hidden"}
+            >
+              <ImageConvertTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={ImageIcon}
+              title="图片裁剪 / 改尺寸"
+              description="按指定宽高重新缩放图片，支持锁定宽高比，导出 PNG。"
+              className={isToolVisible("image-resize") ? "" : "hidden"}
+            >
+              <ImageResizeTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={Wand2}
+              title="图片加水印"
+              description="给图片添加文字水印，可设字号、颜色、透明度、九宫格位置或整图平铺。"
+              className={isToolVisible("image-watermark") ? "" : "hidden"}
+            >
+              <ImageWatermarkTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={Sparkles}
+              title="图片主色调提取"
+              description="从图片中提取占比最高的主色调，生成可一键复制的配色板。"
+              className={isToolVisible("color-extract") ? "" : "hidden"}
+            >
+              <ColorExtractTool />
+            </SectionCard>
+
+            <SectionCard
               icon={QrCode}
               title="二维码生成"
               description="输入任意文本、本地直接生成 PNG Data URL，适合链接、备注和联系方式。"
               className={isToolVisible("qrcode") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <textarea
-                  className={`${inputClass} min-h-[120px] resize-y`}
-                  value={qrText}
-                  onChange={(event) => setQrText(event.target.value)}
-                  placeholder="输入二维码内容"
-                />
-                <Button
-                  onClick={handleQrGenerate}
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  生成二维码
-                </Button>
-                {qrError && <OutputBox>{qrError}</OutputBox>}
-                {qrDataUrl && (
-                  <OutputBox className="space-y-3 text-center">
-                    <img
-                      src={qrDataUrl}
-                      alt="QR code"
-                      className="mx-auto h-44 w-44 rounded-2xl border border-[#e3d7ff] bg-white p-3"
-                    />
-                    <a
-                      href={qrDataUrl}
-                      download="dci-qrcode.png"
-                      className="text-sm text-[#5b3df5] hover:underline"
-                    >
-                      下载 PNG
-                    </a>
-                  </OutputBox>
-                )}
-              </div>
+              <QrcodeTool />
             </SectionCard>
 
             <SectionCard
@@ -2151,47 +779,7 @@ export default function ToolsClientPage({
               description="上传图片可转 Data URL，粘贴 Base64 也能直接预览和验证。"
               className={isToolVisible("image-base64") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <ToolFileInput
-                  accept="image/*"
-                  onChange={handleImageFileToBase64}
-                  hint="支持 PNG / JPG / WebP 等图片，转换完全在本地完成"
-                />
-                <textarea
-                  className={`${inputClass} min-h-[150px] resize-y font-mono`}
-                  value={imageBase64Value}
-                  onChange={(event) => setImageBase64Value(event.target.value)}
-                  placeholder="这里会显示图片 Base64，也可以直接粘贴现成的 Base64"
-                />
-                <div className="flex gap-3">
-                  <Button
-                    onClick={handleBase64ToImagePreview}
-                    className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                  >
-                    解析并预览
-                  </Button>
-                </div>
-                {imageBase64Error && <OutputBox>{imageBase64Error}</OutputBox>}
-                {imageBase64Preview && (
-                  <OutputBox className="space-y-3">
-                    {imageBase64Info && (
-                      <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-                        {imageBase64Info.name
-                          ? `${imageBase64Info.name} · `
-                          : ""}
-                        {imageBase64Info.size
-                          ? formatBytes(imageBase64Info.size)
-                          : ""}
-                      </div>
-                    )}
-                    <img
-                      src={imageBase64Preview}
-                      alt="Base64 preview"
-                      className="max-h-64 rounded-2xl border border-[#e3d7ff] bg-white object-contain p-2"
-                    />
-                  </OutputBox>
-                )}
-              </div>
+              <ImageBase64Tool />
             </SectionCard>
 
             <SectionCard
@@ -2200,36 +788,7 @@ export default function ToolsClientPage({
               description="直接粘贴 SVG 源码，本地转成 PNG 预览与下载。"
               className={isToolVisible("svg-image") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <textarea
-                  className={`${inputClass} min-h-[200px] resize-y font-mono text-xs`}
-                  value={svgInput}
-                  onChange={(event) => setSvgInput(event.target.value)}
-                />
-                <Button
-                  onClick={handleSvgConvert}
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  转成 PNG
-                </Button>
-                {svgError && <OutputBox>{svgError}</OutputBox>}
-                {svgPngUrl && (
-                  <OutputBox className="space-y-3 text-center">
-                    <img
-                      src={svgPngUrl}
-                      alt="SVG to PNG result"
-                      className="mx-auto max-h-64 rounded-2xl border border-[#e3d7ff] bg-white p-3"
-                    />
-                    <a
-                      href={svgPngUrl}
-                      download="converted-from-svg.png"
-                      className="text-sm text-[#5b3df5] hover:underline"
-                    >
-                      下载 PNG
-                    </a>
-                  </OutputBox>
-                )}
-              </div>
+              <SvgToImageTool />
             </SectionCard>
 
             <SectionCard
@@ -2238,60 +797,7 @@ export default function ToolsClientPage({
               description="基于 Canvas 做本地压缩，可选 JPEG / WebP，适合发图前快速瘦身。"
               className={isToolVisible("image-compress") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <ToolFileInput
-                  accept="image/*"
-                  onChange={handleCompressImage}
-                  hint="选择要压缩的图片，可调整质量、最大宽度与导出格式"
-                />
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <Input
-                    className={inputClass}
-                    value={compressQuality}
-                    onChange={(event) => setCompressQuality(event.target.value)}
-                    placeholder="质量 0~1"
-                  />
-                  <Input
-                    className={inputClass}
-                    value={compressMaxWidth}
-                    onChange={(event) =>
-                      setCompressMaxWidth(event.target.value)
-                    }
-                    placeholder="最大宽度"
-                  />
-                  <FancySelect
-                    value={compressType}
-                    onChange={setCompressType}
-                    ariaLabel="选择压缩格式"
-                    options={[
-                      { value: "image/webp", label: "WebP" },
-                      { value: "image/jpeg", label: "JPEG" },
-                    ]}
-                  />
-                </div>
-                {compressError && <OutputBox>{compressError}</OutputBox>}
-                {compressDataUrl && compressInfo && (
-                  <OutputBox className="space-y-3">
-                    <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-                      压缩前 {formatBytes(compressInfo.before)} · 压缩后{" "}
-                      {formatBytes(compressInfo.after)} · 输出{" "}
-                      {compressInfo.type}
-                    </div>
-                    <img
-                      src={compressDataUrl}
-                      alt="Compressed result"
-                      className="max-h-72 rounded-2xl border border-[#e3d7ff] bg-white object-contain p-2"
-                    />
-                    <a
-                      href={compressDataUrl}
-                      download={`compressed.${compressType === "image/webp" ? "webp" : "jpg"}`}
-                      className="text-sm text-[#5b3df5] hover:underline"
-                    >
-                      下载压缩图
-                    </a>
-                  </OutputBox>
-                )}
-              </div>
+              <ImageCompressTool />
             </SectionCard>
 
             <SectionCard
@@ -2300,42 +806,7 @@ export default function ToolsClientPage({
               description="上传头像后本地生成一个轻量简版摸头 GIF，适合做个性签名或评论区头像。"
               className={isToolVisible("pet-gif") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <ToolFileInput
-                  accept="image/*"
-                  onChange={handleGeneratePetGif}
-                  hint="上传一张头像/图片，生成透明背景的摸头 GIF"
-                />
-                <div className="text-xs leading-6 text-[#7b69a5] dark:text-[#af9fda]">
-                  这版是站内自制的极简摸头动效，不依赖外部服务，会生成透明背景
-                  GIF。
-                </div>
-                {petGifError && <OutputBox>{petGifError}</OutputBox>}
-                {petGifBusy && (
-                  <OutputBox>
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      正在生成 GIF，请稍等…
-                    </div>
-                  </OutputBox>
-                )}
-                {petGifUrl && !petGifBusy && (
-                  <OutputBox className="space-y-3 text-center">
-                    <img
-                      src={petGifUrl}
-                      alt="Patting GIF"
-                      className="mx-auto max-h-56 rounded-2xl border border-[#e3d7ff] bg-[radial-gradient(circle_at_center,#f7f2ff,#efe7ff)] p-3"
-                    />
-                    <a
-                      href={petGifUrl}
-                      download="pet-pat.gif"
-                      className="text-sm text-[#5b3df5] hover:underline"
-                    >
-                      下载 GIF
-                    </a>
-                  </OutputBox>
-                )}
-              </div>
+              <PetGifTool />
             </SectionCard>
           </div>
         </section>
@@ -2361,178 +832,7 @@ export default function ToolsClientPage({
               description="一款免费的 llms.txt 生成工具，可以把网站里的核心内容整理成统一的纯文本格式，让 ChatGPT、Claude、Gemini 这类模型更容易读懂、检索和引用你的信息。"
               className={isToolVisible("llms-txt") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={llmsUrlInput}
-                  onChange={(event) => setLlmsUrlInput(event.target.value)}
-                  placeholder="例如 https://example.com"
-                />
-
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    onClick={() => runServerTool("llms-txt", { url: llmsUrlInput })}
-                    className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                  >
-                    {loadingMap["llms-txt"] ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      "生成 llms.txt"
-                    )}
-                  </Button>
-
-                  {serverResults["llms-txt"]?.generated && (
-                    <>
-                      <Button
-                        variant="outline"
-                        onClick={() =>
-                          copyGeneratedText(
-                            "llms-txt",
-                            serverResults["llms-txt"].generated,
-                          )
-                        }
-                        className={secondaryButtonClass}
-                      >
-                        {copiedTool === "llms-txt" ? (
-                          <Check className="mr-2 h-4 w-4" />
-                        ) : (
-                          <Copy className="mr-2 h-4 w-4" />
-                        )}
-                        {copiedTool === "llms-txt" ? "已复制" : "复制文本"}
-                      </Button>
-
-                      <Button
-                        variant="outline"
-                        onClick={() =>
-                          downloadPlainText(
-                            "llms.txt",
-                            serverResults["llms-txt"].generated,
-                          )
-                        }
-                        className={secondaryButtonClass}
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        下载 llms.txt
-                      </Button>
-                    </>
-                  )}
-                </div>
-
-                {serverErrors["llms-txt"] && (
-                  <OutputBox>{serverErrors["llms-txt"]}</OutputBox>
-                )}
-
-                {serverResults["llms-txt"] && (
-                  <OutputBox className="space-y-3">
-                    <div className="grid gap-2 text-sm sm:grid-cols-2">
-                      <div>站点标题：{serverResults["llms-txt"].siteTitle}</div>
-                      <div>主语言：{serverResults["llms-txt"].language || "-"}</div>
-                      <div className="break-all">
-                        站点地址：{serverResults["llms-txt"].siteUrl}
-                      </div>
-                      <div>
-                        语言版本：
-                        {
-                          serverResults["llms-txt"].languageVariants.filter(
-                            (item: { code: string }) => item.code !== "x-default",
-                          ).length
-                        }{" "}
-                        个
-                      </div>
-                      <div>
-                        主要栏目数：{serverResults["llms-txt"].primarySections.length} 个
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 text-xs">
-                      <a
-                        href={serverResults["llms-txt"].robots.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1.5 text-[#5c4a88] transition hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#392d56] dark:bg-white/[0.03] dark:text-[#d2c6f3]"
-                      >
-                        robots.txt
-                      </a>
-                      <a
-                        href={serverResults["llms-txt"].sitemap.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1.5 text-[#5c4a88] transition hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#392d56] dark:bg-white/[0.03] dark:text-[#d2c6f3]"
-                      >
-                        sitemap.xml
-                      </a>
-                      {serverResults["llms-txt"].rssUrl && (
-                        <a
-                          href={serverResults["llms-txt"].rssUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1.5 text-[#5c4a88] transition hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#392d56] dark:bg-white/[0.03] dark:text-[#d2c6f3]"
-                        >
-                          RSS / Feed
-                        </a>
-                      )}
-                    </div>
-
-                    {serverResults["llms-txt"].languageVariants.filter(
-                      (item: { code: string }) => item.code !== "x-default",
-                    ).length > 0 && (
-                      <div className="space-y-2">
-                        <div className="text-xs uppercase tracking-[0.18em] text-[#7f71ab] dark:text-[#ab9cd8]">
-                          Language Versions
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {serverResults["llms-txt"].languageVariants.map(
-                            (item: { code: string; label: string; url: string }) =>
-                              item.code === "x-default" ? null : (
-                                <a
-                                  key={`${item.code}-${item.url}`}
-                                  href={item.url}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="rounded-full border border-[#dacdff] bg-[#f7f1ff] px-3 py-1.5 text-xs text-[#543c8f] transition hover:border-[#8b6bff] hover:text-[#4f31d7] dark:border-[#392d56] dark:bg-[#211834] dark:text-[#d8ccff]"
-                                >
-                                  {item.label}
-                                  <span className="ml-1 text-[#876fc4] dark:text-[#bbaef0]">
-                                    {item.code}
-                                  </span>
-                                </a>
-                              ),
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {serverResults["llms-txt"].primarySections.length > 0 && (
-                      <div className="space-y-2">
-                        <div className="text-xs uppercase tracking-[0.18em] text-[#7f71ab] dark:text-[#ab9cd8]">
-                          Primary Sections
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {serverResults["llms-txt"].primarySections.map(
-                            (item: { label: string; url: string }) => (
-                              <a
-                                key={item.url}
-                                href={item.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="rounded-full border border-[#dacdff] bg-[#f7f1ff] px-3 py-1.5 text-xs text-[#543c8f] transition hover:border-[#8b6bff] hover:text-[#4f31d7] dark:border-[#392d56] dark:bg-[#211834] dark:text-[#d8ccff]"
-                              >
-                                {item.label}
-                              </a>
-                            ),
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    <textarea
-                      className={`${inputClass} min-h-[320px] resize-y font-mono text-xs leading-6`}
-                      value={serverResults["llms-txt"].generated}
-                      readOnly
-                    />
-                  </OutputBox>
-                )}
-              </div>
+              <LlmsTxtTool />
             </SectionCard>
 
             <SectionCard
@@ -2550,101 +850,7 @@ export default function ToolsClientPage({
               description="填好标题、描述、关键词与社交分享信息，一键生成可直接粘贴到 <head> 的 SEO 与 Open Graph / Twitter 卡片标签。"
               className={isToolVisible("meta-tags") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <div>
-                  <Input
-                    className={inputClass}
-                    value={seoTitle}
-                    onChange={(event) => setSeoTitle(event.target.value)}
-                    placeholder="页面标题 Title"
-                  />
-                  <div
-                    className={cn(
-                      "mt-1 text-xs",
-                      seoTitle.length > 60
-                        ? "text-[#d8453f] dark:text-[#ff9b95]"
-                        : "text-[#7b69a5] dark:text-[#af9fda]",
-                    )}
-                  >
-                    标题 {seoTitle.length} 字符（建议 ≤ 60）
-                  </div>
-                </div>
-                <div>
-                  <textarea
-                    className={`${inputClass} min-h-[88px] resize-y`}
-                    value={seoDescription}
-                    onChange={(event) => setSeoDescription(event.target.value)}
-                    placeholder="页面描述 Description"
-                  />
-                  <div
-                    className={cn(
-                      "mt-1 text-xs",
-                      seoDescription.length > 160
-                        ? "text-[#d8453f] dark:text-[#ff9b95]"
-                        : "text-[#7b69a5] dark:text-[#af9fda]",
-                    )}
-                  >
-                    描述 {seoDescription.length} 字符（建议 ≤ 160）
-                  </div>
-                </div>
-                <Input
-                  className={inputClass}
-                  value={seoKeywords}
-                  onChange={(event) => setSeoKeywords(event.target.value)}
-                  placeholder="关键词，逗号分隔（可选）"
-                />
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Input
-                    className={inputClass}
-                    value={seoUrl}
-                    onChange={(event) => setSeoUrl(event.target.value)}
-                    placeholder="规范链接 URL"
-                  />
-                  <Input
-                    className={inputClass}
-                    value={seoSiteName}
-                    onChange={(event) => setSeoSiteName(event.target.value)}
-                    placeholder="站点名称（可选）"
-                  />
-                </div>
-                <Input
-                  className={inputClass}
-                  value={seoImage}
-                  onChange={(event) => setSeoImage(event.target.value)}
-                  placeholder="社交分享图 URL（可选）"
-                />
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => copyGeneratedText("meta-tags", metaTagsOutput)}
-                    className={secondaryButtonClass}
-                    disabled={!metaTagsOutput}
-                  >
-                    {copiedTool === "meta-tags" ? (
-                      <Check className="mr-2 h-4 w-4" />
-                    ) : (
-                      <Copy className="mr-2 h-4 w-4" />
-                    )}
-                    {copiedTool === "meta-tags" ? "已复制" : "复制标签"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => downloadPlainText("meta-tags.html", metaTagsOutput)}
-                    className={secondaryButtonClass}
-                    disabled={!metaTagsOutput}
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    下载
-                  </Button>
-                </div>
-                {metaTagsOutput && (
-                  <textarea
-                    className={`${inputClass} min-h-[200px] resize-y font-mono text-xs leading-6`}
-                    value={metaTagsOutput}
-                    readOnly
-                  />
-                )}
-              </div>
+              <MetaTagsTool />
             </SectionCard>
 
             <SectionCard
@@ -2653,61 +859,7 @@ export default function ToolsClientPage({
               description="按 User-agent、Allow / Disallow 规则与 Sitemap 地址生成标准 robots.txt，控制搜索引擎与 AI 爬虫的抓取范围。"
               className={isToolVisible("robots-txt") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={robotsUserAgent}
-                  onChange={(event) => setRobotsUserAgent(event.target.value)}
-                  placeholder="User-agent（默认 *）"
-                />
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <textarea
-                    className={`${inputClass} min-h-[96px] resize-y font-mono text-xs`}
-                    value={robotsAllow}
-                    onChange={(event) => setRobotsAllow(event.target.value)}
-                    placeholder={"Allow 路径，每行一个\n例如 /"}
-                  />
-                  <textarea
-                    className={`${inputClass} min-h-[96px] resize-y font-mono text-xs`}
-                    value={robotsDisallow}
-                    onChange={(event) => setRobotsDisallow(event.target.value)}
-                    placeholder={"Disallow 路径，每行一个\n例如 /admin"}
-                  />
-                </div>
-                <textarea
-                  className={`${inputClass} min-h-[64px] resize-y font-mono text-xs`}
-                  value={robotsSitemap}
-                  onChange={(event) => setRobotsSitemap(event.target.value)}
-                  placeholder="Sitemap 地址，每行一个（可选）"
-                />
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => copyGeneratedText("robots-txt", robotsOutput)}
-                    className={secondaryButtonClass}
-                  >
-                    {copiedTool === "robots-txt" ? (
-                      <Check className="mr-2 h-4 w-4" />
-                    ) : (
-                      <Copy className="mr-2 h-4 w-4" />
-                    )}
-                    {copiedTool === "robots-txt" ? "已复制" : "复制"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => downloadPlainText("robots.txt", robotsOutput)}
-                    className={secondaryButtonClass}
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    下载 robots.txt
-                  </Button>
-                </div>
-                <textarea
-                  className={`${inputClass} min-h-[160px] resize-y font-mono text-xs leading-6`}
-                  value={robotsOutput}
-                  readOnly
-                />
-              </div>
+              <RobotsTxtTool />
             </SectionCard>
 
             <SectionCard
@@ -2716,78 +868,7 @@ export default function ToolsClientPage({
               description="生成 schema.org 结构化数据，帮助搜索引擎与 AI 更准确地理解页面，支持文章、网站与组织三种常见类型。"
               className={isToolVisible("json-ld") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <FancySelect
-                  ariaLabel="选择结构化数据类型"
-                  value={jsonLdType}
-                  onChange={(value) => setJsonLdType(value)}
-                  options={[
-                    { value: "Article", label: "文章 Article" },
-                    { value: "WebSite", label: "网站 WebSite" },
-                    { value: "Organization", label: "组织 Organization" },
-                  ]}
-                />
-                <Input
-                  className={inputClass}
-                  value={jsonLdName}
-                  onChange={(event) => setJsonLdName(event.target.value)}
-                  placeholder={jsonLdType === "Article" ? "文章标题 headline" : "名称 name"}
-                />
-                <Input
-                  className={inputClass}
-                  value={jsonLdUrl}
-                  onChange={(event) => setJsonLdUrl(event.target.value)}
-                  placeholder="URL"
-                />
-                <textarea
-                  className={`${inputClass} min-h-[72px] resize-y`}
-                  value={jsonLdDesc}
-                  onChange={(event) => setJsonLdDesc(event.target.value)}
-                  placeholder="描述 description（可选）"
-                />
-                {jsonLdType === "Article" && (
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <Input
-                      className={inputClass}
-                      value={jsonLdAuthor}
-                      onChange={(event) => setJsonLdAuthor(event.target.value)}
-                      placeholder="作者 author（可选）"
-                    />
-                    <Input
-                      className={inputClass}
-                      type="date"
-                      value={jsonLdDate}
-                      onChange={(event) => setJsonLdDate(event.target.value)}
-                      placeholder="发布日期"
-                    />
-                  </div>
-                )}
-                <Input
-                  className={inputClass}
-                  value={jsonLdImage}
-                  onChange={(event) => setJsonLdImage(event.target.value)}
-                  placeholder={jsonLdType === "Organization" ? "Logo 图片 URL（可选）" : "图片 URL（可选）"}
-                />
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => copyGeneratedText("json-ld", jsonLdOutput)}
-                    className={secondaryButtonClass}
-                  >
-                    {copiedTool === "json-ld" ? (
-                      <Check className="mr-2 h-4 w-4" />
-                    ) : (
-                      <Copy className="mr-2 h-4 w-4" />
-                    )}
-                    {copiedTool === "json-ld" ? "已复制" : "复制 JSON-LD"}
-                  </Button>
-                </div>
-                <textarea
-                  className={`${inputClass} min-h-[200px] resize-y font-mono text-xs leading-6`}
-                  value={jsonLdOutput}
-                  readOnly
-                />
-              </div>
+              <JsonLdTool />
             </SectionCard>
 
             <SectionCard
@@ -2796,55 +877,7 @@ export default function ToolsClientPage({
               description="粘贴正文，统计字数与高频词，并可针对目标关键词计算出现次数与密度，辅助判断内容是否堆砌或覆盖不足。"
               className={isToolVisible("keyword-density") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <textarea
-                  className={`${inputClass} min-h-[150px] resize-y`}
-                  value={densityText}
-                  onChange={(event) => setDensityText(event.target.value)}
-                  placeholder="粘贴要分析的正文内容"
-                />
-                <Input
-                  className={inputClass}
-                  value={densityKeyword}
-                  onChange={(event) => setDensityKeyword(event.target.value)}
-                  placeholder="目标关键词（可选）"
-                />
-                {densityText.trim() && (
-                  <OutputBox className="space-y-3">
-                    <div className="grid gap-2 text-sm sm:grid-cols-2">
-                      <div>总字数（去空白）：{densityResult.chars}</div>
-                      <div>分词数：{densityResult.totalTokens}</div>
-                    </div>
-                    {densityResult.keyword && (
-                      <div className="rounded-2xl border border-[#ddd0ff] bg-white/60 px-3 py-2 text-sm dark:border-[#392d56] dark:bg-white/[0.03]">
-                        关键词「{densityResult.keyword.keyword}」出现{" "}
-                        {densityResult.keyword.occurrences} 次，密度约{" "}
-                        {(densityResult.keyword.density * 100).toFixed(2)}%
-                      </div>
-                    )}
-                    {densityResult.top.length > 0 && (
-                      <div className="space-y-2">
-                        <div className="text-xs uppercase tracking-[0.18em] text-[#7f71ab] dark:text-[#ab9cd8]">
-                          高频词 Top {densityResult.top.length}
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {densityResult.top.map((item) => (
-                            <span
-                              key={item.word}
-                              className="rounded-full border border-[#dacdff] bg-[#f7f1ff] px-3 py-1 text-xs text-[#543c8f] dark:border-[#392d56] dark:bg-[#211834] dark:text-[#d8ccff]"
-                            >
-                              {item.word}
-                              <span className="ml-1 text-[#876fc4] dark:text-[#bbaef0]">
-                                {item.count}（{(item.ratio * 100).toFixed(1)}%）
-                              </span>
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </OutputBox>
-                )}
-              </div>
+              <KeywordDensityTool />
             </SectionCard>
           </div>
         </section>
@@ -2870,33 +903,7 @@ export default function ToolsClientPage({
               description="读取当前请求头里的公网来源信息，适合快速确认反代和访客地址。"
               className={isToolVisible("client-ip") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Button
-                  onClick={() => runServerTool("client-ip")}
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap["client-ip"] ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "获取客户端信息"
-                  )}
-                </Button>
-                {serverErrors["client-ip"] && (
-                  <OutputBox>{serverErrors["client-ip"]}</OutputBox>
-                )}
-                {serverResults["client-ip"] && (
-                  <OutputBox className="space-y-2">
-                    <div>IP：{serverResults["client-ip"].ip}</div>
-                    <div className="break-all">
-                      x-forwarded-for：
-                      {serverResults["client-ip"].forwardedFor || "-"}
-                    </div>
-                    <div className="break-all">
-                      User-Agent：{serverResults["client-ip"].userAgent || "-"}
-                    </div>
-                  </OutputBox>
-                )}
-              </div>
+              <ClientIpTool />
             </SectionCard>
 
             <SectionCard
@@ -2905,52 +912,7 @@ export default function ToolsClientPage({
               description="一次拉出 A、AAAA、MX、NS、TXT 等常见记录，方便排查域名解析问题。"
               className={isToolVisible("dns-lookup") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={dnsHost}
-                  onChange={(event) => setDnsHost(event.target.value)}
-                  placeholder="例如 openai.com"
-                />
-                <Button
-                  onClick={() => runServerTool("dns-lookup", { host: dnsHost })}
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap["dns-lookup"] ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "开始查询"
-                  )}
-                </Button>
-                {serverErrors["dns-lookup"] && (
-                  <OutputBox>{serverErrors["dns-lookup"]}</OutputBox>
-                )}
-                {serverResults["dns-lookup"] && (
-                  <OutputBox className="space-y-2">
-                    <div>
-                      A：{serverResults["dns-lookup"].a.join(", ") || "-"}
-                    </div>
-                    <div>
-                      AAAA：{serverResults["dns-lookup"].aaaa.join(", ") || "-"}
-                    </div>
-                    <div>
-                      MX：
-                      {serverResults["dns-lookup"].mx
-                        .map(
-                          (item: { exchange: string; priority: number }) =>
-                            `${item.exchange} (${item.priority})`,
-                        )
-                        .join(", ") || "-"}
-                    </div>
-                    <div>
-                      NS：{serverResults["dns-lookup"].ns.join(", ") || "-"}
-                    </div>
-                    <div>
-                      TXT：{serverResults["dns-lookup"].txt.join(" | ") || "-"}
-                    </div>
-                  </OutputBox>
-                )}
-              </div>
+              <DnsLookupTool />
             </SectionCard>
 
             <SectionCard
@@ -2959,71 +921,7 @@ export default function ToolsClientPage({
               description="出于运行环境限制，这里做的是 TCP connect 延迟测试，更适合排查端口可达性。"
               className={isToolVisible("ping") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Input
-                    className={inputClass}
-                    value={pingHost}
-                    onChange={(event) => setPingHost(event.target.value)}
-                    placeholder="目标主机"
-                  />
-                  <Input
-                    className={inputClass}
-                    value={pingPort}
-                    onChange={(event) => setPingPort(event.target.value)}
-                    placeholder="端口，例如 443"
-                  />
-                </div>
-                <Button
-                  onClick={() =>
-                    runServerTool("ping", {
-                      host: pingHost,
-                      port: pingPort,
-                      count: 4,
-                    })
-                  }
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap.ping ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "开始 Ping"
-                  )}
-                </Button>
-                {serverErrors.ping && (
-                  <OutputBox>{serverErrors.ping}</OutputBox>
-                )}
-                {serverResults.ping && (
-                  <OutputBox className="space-y-2">
-                    <div>
-                      平均延迟：
-                      {serverResults.ping.averageLatency !== null
-                        ? `${serverResults.ping.averageLatency} ms`
-                        : "全部超时"}
-                    </div>
-                    <div className="space-y-1">
-                      {serverResults.ping.attempts.map(
-                        (
-                          item: {
-                            port: number;
-                            open: boolean;
-                            latency: number | null;
-                            error?: string;
-                          },
-                          index: number,
-                        ) => (
-                          <div key={`${item.port}-${index}`}>
-                            #{index + 1}：
-                            {item.open
-                              ? `${item.latency} ms`
-                              : `失败 (${item.error || "closed"})`}
-                          </div>
-                        ),
-                      )}
-                    </div>
-                  </OutputBox>
-                )}
-              </div>
+              <PingTool />
             </SectionCard>
 
             <SectionCard
@@ -3032,64 +930,7 @@ export default function ToolsClientPage({
               description="支持逗号和短范围写法，如 80,443,3000-3005；为了安全，限制了端口数量和内网目标。"
               className={isToolVisible("port-scan") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={portHost}
-                  onChange={(event) => setPortHost(event.target.value)}
-                  placeholder="目标主机"
-                />
-                <Input
-                  className={inputClass}
-                  value={portExpression}
-                  onChange={(event) => setPortExpression(event.target.value)}
-                  placeholder="例如 80,443,3000-3005"
-                />
-                <Button
-                  onClick={() =>
-                    runServerTool("port-scan", {
-                      host: portHost,
-                      ports: portExpression,
-                    })
-                  }
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap["port-scan"] ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "扫描端口"
-                  )}
-                </Button>
-                {serverErrors["port-scan"] && (
-                  <OutputBox>{serverErrors["port-scan"]}</OutputBox>
-                )}
-                {serverResults["port-scan"] && (
-                  <OutputBox className="space-y-2">
-                    <div>
-                      开放端口：
-                      {serverResults["port-scan"].openPorts.join(", ") ||
-                        "未发现"}
-                    </div>
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      {serverResults["port-scan"].results.map(
-                        (item: {
-                          port: number;
-                          open: boolean;
-                          latency: number | null;
-                        }) => (
-                          <div
-                            key={item.port}
-                            className="rounded-xl bg-white/60 px-3 py-2 dark:bg-white/[0.03]"
-                          >
-                            {item.port} ·{" "}
-                            {item.open ? `开放 (${item.latency} ms)` : "关闭"}
-                          </div>
-                        ),
-                      )}
-                    </div>
-                  </OutputBox>
-                )}
-              </div>
+              <PortScanTool />
             </SectionCard>
 
             <SectionCard
@@ -3098,49 +939,7 @@ export default function ToolsClientPage({
               description="检测最终跳转地址、状态码和响应头部中的基本信息。"
               className={isToolVisible("url-status") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={urlStatusInput}
-                  onChange={(event) => setUrlStatusInput(event.target.value)}
-                  placeholder="例如 https://openai.com"
-                />
-                <Button
-                  onClick={() =>
-                    runServerTool("url-status", { url: urlStatusInput })
-                  }
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap["url-status"] ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "检测状态"
-                  )}
-                </Button>
-                {serverErrors["url-status"] && (
-                  <OutputBox>{serverErrors["url-status"]}</OutputBox>
-                )}
-                {serverResults["url-status"] && (
-                  <OutputBox className="space-y-2">
-                    <div>
-                      状态：{serverResults["url-status"].status}{" "}
-                      {serverResults["url-status"].statusText}
-                    </div>
-                    <div className="break-all">
-                      最终地址：{serverResults["url-status"].finalUrl}
-                    </div>
-                    <div>
-                      类型：{serverResults["url-status"].contentType || "-"}
-                    </div>
-                    <div>
-                      长度：{serverResults["url-status"].contentLength || "-"}
-                    </div>
-                    <div>
-                      Server：{serverResults["url-status"].server || "-"}
-                    </div>
-                  </OutputBox>
-                )}
-              </div>
+              <UrlStatusTool />
             </SectionCard>
 
             <SectionCard
@@ -3149,48 +948,7 @@ export default function ToolsClientPage({
               description="提取标题、描述、canonical、favicon 以及常见 OG / Twitter 元信息。"
               className={isToolVisible("web-metadata") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={metadataUrlInput}
-                  onChange={(event) => setMetadataUrlInput(event.target.value)}
-                  placeholder="输入网页 URL"
-                />
-                <Button
-                  onClick={() =>
-                    runServerTool("web-metadata", { url: metadataUrlInput })
-                  }
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap["web-metadata"] ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "提取元数据"
-                  )}
-                </Button>
-                {serverErrors["web-metadata"] && (
-                  <OutputBox>{serverErrors["web-metadata"]}</OutputBox>
-                )}
-                {serverResults["web-metadata"] && (
-                  <OutputBox className="space-y-2">
-                    <div>标题：{serverResults["web-metadata"].title}</div>
-                    <div>
-                      描述：{serverResults["web-metadata"].description || "-"}
-                    </div>
-                    <div className="break-all">
-                      Canonical：
-                      {serverResults["web-metadata"].canonical || "-"}
-                    </div>
-                    <div className="break-all">
-                      Favicon：{serverResults["web-metadata"].favicon || "-"}
-                    </div>
-                    <div className="break-all">
-                      OG Image：
-                      {serverResults["web-metadata"].openGraph?.image || "-"}
-                    </div>
-                  </OutputBox>
-                )}
-              </div>
+              <WebMetadataTool />
             </SectionCard>
 
             <SectionCard
@@ -3199,57 +957,7 @@ export default function ToolsClientPage({
               description="列出页面中的常见图片资源，适合快速收集素材或检查首图。"
               className={isToolVisible("web-images") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={imageExtractUrlInput}
-                  onChange={(event) =>
-                    setImageExtractUrlInput(event.target.value)
-                  }
-                  placeholder="输入网页 URL"
-                />
-                <Button
-                  onClick={() =>
-                    runServerTool("web-images", { url: imageExtractUrlInput })
-                  }
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap["web-images"] ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "提取图片"
-                  )}
-                </Button>
-                {serverErrors["web-images"] && (
-                  <OutputBox>{serverErrors["web-images"]}</OutputBox>
-                )}
-                {serverResults["web-images"] && (
-                  <OutputBox className="space-y-3">
-                    <div>
-                      共提取 {serverResults["web-images"].images.length} 张图片
-                    </div>
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                      {serverResults["web-images"].images
-                        .slice(0, 12)
-                        .map((item: { url: string; alt: string }) => (
-                          <a
-                            key={item.url}
-                            href={item.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="rounded-2xl border border-[#e3d7ff] bg-white p-2 dark:border-[#34294f] dark:bg-white/[0.03]"
-                          >
-                            <img
-                              src={item.url}
-                              alt={item.alt || "web image"}
-                              className="h-28 w-full rounded-xl object-cover"
-                            />
-                          </a>
-                        ))}
-                    </div>
-                  </OutputBox>
-                )}
-              </div>
+              <WebImagesTool />
             </SectionCard>
 
             <SectionCard
@@ -3258,38 +966,7 @@ export default function ToolsClientPage({
               description="抓取页面主体内容并转成 Markdown，适合先做初稿摘录或归档。"
               className={isToolVisible("web-markdown") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={markdownUrlInput}
-                  onChange={(event) => setMarkdownUrlInput(event.target.value)}
-                  placeholder="输入网页 URL"
-                />
-                <Button
-                  onClick={() =>
-                    runServerTool("web-markdown", { url: markdownUrlInput })
-                  }
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap["web-markdown"] ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "转换为 Markdown"
-                  )}
-                </Button>
-                {serverErrors["web-markdown"] && (
-                  <OutputBox>{serverErrors["web-markdown"]}</OutputBox>
-                )}
-                {serverResults["web-markdown"] && (
-                  <OutputBox>
-                    <textarea
-                      className={`${inputClass} min-h-[260px] resize-y font-mono text-xs`}
-                      value={serverResults["web-markdown"].markdown}
-                      readOnly
-                    />
-                  </OutputBox>
-                )}
-              </div>
+              <WebMarkdownTool />
             </SectionCard>
 
           </div>
@@ -3316,60 +993,7 @@ export default function ToolsClientPage({
               description="查询 UUID、头像和皮肤资源，适合做个人主页挂件或资料卡。"
               className={isToolVisible("minecraft-player") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={minecraftPlayerInput}
-                  onChange={(event) =>
-                    setMinecraftPlayerInput(event.target.value)
-                  }
-                  placeholder="例如 Notch"
-                />
-                <Button
-                  onClick={() =>
-                    runServerTool("minecraft-player", {
-                      username: minecraftPlayerInput,
-                    })
-                  }
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap["minecraft-player"] ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "查询玩家"
-                  )}
-                </Button>
-                {serverErrors["minecraft-player"] && (
-                  <OutputBox>{serverErrors["minecraft-player"]}</OutputBox>
-                )}
-                {serverResults["minecraft-player"] && (
-                  <OutputBox className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={serverResults["minecraft-player"].avatarUrl}
-                        alt="Minecraft avatar"
-                        className="h-14 w-14 rounded-2xl border border-[#e3d7ff]"
-                      />
-                      <div>
-                        <div className="font-medium text-[#2f2154] dark:text-[#f4efff]">
-                          {serverResults["minecraft-player"].username}
-                        </div>
-                        <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-                          {serverResults["minecraft-player"].id}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="break-all text-xs">
-                      皮肤：{serverResults["minecraft-player"].skinUrl}
-                    </div>
-                    {serverResults["minecraft-player"].capeUrl && (
-                      <div className="break-all text-xs">
-                        披风：{serverResults["minecraft-player"].capeUrl}
-                      </div>
-                    )}
-                  </OutputBox>
-                )}
-              </div>
+              <MinecraftPlayerTool />
             </SectionCard>
 
             <SectionCard
@@ -3378,79 +1002,7 @@ export default function ToolsClientPage({
               description="基于 mcstatus.io 免费接口查询 Java 或 Bedrock 服务器状态。"
               className={isToolVisible("minecraft-server") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setMinecraftEdition("java")}
-                    className={`rounded-full px-4 py-2 text-sm transition ${minecraftEdition === "java" ? "bg-[#5b3df5] text-white" : "bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]"}`}
-                  >
-                    Java
-                  </button>
-                  <button
-                    onClick={() => setMinecraftEdition("bedrock")}
-                    className={`rounded-full px-4 py-2 text-sm transition ${minecraftEdition === "bedrock" ? "bg-[#5b3df5] text-white" : "bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]"}`}
-                  >
-                    Bedrock
-                  </button>
-                </div>
-                <Input
-                  className={inputClass}
-                  value={minecraftServerInput}
-                  onChange={(event) =>
-                    setMinecraftServerInput(event.target.value)
-                  }
-                  placeholder="例如 mc.hypixel.net"
-                />
-                <Button
-                  onClick={() =>
-                    runServerTool("minecraft-server", {
-                      address: minecraftServerInput,
-                      edition: minecraftEdition,
-                    })
-                  }
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap["minecraft-server"] ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "查询服务器"
-                  )}
-                </Button>
-                {serverErrors["minecraft-server"] && (
-                  <OutputBox>{serverErrors["minecraft-server"]}</OutputBox>
-                )}
-                {serverResults["minecraft-server"] && (
-                  <OutputBox className="space-y-2">
-                    <div>
-                      在线状态：
-                      {serverResults["minecraft-server"].data.online
-                        ? "在线"
-                        : "离线"}
-                    </div>
-                    <div>
-                      版本：
-                      {serverResults["minecraft-server"].data.version
-                        ?.name_clean ||
-                        serverResults["minecraft-server"].data.version?.name ||
-                        "-"}
-                    </div>
-                    <div>
-                      玩家：
-                      {serverResults["minecraft-server"].data.players?.online ??
-                        "-"}{" "}
-                      /{" "}
-                      {serverResults["minecraft-server"].data.players?.max ??
-                        "-"}
-                    </div>
-                    <div className="break-all">
-                      MOTD：
-                      {serverResults["minecraft-server"].data.motd?.clean ||
-                        serverResults["minecraft-server"].data.motd?.raw ||
-                        "-"}
-                    </div>
-                  </OutputBox>
-                )}
-              </div>
+              <MinecraftServerTool />
             </SectionCard>
 
             <SectionCard
@@ -3459,54 +1011,7 @@ export default function ToolsClientPage({
               description="解析 owner/repo 或完整仓库地址，返回 stars、forks、topics 和语言分布。"
               className={isToolVisible("github-repo") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={githubRepoInput}
-                  onChange={(event) => setGithubRepoInput(event.target.value)}
-                  placeholder="例如 vercel/next.js"
-                />
-                <Button
-                  onClick={() =>
-                    runServerTool("github-repo", { repo: githubRepoInput })
-                  }
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap["github-repo"] ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "查询仓库"
-                  )}
-                </Button>
-                {serverErrors["github-repo"] && (
-                  <OutputBox>{serverErrors["github-repo"]}</OutputBox>
-                )}
-                {serverResults["github-repo"] && (
-                  <OutputBox className="space-y-2">
-                    <div className="font-medium text-[#2f2154] dark:text-[#f4efff]">
-                      {serverResults["github-repo"].fullName}
-                    </div>
-                    <div>{serverResults["github-repo"].description || "-"}</div>
-                    <div>
-                      Stars {serverResults["github-repo"].stars} · Forks{" "}
-                      {serverResults["github-repo"].forks} · Issues{" "}
-                      {serverResults["github-repo"].openIssues}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {(serverResults["github-repo"].topics || [])
-                        .slice(0, 8)
-                        .map((topic: string) => (
-                          <span
-                            key={topic}
-                            className="rounded-full bg-[#f1eaff] px-3 py-1 text-xs text-[#5b3df5] dark:bg-[#241739] dark:text-[#d9ccff]"
-                          >
-                            {topic}
-                          </span>
-                        ))}
-                    </div>
-                  </OutputBox>
-                )}
-              </div>
+              <GithubRepoTool />
             </SectionCard>
 
             <SectionCard
@@ -3515,53 +1020,7 @@ export default function ToolsClientPage({
               description="输入邮箱即可本地算出 MD5，并拼出 Gravatar 头像与资料页地址。"
               className={isToolVisible("gravatar") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={gravatarEmail}
-                  onChange={(event) => setGravatarEmail(event.target.value)}
-                  placeholder="邮箱地址"
-                />
-                <Button
-                  onClick={() =>
-                    runServerTool("gravatar", {
-                      email: gravatarEmail,
-                      size: 256,
-                    })
-                  }
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap.gravatar ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "生成头像地址"
-                  )}
-                </Button>
-                {serverErrors.gravatar && (
-                  <OutputBox>{serverErrors.gravatar}</OutputBox>
-                )}
-                {serverResults.gravatar && (
-                  <OutputBox className="space-y-3">
-                    <img
-                      src={serverResults.gravatar.avatarUrl}
-                      alt="Gravatar avatar"
-                      className="h-24 w-24 rounded-full border border-[#e3d7ff]"
-                    />
-                    <div className="break-all font-mono text-xs">
-                      {serverResults.gravatar.hash}
-                    </div>
-                    <a
-                      href={serverResults.gravatar.profileUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-sm text-[#5b3df5] hover:underline"
-                    >
-                      打开 Gravatar 资料页{" "}
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </a>
-                  </OutputBox>
-                )}
-              </div>
+              <GravatarTool />
             </SectionCard>
 
             <SectionCard
@@ -3570,38 +1029,7 @@ export default function ToolsClientPage({
               description="优先查输入的 IP，没有的话就查你当前请求来源，基于本地 GeoIP 库完成。"
               className={isToolVisible("ip-geo") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={geoIpInput}
-                  onChange={(event) => setGeoIpInput(event.target.value)}
-                  placeholder="可留空，默认查询当前访问 IP"
-                />
-                <Button
-                  onClick={() => runServerTool("ip-geo", { ip: geoIpInput })}
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap["ip-geo"] ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "查询归属"
-                  )}
-                </Button>
-                {serverErrors["ip-geo"] && (
-                  <OutputBox>{serverErrors["ip-geo"]}</OutputBox>
-                )}
-                {serverResults["ip-geo"] && (
-                  <OutputBox className="space-y-2">
-                    <div>IP：{serverResults["ip-geo"].ip}</div>
-                    <div>
-                      国家 / 地区：{serverResults["ip-geo"].country || "-"} /{" "}
-                      {serverResults["ip-geo"].region || "-"}
-                    </div>
-                    <div>城市：{serverResults["ip-geo"].city || "-"}</div>
-                    <div>时区：{serverResults["ip-geo"].timezone || "-"}</div>
-                  </OutputBox>
-                )}
-              </div>
+              <IpGeoTool />
             </SectionCard>
 
             <SectionCard
@@ -3610,41 +1038,7 @@ export default function ToolsClientPage({
               description="使用本地号段库查询中国大陆手机号的省市和运营商，不走在线接口。"
               className={isToolVisible("mobile-area") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <Input
-                  className={inputClass}
-                  value={phoneInput}
-                  onChange={(event) => setPhoneInput(event.target.value)}
-                  placeholder="例如 13800138000"
-                />
-                <Button
-                  onClick={() =>
-                    runServerTool("mobile-area", { phone: phoneInput })
-                  }
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap["mobile-area"] ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "查询归属地"
-                  )}
-                </Button>
-                {serverErrors["mobile-area"] && (
-                  <OutputBox>{serverErrors["mobile-area"]}</OutputBox>
-                )}
-                {serverResults["mobile-area"] && (
-                  <OutputBox className="space-y-2">
-                    <div>号码：{serverResults["mobile-area"].phone}</div>
-                    <div>
-                      省份：{serverResults["mobile-area"].province || "-"}
-                    </div>
-                    <div>城市：{serverResults["mobile-area"].city || "-"}</div>
-                    <div>
-                      运营商：{serverResults["mobile-area"].carrier || "-"}
-                    </div>
-                  </OutputBox>
-                )}
-              </div>
+              <MobileAreaTool />
             </SectionCard>
 
             <SectionCard
@@ -3653,56 +1047,7 @@ export default function ToolsClientPage({
               description="直接拉取 Bing 当天壁纸，适合拿来做背景图、封面图或桌面收藏。"
               className={isToolVisible("bing-wallpaper") ? "" : "hidden"}
             >
-              <div className="space-y-3">
-                <FancySelect
-                  value={bingMarket}
-                  onChange={setBingMarket}
-                  ariaLabel="选择 Bing 区域"
-                  options={[
-                    { value: "zh-CN", label: "中国大陆（zh-CN）" },
-                    { value: "en-US", label: "美国（en-US）" },
-                    { value: "ja-JP", label: "日本（ja-JP）" },
-                  ]}
-                />
-                <Button
-                  onClick={() =>
-                    runServerTool("bing-wallpaper", { market: bingMarket })
-                  }
-                  className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                >
-                  {loadingMap["bing-wallpaper"] ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "获取壁纸"
-                  )}
-                </Button>
-                {serverErrors["bing-wallpaper"] && (
-                  <OutputBox>{serverErrors["bing-wallpaper"]}</OutputBox>
-                )}
-                {serverResults["bing-wallpaper"] && (
-                  <OutputBox className="space-y-3">
-                    <img
-                      src={serverResults["bing-wallpaper"].url}
-                      alt={serverResults["bing-wallpaper"].title}
-                      className="max-h-64 rounded-2xl border border-[#e3d7ff] object-cover"
-                    />
-                    <div className="font-medium text-[#2f2154] dark:text-[#f4efff]">
-                      {serverResults["bing-wallpaper"].title}
-                    </div>
-                    <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-                      {serverResults["bing-wallpaper"].copyright}
-                    </div>
-                    <a
-                      href={serverResults["bing-wallpaper"].url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-sm text-[#5b3df5] hover:underline"
-                    >
-                      打开原图
-                    </a>
-                  </OutputBox>
-                )}
-              </div>
+              <BingWallpaperTool />
             </SectionCard>
 
             <SectionCard
@@ -3711,121 +1056,166 @@ export default function ToolsClientPage({
               description="把轻量的内容型接口也收进来，适合做主页小挂件或随机内容卡片。"
               className={isToolVisible("content-tools") ? "" : "hidden"}
             >
-              <div className="space-y-4">
-                <div className="rounded-2xl border border-[#e3d7ff] bg-white/60 p-4 dark:border-[#34294f] dark:bg-white/[0.03]">
-                  <div className="mb-2 text-sm font-medium text-[#2f2154] dark:text-[#f4efff]">
-                    答案之书
-                  </div>
-                  <Input
-                    className={inputClass}
-                    value={answerQuestion}
-                    onChange={(event) => setAnswerQuestion(event.target.value)}
-                    placeholder="输入问题"
-                  />
-                  <Button
-                    onClick={() =>
-                      runServerTool("answer-book", { question: answerQuestion })
-                    }
-                    className="mt-3 rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                  >
-                    {loadingMap["answer-book"] ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      "翻一页"
-                    )}
-                  </Button>
-                  {serverResults["answer-book"] && (
-                    <div className="mt-3 text-sm leading-7 text-[#5b3df5] dark:text-[#d9ccff]">
-                      {serverResults["answer-book"].answer}
-                    </div>
-                  )}
-                </div>
+              <ContentTools />
+            </SectionCard>
+          </div>
+        </section>
+      )}
 
-                <div className="rounded-2xl border border-[#e3d7ff] bg-white/60 p-4 dark:border-[#34294f] dark:bg-white/[0.03]">
-                  <div className="mb-2 text-sm font-medium text-[#2f2154] dark:text-[#f4efff]">
-                    随机诗词
-                  </div>
-                  <Button
-                    onClick={() => runServerTool("poetry")}
-                    className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                  >
-                    {loadingMap.poetry ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      "来一首"
-                    )}
-                  </Button>
-                  {serverResults.poetry && (
-                    <div className="mt-3 space-y-2 text-sm leading-7 text-[#5c4a88] dark:text-[#d9ccff]">
-                      <div className="font-medium text-[#2f2154] dark:text-[#f4efff]">
-                        {serverResults.poetry.title}
-                      </div>
-                      <div>{serverResults.poetry.content}</div>
-                      <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-                        {serverResults.poetry.dynasty} ·{" "}
-                        {serverResults.poetry.author}
-                      </div>
-                    </div>
-                  )}
-                </div>
+      {isSectionVisible("calc-tools") && (
+        <section id="calc-tools" className="scroll-mt-28 pt-12 sm:pt-16">
+          <div className="mb-6">
+            <SectionHeading className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
+              {sections[5].title}
+            </SectionHeading>
+            <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">
+              {sections[5].description}
+            </p>
+          </div>
 
-                <div className="rounded-2xl border border-[#e3d7ff] bg-white/60 p-4 dark:border-[#34294f] dark:bg-white/[0.03]">
-                  <div className="mb-2 text-sm font-medium text-[#2f2154] dark:text-[#f4efff]">
-                    历史今天
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    <Input
-                      className={inputClass}
-                      value={historyMonth}
-                      onChange={(event) => setHistoryMonth(event.target.value)}
-                      placeholder="月"
-                    />
-                    <Input
-                      className={inputClass}
-                      value={historyDay}
-                      onChange={(event) => setHistoryDay(event.target.value)}
-                      placeholder="日"
-                    />
-                    <Button
-                      onClick={() =>
-                        runServerTool("history-today", {
-                          month: historyMonth,
-                          day: historyDay,
-                        })
-                      }
-                      className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
-                    >
-                      {loadingMap["history-today"] ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        "查询"
-                      )}
-                    </Button>
-                  </div>
-                  {serverResults["history-today"] && (
-                    <div className="mt-3 space-y-2 text-sm leading-6 text-[#5c4a88] dark:text-[#d9ccff]">
-                      {serverResults["history-today"].events
-                        .slice(0, 6)
-                        .map(
-                          (
-                            item: { year: string; text: string },
-                            index: number,
-                          ) => (
-                            <div
-                              key={`${item.year}-${index}`}
-                              className="rounded-xl border border-[#ece3ff] px-3 py-2 dark:border-[#322746]"
-                            >
-                              <span className="mr-2 font-semibold text-[#2f2154] dark:text-[#f4efff]">
-                                {item.year}
-                              </span>
-                              {item.text}
-                            </div>
-                          ),
-                        )}
-                    </div>
-                  )}
-                </div>
-              </div>
+          {renderToolTabs("calc-tools")}
+
+          <div className={sectionGridClass}>
+            <SectionCard
+              icon={ScrollText}
+              title="房贷计算器"
+              description="按等额本息或等额本金计算每月月供、总利息与总还款，买房贷款前先算一笔账。"
+              className={isToolVisible("loan") ? "" : "hidden"}
+            >
+              <LoanCalcTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={BookOpenText}
+              title="个税计算器"
+              description="输入税前月薪、五险一金与专项附加扣除，估算应缴个税与税后到手收入。"
+              className={isToolVisible("income-tax") ? "" : "hidden"}
+            >
+              <IncomeTaxTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={Sparkles}
+              title="BMI 计算器"
+              description="输入身高体重计算身体质量指数 BMI，并按中国标准给出偏瘦 / 正常 / 超重 / 肥胖判断。"
+              className={isToolVisible("bmi") ? "" : "hidden"}
+            >
+              <BmiTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={Clock3}
+              title="日期间隔计算"
+              description="计算两个日期之间相差的天数、周数与年月，也可用来算年龄或纪念日。"
+              className={isToolVisible("date-diff") ? "" : "hidden"}
+            >
+              <DateDiffTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={RefreshCcw}
+              title="单位换算"
+              description="长度、重量、面积、存储与温度的常用单位互相换算。"
+              className={isToolVisible("unit-convert") ? "" : "hidden"}
+            >
+              <UnitConvertTool />
+            </SectionCard>
+          </div>
+        </section>
+      )}
+
+      {isSectionVisible("cn-tools") && (
+        <section id="cn-tools" className="scroll-mt-28 pt-12 sm:pt-16">
+          <div className="mb-6">
+            <SectionHeading className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
+              {sections[6].title}
+            </SectionHeading>
+            <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">
+              {sections[6].description}
+            </p>
+          </div>
+
+          {renderToolTabs("cn-tools")}
+
+          <div className={sectionGridClass}>
+            <SectionCard
+              icon={RefreshCcw}
+              title="简繁体转换"
+              description="简体中文与繁体中文互相转换，基于 OpenCC 词库，转换更准确自然。"
+              className={isToolVisible("hanzi-convert") ? "" : "hidden"}
+            >
+              <HanziConvertTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={BookOpenText}
+              title="汉字转拼音"
+              description="把中文转换为拼音，支持带声调、不带声调、数字声调与首字母四种模式。"
+              className={isToolVisible("pinyin") ? "" : "hidden"}
+            >
+              <PinyinTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={SquareTerminal}
+              title="中文假数据生成"
+              description="批量生成虚构的中文姓名、手机号、邮箱与地址，适合做测试与演示数据。"
+              className={isToolVisible("chinese-faker") ? "" : "hidden"}
+            >
+              <ChineseFakerTool />
+            </SectionCard>
+          </div>
+        </section>
+      )}
+
+      {isSectionVisible("css-tools") && (
+        <section id="css-tools" className="scroll-mt-28 pt-12 sm:pt-16">
+          <div className="mb-6">
+            <SectionHeading className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
+              {sections[7].title}
+            </SectionHeading>
+            <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">
+              {sections[7].description}
+            </p>
+          </div>
+
+          {renderToolTabs("css-tools")}
+
+          <div className={sectionGridClass}>
+            <SectionCard
+              icon={Sparkles}
+              title="CSS 渐变生成"
+              description="可视化生成线性 / 径向渐变，调整角度与颜色，实时预览并复制 CSS。"
+              className={isToolVisible("css-gradient") ? "" : "hidden"}
+            >
+              <CssGradientTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={Wand2}
+              title="box-shadow 生成"
+              description="拖动滑块调整偏移、模糊、扩散与颜色透明度，实时预览阴影并复制 CSS。"
+              className={isToolVisible("box-shadow") ? "" : "hidden"}
+            >
+              <BoxShadowTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={ImageIcon}
+              title="圆角生成"
+              description="分别调节四个角的圆角大小，实时预览并复制 border-radius。"
+              className={isToolVisible("border-radius") ? "" : "hidden"}
+            >
+              <BorderRadiusTool />
+            </SectionCard>
+
+            <SectionCard
+              icon={Hash}
+              title="调色板生成"
+              description="从一个主色出发，生成由浅到深的一整套色阶，点击即可复制色值。"
+              className={isToolVisible("palette") ? "" : "hidden"}
+            >
+              <PaletteTool />
             </SectionCard>
           </div>
         </section>
