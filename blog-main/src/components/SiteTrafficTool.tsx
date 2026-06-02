@@ -1,6 +1,6 @@
 'use client';
 
-import { ExternalLink, Loader2, Search } from 'lucide-react';
+import { ExternalLink, Link2, Loader2, Search } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,25 @@ interface TrafficData {
   EstimatedMonthlyVisits?: Record<string, number>;
   TrafficSources?: Record<string, number>;
   TopCountryShares?: Array<{ Country?: number; CountryCode?: string; Value?: number }>;
+  // 预留：接入付费 SEO 数据源（如 DataForSEO）后填充
+  keywords?: KeywordRow[];
+  backlinks?: BacklinkInfo;
+}
+
+interface KeywordRow {
+  keyword: string;
+  position?: number;
+  trafficShare?: number;
+  volume?: number;
+  cpc?: number;
+  difficulty?: number;
+}
+
+interface BacklinkInfo {
+  domainAuthority?: number;
+  backlinks?: number;
+  referringDomains?: number;
+  trend?: Array<{ date: string; backlinks: number; referringDomains: number }>;
 }
 
 const SOURCE_LABELS: Record<string, string> = {
@@ -263,6 +282,10 @@ export default function SiteTrafficTool() {
     .filter((item) => (item.Value || 0) > 0)
     .slice(0, 5);
 
+  const keywords = data?.keywords || [];
+  const backlinks = data?.backlinks;
+  const backlinkTrend = backlinks?.trend || [];
+
   const panelClass =
     'rounded-2xl border border-[#ece3ff] bg-white/60 p-4 dark:border-[#2c2347] dark:bg-white/[0.03]';
 
@@ -402,8 +425,92 @@ export default function SiteTrafficTool() {
               </div>
             )}
           </div>
+
+          {/* 热门关键词 */}
+          <div className={panelClass}>
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#312355] dark:text-[#f4efff]">
+              <Search className="h-4 w-4 text-[#8b6bff]" />
+              热门关键词
+            </div>
+            {keywords.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[520px] border-collapse text-sm">
+                  <thead>
+                    <tr className="text-left text-xs text-[#7b69a5] dark:text-[#af9fda]">
+                      <th className="py-2 pr-3 font-medium">关键词</th>
+                      <th className="py-2 pr-3 font-medium">排名</th>
+                      <th className="py-2 pr-3 font-medium">流量占比</th>
+                      <th className="py-2 pr-3 font-medium">搜索量</th>
+                      <th className="py-2 pr-3 font-medium">CPC</th>
+                      <th className="py-2 font-medium">难度</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {keywords.map((row, index) => (
+                      <tr
+                        key={`${row.keyword}-${index}`}
+                        className="border-t border-[#ece3ff] text-[#3a2c63] dark:border-[#2c2347] dark:text-[#e6def9]"
+                      >
+                        <td className="py-2 pr-3">{row.keyword}</td>
+                        <td className="py-2 pr-3">{row.position ?? '-'}</td>
+                        <td className="py-2 pr-3">
+                          {row.trafficShare != null ? `${(row.trafficShare * 100).toFixed(2)}%` : '-'}
+                        </td>
+                        <td className="py-2 pr-3">{row.volume ?? '-'}</td>
+                        <td className="py-2 pr-3">{row.cpc != null ? `$${row.cpc}` : '-'}</td>
+                        <td className="py-2">{row.difficulty ?? '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <DataSourceNote text="关键词排名、搜索量、CPC 与难度需要付费 SEO 数据源（如 DataForSEO），配置后将在此展示。" />
+            )}
+          </div>
+
+          {/* 反向链接 */}
+          <div className={panelClass}>
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#312355] dark:text-[#f4efff]">
+              <Link2 className="h-4 w-4 text-[#8b6bff]" />
+              反向链接
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: '域名权威', value: backlinks?.domainAuthority },
+                { label: '反向链接', value: backlinks?.backlinks },
+                { label: '参考域名', value: backlinks?.referringDomains },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-2xl border border-[#ece3ff] bg-white/60 px-3 py-3 text-center dark:border-[#2c2347] dark:bg-white/[0.03]"
+                >
+                  <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{item.label}</div>
+                  <div className="mt-1 text-lg font-semibold text-[#3a2c63] dark:text-[#f1ebff]">
+                    {item.value ?? '—'}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {backlinkTrend.length === 0 && (
+              <div className="mt-3">
+                <DataSourceNote text="反向链接与参考域名的历史趋势需要付费 SEO 数据源（如 DataForSEO），配置后将在此展示折线图。" />
+              </div>
+            )}
+          </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function DataSourceNote({ text }: { text: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-[#d9ccff] bg-white/40 px-4 py-8 text-center dark:border-[#3a2f58] dark:bg-white/[0.02]">
+      <span className="rounded-full bg-[#efe6ff] px-2.5 py-0.5 text-[11px] font-medium text-[#5b3df5] dark:bg-[#2b1f43] dark:text-[#cbbcff]">
+        需配置数据源
+      </span>
+      <p className="max-w-md text-xs leading-6 text-[#7b69a5] dark:text-[#af9fda]">{text}</p>
     </div>
   );
 }

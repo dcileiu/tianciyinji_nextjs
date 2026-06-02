@@ -96,11 +96,11 @@ const toolCatalog = [
   { id: "image-compress", title: "图片压缩", sectionId: "image-tools" },
   { id: "pet-gif", title: "摸头 GIF（图片上传版）", sectionId: "image-tools" },
   { id: "llms-txt", title: "llms.txt 生成器", sectionId: "seo-geo-tools" },
+  { id: "site-traffic", title: "网站流量分析", sectionId: "seo-geo-tools" },
   { id: "meta-tags", title: "Meta 标签 / TDK 生成", sectionId: "seo-geo-tools" },
   { id: "robots-txt", title: "robots.txt 生成器", sectionId: "seo-geo-tools" },
   { id: "json-ld", title: "结构化数据 JSON-LD", sectionId: "seo-geo-tools" },
   { id: "keyword-density", title: "关键词密度分析", sectionId: "seo-geo-tools" },
-  { id: "site-traffic", title: "网站流量分析", sectionId: "seo-geo-tools" },
   { id: "client-ip", title: "客户端 IP", sectionId: "network-tools" },
   { id: "dns-lookup", title: "DNS 查询", sectionId: "network-tools" },
   { id: "ping", title: "Ping（TCP 连通性）", sectionId: "network-tools" },
@@ -1341,6 +1341,11 @@ export default function ToolsClientPage({
     }
   }
 
+  const sectionGridClass = cn(
+    "grid gap-5",
+    selectedTool === "all" ? "lg:grid-cols-2" : "grid-cols-1",
+  );
+
   const renderToolTabs = (sectionId: SectionId) => {
     const toolsInSection = toolCatalog.filter((tool) => tool.sectionId === sectionId);
     if (toolsInSection.length <= 1) return null;
@@ -1548,7 +1553,7 @@ export default function ToolsClientPage({
 
           {renderToolTabs("local-tools")}
 
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className={sectionGridClass}>
             <SectionCard
               icon={ShieldAlert}
               title="AES 加解密"
@@ -2097,7 +2102,7 @@ export default function ToolsClientPage({
 
           {renderToolTabs("image-tools")}
 
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className={sectionGridClass}>
             <SectionCard
               icon={QrCode}
               title="二维码生成"
@@ -2346,7 +2351,7 @@ export default function ToolsClientPage({
 
           {renderToolTabs("seo-geo-tools")}
 
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className={sectionGridClass}>
             <SectionCard
               icon={FileCode2}
               title="llms.txt 生成器"
@@ -2855,7 +2860,7 @@ export default function ToolsClientPage({
 
           {renderToolTabs("network-tools")}
 
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className={sectionGridClass}>
             <SectionCard
               icon={Globe}
               title="客户端 IP"
@@ -3301,7 +3306,7 @@ export default function ToolsClientPage({
 
           {renderToolTabs("public-data-tools")}
 
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className={sectionGridClass}>
             <SectionCard
               icon={Sparkles}
               title="Minecraft 玩家信息"
