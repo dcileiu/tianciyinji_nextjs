@@ -17,16 +17,16 @@ export default function PricingPage() {
           合作咨询
         </h1>
         <p className="mb-6 max-w-3xl text-base leading-relaxed text-black/60 sm:text-lg dark:text-white/60">
-          这个页面现在先保留成轻量入口。如果你后面要提供网站搭建、项目开发、设计支持或内容合作，可以在这里放服务说明、报价方式和联系渠道。
+          如果你想聊网站搭建、项目开发、设计支持或内容合作，欢迎通过下面的方式联系我，我会尽快回复并一起确认需求与方案。
         </p>
         <div className="h-[2px] w-12 bg-black sm:w-16 dark:bg-white" />
       </header>
 
       <section className="space-y-6 rounded-3xl border border-black/6 bg-black/[0.02] p-6 sm:p-8 dark:border-white/6 dark:bg-white/[0.02]">
         <div>
-          <h2 className="text-2xl font-medium text-black dark:text-white">当前状态</h2>
+          <h2 className="text-2xl font-medium text-black dark:text-white">合作方式</h2>
           <p className="mt-3 text-base leading-relaxed text-black/60 dark:text-white/60">
-            这页还没有填写正式的合作条目。你可以先把它当成一个“联系我”页面，等后面确定了服务范围，再补充案例、流程和参考报价。
+            目前以邮件沟通为主：说明你的项目背景、想实现的目标和大致时间，我会结合需求给出可行方案与报价建议。
           </p>
         </div>
 

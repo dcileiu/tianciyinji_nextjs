@@ -7,7 +7,6 @@ import {
   DatabaseZap,
   FileCode2,
   FileJson2,
-  Filter,
   Globe,
   Hash,
   ImageIcon,
@@ -121,23 +120,25 @@ const sectionMeta = [
     id: "local-tools",
     title: "纯本地工具",
     description:
-      "不依赖外部网络，浏览器或本站服务端本地就能完成的算法和文本处理工具。",
+      "常用的本地小工具：字数统计、金额大写、正则测试、JSON、Base64、MD5、时间戳、颜色与编码转换，全部在浏览器本地完成，安全不上传。",
   },
   {
     id: "image-tools",
     title: "图片处理",
     description:
-      "二维码、Base64、SVG、压缩和简版摸头 GIF，都可以直接在页面里处理。",
+      "在线图片工具：二维码生成、格式转换、压缩、裁剪、加水印、Favicon 与主色提取，图片在本地处理无需上传。",
   },
   {
     id: "network-tools",
     title: "网络基础",
-    description: "面向 URL、域名、端口和网页内容的基础观测与分析能力。",
+    description:
+      "在线网络工具：DNS 查询、Ping 连通性、端口扫描、URL 状态检测、网页元数据与图片提取、网页转 Markdown。",
   },
   {
     id: "public-data-tools",
     title: "公开数据",
-    description: "基于公开协议或免费数据源组合出来的实用信息查询工具。",
+    description:
+      "实用信息查询：Minecraft、GitHub 仓库、Gravatar、IP 与手机号归属、Bing 每日壁纸等公开数据，一键查询。",
   },
   {
     id: "seo-geo-tools",
@@ -293,12 +294,6 @@ export default function ToolsClientPage({
     selectedTool === "all"
       ? null
       : toolCatalog.find((tool) => tool.id === selectedTool) || null;
-  const activeSection =
-    selectedTool !== "all"
-      ? sections.find((section) => section.id === activeTool?.sectionId) || null
-      : selectedSection === "all"
-        ? null
-        : sections.find((section) => section.id === selectedSection) || null;
   const isToolVisible = (toolId: ToolId) =>
     selectedTool === "all" || selectedTool === toolId;
   const isSectionVisible = (sectionId: SectionId) =>
@@ -361,151 +356,6 @@ export default function ToolsClientPage({
             {sections.find((item) => item.id === section)?.title}
           </span>
         </div>
-      )}
-
-      {!section && (
-      <header className="relative overflow-hidden rounded-[34px] border border-[#e4d8ff] bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(244,237,255,0.94))] px-6 py-8 shadow-[0_24px_80px_rgba(91,61,245,0.10)] sm:px-8 sm:py-10 md:px-10 md:py-12 dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.92),rgba(15,11,27,0.96))]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(130,96,255,0.16),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(218,208,255,0.18),transparent_30%)]" />
-        <div className="relative">
-          <p className="text-xs uppercase tracking-[0.28em] text-[#7f71ab] dark:text-[#ab9cd8]">
-            Tools Menu
-          </p>
-          <div className="mt-4">
-            <div className="max-w-4xl">
-              <h1 className="text-3xl font-semibold tracking-tight text-[#2e2150] sm:text-4xl md:text-5xl dark:text-[#f4efff]">
-                给博客加一套真正能用的工具箱
-              </h1>
-              <p className="mt-4 text-sm leading-7 text-[#66568f] sm:text-base dark:text-[#c4b6eb]">
-                这里把纯本地算法、图片处理、网络基础探测和公开数据接口都收成了一页工具菜单。偏隐私的内容尽量本地完成，偏网络的能力统一走
-                <code className="mx-1 rounded bg-[#efe8ff] px-1.5 py-0.5 text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]">
-                  /api/tools
-                </code>
-                ，后续你继续加新工具也会比较顺手。
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-6 rounded-[26px] border border-[#ddd0ff] bg-[linear-gradient(135deg,rgba(255,255,255,0.7),rgba(247,242,255,0.55))] p-4 shadow-[0_18px_55px_rgba(91,61,245,0.08)] dark:border-[#32274d] dark:bg-[linear-gradient(135deg,rgba(27,20,45,0.85),rgba(18,13,31,0.92))] sm:p-5">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-              <div>
-                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-[#7f71ab] dark:text-[#ab9cd8]">
-                  <Filter className="h-3.5 w-3.5" />
-                  Tool Picker
-                </div>
-                <p className="mt-2 text-sm leading-7 text-[#65558e] dark:text-[#c4b6eb]">
-                  默认展示全部工具卡片；点选某个工具名后，会聚焦只显示这一张卡片。
-                </p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1 text-xs text-[#6b5b97] dark:border-[#3a2f58] dark:bg-white/[0.05] dark:text-[#c7baf1]">
-                  {selectedTool !== "all"
-                    ? `当前聚焦：${activeTool?.title || ""}`
-                    : selectedSection !== "all"
-                      ? `当前分类：${activeSection?.title || ""} · ${activeSection?.count || 0} 张工具卡片`
-                      : `当前显示全部 ${toolCatalog.length} 张工具卡片`}
-                </span>
-                {(selectedTool !== "all" || selectedSection !== "all") && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedTool("all");
-                      setSelectedSection("all");
-                    }}
-                    className="rounded-full bg-[#5b3df5] px-3.5 py-2 text-sm text-white transition hover:bg-[#4f31d7]"
-                  >
-                    恢复全部
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedTool("all");
-                  setSelectedSection("all");
-                }}
-                className={cn(
-                  "rounded-full border px-4 py-2 text-sm transition",
-                  selectedTool === "all" && selectedSection === "all"
-                    ? "border-[#5b3df5] bg-[#5b3df5] text-white shadow-[0_12px_30px_rgba(91,61,245,0.22)]"
-                    : "border-[#d9ccff] bg-white/75 text-[#5c4a88] hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#362b53] dark:bg-white/[0.04] dark:text-[#d2c6f3]",
-                )}
-              >
-                全部工具
-              </button>
-              {sections.map((section) => (
-                <button
-                  key={section.id}
-                  type="button"
-                  onClick={() => {
-                    setSelectedTool("all");
-                    setSelectedSection(section.id);
-                  }}
-                  className={cn(
-                    "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition",
-                    selectedTool === "all" && selectedSection === section.id
-                      ? "border-[#5b3df5] bg-[#5b3df5] text-white shadow-[0_12px_30px_rgba(91,61,245,0.22)]"
-                      : "border-[#d9ccff] bg-white/75 text-[#5c4a88] hover:border-[#8b6bff] hover:text-[#5b3df5] dark:border-[#362b53] dark:bg-white/[0.04] dark:text-[#d2c6f3]",
-                  )}
-                >
-                  <span>{section.title}</span>
-                  <span
-                    className={cn(
-                      "inline-flex min-w-7 items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-semibold leading-none",
-                      selectedTool === "all" && selectedSection === section.id
-                        ? "bg-white/18 text-white"
-                        : "bg-[#efe6ff] text-[#5b3df5] dark:bg-[#2b1f43] dark:text-[#efe9ff]",
-                    )}
-                  >
-                    {section.count}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-4 grid gap-3 xl:grid-cols-2">
-              {sections.filter((section) => isSectionVisible(section.id)).map((section) => (
-                <div
-                  key={section.id}
-                  className="rounded-[22px] border border-[#e4d8ff] bg-white/60 p-4 dark:border-[#302646] dark:bg-white/[0.04]"
-                >
-                  <div className="mb-3 flex items-center justify-between gap-3">
-                    <div className="text-sm font-semibold text-[#312355] dark:text-[#f4efff]">
-                      {section.title}
-                    </div>
-                    <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-                      {section.count} 个工具
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {section.tools.map((tool) => (
-                      <button
-                        key={tool.id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedTool(tool.id);
-                          setSelectedSection(section.id);
-                        }}
-                        className={cn(
-                          "rounded-full border px-3 py-1.5 text-xs transition sm:text-sm",
-                          selectedTool === tool.id
-                            ? "border-[#5b3df5] bg-[#ece3ff] text-[#4f31d7] shadow-[0_8px_20px_rgba(91,61,245,0.14)] dark:border-[#8b6bff] dark:bg-[#2b1f43] dark:text-[#efe9ff]"
-                            : "border-[#ddd0ff] bg-white/70 text-[#5f4e89] hover:border-[#b695ff] hover:text-[#4f31d7] dark:border-[#392d56] dark:bg-white/[0.03] dark:text-[#cabbef]",
-                        )}
-                      >
-                        {tool.title}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </header>
       )}
 
       {isSectionVisible("local-tools") && (
@@ -642,7 +492,7 @@ export default function ToolsClientPage({
             <SectionCard
               icon={Hash}
               title="MD5 计算与校验"
-              description="服务端本地计算 MD5，可选输入目标哈希做快速校验。"
+              description="计算文本的 MD5 值，并可与目标哈希快速比对、校验文件或内容是否一致。"
               className={isToolVisible("md5") ? "" : "hidden"}
             >
               <Md5Tool />
@@ -678,7 +528,7 @@ export default function ToolsClientPage({
             <SectionCard
               icon={FileCode2}
               title="代码混淆 / 压缩"
-              description="支持 JavaScript 混淆与压缩，以及 CSS / HTML 压缩；混淆在服务端完成，适合脚本发布前处理。"
+              description="对 JavaScript 进行混淆与压缩，并支持 CSS / HTML 压缩，适合代码上线前减小体积、提高阅读门槛。"
               className={isToolVisible("code-obfuscate") ? "" : "hidden"}
             >
               <CodeObfuscateTool />
@@ -990,7 +840,7 @@ export default function ToolsClientPage({
             <SectionCard
               icon={Sparkles}
               title="Minecraft 玩家信息"
-              description="查询 UUID、头像和皮肤资源，适合做个人主页挂件或资料卡。"
+              description="输入用户名即可查询 Minecraft 玩家的 UUID、头像与皮肤，方便查看与展示。"
               className={isToolVisible("minecraft-player") ? "" : "hidden"}
             >
               <MinecraftPlayerTool />
@@ -1053,7 +903,7 @@ export default function ToolsClientPage({
             <SectionCard
               icon={BookOpenText}
               title="答案之书 / 诗词 / 历史今天"
-              description="把轻量的内容型接口也收进来，适合做主页小挂件或随机内容卡片。"
+              description="答案之书、随机诗词与历史上的今天，随手获取一点灵感与有趣内容。"
               className={isToolVisible("content-tools") ? "" : "hidden"}
             >
               <ContentTools />
@@ -1223,12 +1073,11 @@ export default function ToolsClientPage({
 
       <div className="mt-14 rounded-[28px] border border-[#e6dbff] bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(246,240,255,0.92))] px-6 py-6 text-sm leading-7 text-[#66568f] shadow-[0_18px_60px_rgba(91,61,245,0.06)] dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.92),rgba(15,11,27,0.96))] dark:text-[#c4b6eb]">
         <p>
-          网络类工具默认会拦截
+          这里的工具大多在你的浏览器本地完成，不会上传你的内容；少数需要联网的查询也只读取公开信息。出于安全考虑，网络类工具不支持查询
           <code className="mx-1 rounded bg-[#efe8ff] px-1.5 py-0.5 text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]">
             localhost
           </code>
-          和常见内网地址，避免把这个页面变成 SSRF
-          或内网探测入口。后续如果你想把每个工具拆成独立详情页，也可以直接在这个基础上继续分。
+          等内网地址。欢迎收藏本页，常用工具随取随用。
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <Link href="/resources" className="text-[#5b3df5] hover:underline">

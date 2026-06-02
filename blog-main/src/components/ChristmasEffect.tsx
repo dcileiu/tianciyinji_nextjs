@@ -87,6 +87,9 @@ export const ChristmasEffect: React.FC<ChristmasEffectProps> = ({ zIndex = 50, s
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
+    // 尊重「减少动态效果」：直接跳过雪花动画
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     let width = window.innerWidth;
     let height = window.innerHeight;
     let dpr = window.devicePixelRatio || 1;
@@ -438,9 +441,13 @@ export const ChristmasEffect: React.FC<ChristmasEffectProps> = ({ zIndex = 50, s
 
     window.addEventListener('resize', init);
     window.addEventListener('mousemove', handleMouseMove);
-    requestRef.current = requestAnimationFrame(animate);
+    // 延迟到首屏渲染之后再启动，避免雪花动画在加载阶段抢占主线程（降低 TBT）
+    const startTimer = window.setTimeout(() => {
+      requestRef.current = requestAnimationFrame(animate);
+    }, 800);
 
     return () => {
+      window.clearTimeout(startTimer);
       window.removeEventListener('resize', init);
       window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(requestRef.current);

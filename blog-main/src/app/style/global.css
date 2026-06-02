@@ -25,6 +25,20 @@
   animation: fadeIn 1s ease-out;
 }
 
+/* 作品轮播：缓慢推近的 Ken Burns 效果 */
+@keyframes kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.kenburns-active {
+  animation: kenburns 7s ease-out forwards;
+}
+
 html {
   scroll-behavior: smooth;
 }

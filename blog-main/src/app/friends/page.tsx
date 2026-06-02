@@ -4,7 +4,7 @@ import { pageTitle } from "@/lib/site-config";
 import { buildCollectionPageJsonLd, buildPageMetadata } from "@/lib/seo";
 
 const friendsDescription =
-  "朋友站点、创作者链接与常逛的实用站点。收录刘明野的工具箱（tools.liumingye.cn）；";
+  "朋友站点、创作者主页与我常逛的实用网站，例如刘明野的工具箱（tools.liumingye.cn）。";
 
 export const metadata: Metadata = buildPageMetadata({
   title: pageTitle("友链"),

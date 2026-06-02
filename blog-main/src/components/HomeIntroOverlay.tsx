@@ -40,6 +40,17 @@ export default function HomeIntroOverlay({ enabled = true }: HomeIntroOverlayPro
       return;
     }
 
+    // 同一会话只播放一次开场动画，避免每次进入首页都全屏遮挡内容、拖慢 LCP
+    try {
+      if (sessionStorage.getItem('home-intro-shown')) {
+        setState('hidden');
+        return;
+      }
+      sessionStorage.setItem('home-intro-shown', '1');
+    } catch {
+      // 忽略隐私模式下的 sessionStorage 异常
+    }
+
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const introDuration = prefersReducedMotion ? 700 : INTRO_DURATION_MS;
     const exitDuration = prefersReducedMotion ? 260 : EXIT_DURATION_MS;

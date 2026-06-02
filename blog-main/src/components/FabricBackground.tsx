@@ -189,17 +189,37 @@ export function FabricBackground() {
         ctx.restore();
       }
 
-      frameRef.current = window.requestAnimationFrame(draw);
+    };
+
+    // 帧率限制到 ~30fps，降低主线程占用
+    const frameInterval = 1000 / 30;
+    let lastFrame = 0;
+    const loop = (now: number) => {
+      frameRef.current = window.requestAnimationFrame(loop);
+      if (now - lastFrame < frameInterval) return;
+      lastFrame = now;
+      draw();
     };
 
     resize();
-    draw();
+
+    // 尊重「减少动态效果」：只画一帧静态网格，不启动动画循环
+    let startTimer = 0;
+    if (prefersReducedMotion) {
+      draw();
+    } else {
+      // 延迟到首屏渲染/水合之后再启动，避免与 LCP 抢占主线程（降低 TBT）
+      startTimer = window.setTimeout(() => {
+        frameRef.current = window.requestAnimationFrame(loop);
+      }, 600);
+    }
 
     window.addEventListener('resize', resize);
     window.addEventListener('pointermove', onPointerMove, { passive: true });
     window.addEventListener('pointerleave', onPointerLeave);
 
     return () => {
+      window.clearTimeout(startTimer);
       window.removeEventListener('resize', resize);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerleave', onPointerLeave);

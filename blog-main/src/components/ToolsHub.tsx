@@ -34,7 +34,7 @@ const MODULES: ModuleEntry[] = [
     base: '/tools/local',
     href: '/tools/local' as Route,
     title: '纯本地工具',
-    description: '不依赖外部网络，浏览器或本站服务端本地就能完成的算法、文本、颜色、编码与开发辅助工具。',
+    description: '字数统计、金额大写、正则测试、颜色、JSON、Base64、MD5 等常用小工具，全部在浏览器本地完成。',
     count: 20,
     icon: SquareTerminal,
     tools: [
@@ -165,7 +165,7 @@ export default function ToolsHub() {
             工具菜单
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-[#66568f] sm:text-base dark:text-[#c4b6eb]">
-            这里把纯本地算法、图片处理、网络基础探测和公开数据接口分成了四大模块，外加一个去水印工具。选一个模块进入，里面是对应的工具卡片。
+            免费在线工具箱，涵盖文本与编码、图片处理、SEO / GEO、网络查询、计算换算、中文工具与去水印等。多数工具在浏览器本地完成、安全不上传，点选下方分类即可使用。
           </p>
         </div>
       </header>

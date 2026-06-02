@@ -236,7 +236,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
               <div className="text-center py-12">
                 <p className="text-black/60 dark:text-white/60 mb-4">暂无资源</p>
                 <p className="text-sm text-black/40 dark:text-white/40">
-                  在 Obsidian 文章的 frontmatter 中添加 resource: true 来创建资源
+                  资源正在持续整理中，欢迎稍后再来看看。
                 </p>
               </div>
             ) : filteredResources.length === 0 ? (
@@ -245,7 +245,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                   {RESOURCE_CATEGORIES.find((item) => item.id === activeCategory)?.label ?? '该分类'} 下暂无资源
                 </p>
                 <p className="text-sm text-black/40 dark:text-white/40">
-                  可在 frontmatter 中设置 category，例如 category: film 或 category: 影视
+                  换个分类看看，或稍后再来。
                 </p>
               </div>
             ) : (
