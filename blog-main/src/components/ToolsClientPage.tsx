@@ -1346,6 +1346,9 @@ export default function ToolsClientPage({
     selectedTool === "all" ? "lg:grid-cols-2" : "grid-cols-1",
   );
 
+  // 单模块页面（带 section）时，分区标题作为页面的 h1，便于 SEO
+  const SectionHeading = section ? "h1" : "h2";
+
   const renderToolTabs = (sectionId: SectionId) => {
     const toolsInSection = toolCatalog.filter((tool) => tool.sectionId === sectionId);
     if (toolsInSection.length <= 1) return null;
@@ -1543,9 +1546,9 @@ export default function ToolsClientPage({
       {isSectionVisible("local-tools") && (
         <section id="local-tools" className="scroll-mt-28 pt-12 sm:pt-16">
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
+            <SectionHeading className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
               {sections[0].title}
-            </h2>
+            </SectionHeading>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">
               {sections[0].description}
             </p>
@@ -2092,9 +2095,9 @@ export default function ToolsClientPage({
       {isSectionVisible("image-tools") && (
         <section id="image-tools" className="scroll-mt-28 pt-12 sm:pt-16">
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
+            <SectionHeading className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
               {sections[1].title}
-            </h2>
+            </SectionHeading>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">
               {sections[1].description}
             </p>
@@ -2341,9 +2344,9 @@ export default function ToolsClientPage({
       {isSectionVisible("seo-geo-tools") && (
         <section id="seo-geo-tools" className="scroll-mt-28 pt-12 sm:pt-16">
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
+            <SectionHeading className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
               {sections[4].title}
-            </h2>
+            </SectionHeading>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">
               {sections[4].description}
             </p>
@@ -2850,9 +2853,9 @@ export default function ToolsClientPage({
       {isSectionVisible("network-tools") && (
         <section id="network-tools" className="scroll-mt-28 pt-12 sm:pt-16">
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
+            <SectionHeading className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
               {sections[2].title}
-            </h2>
+            </SectionHeading>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">
               {sections[2].description}
             </p>
@@ -3296,9 +3299,9 @@ export default function ToolsClientPage({
       {isSectionVisible("public-data-tools") && (
         <section id="public-data-tools" className="scroll-mt-28 pt-12 sm:pt-16">
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
+            <SectionHeading className="text-2xl font-semibold tracking-tight text-[#2e2150] dark:text-[#f4efff] sm:text-3xl">
               {sections[3].title}
-            </h2>
+            </SectionHeading>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-[#6c5b98] dark:text-[#b9aadf]">
               {sections[3].description}
             </p>
