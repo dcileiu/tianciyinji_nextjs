@@ -1,12 +1,10 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { getPathLocale } from '@/lib/i18n';
+import { useI18n } from '@/components/I18nProvider';
 
 export function useServerTool<T = any>(tool: string) {
-  const pathname = usePathname();
-  const locale = getPathLocale(pathname);
+  const { locale } = useI18n();
   const text =
     locale === 'en'
       ? {

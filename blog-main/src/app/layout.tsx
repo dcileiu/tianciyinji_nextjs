@@ -141,9 +141,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <LayoutClient
               dictionary={dictionary}
               locale={locale}
-              navItems={dictionary.nav}
-              siteName={localizedSiteConfig.name}
-              tagline={localizedSiteConfig.tagline}
             >
               {children}
             </LayoutClient>

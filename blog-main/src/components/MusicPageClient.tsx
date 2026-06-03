@@ -4,20 +4,14 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, ChevronUp, Pause, Play } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMusicPlayer } from '@/hooks/use-music-player';
-import type { Locale } from '@/lib/i18n';
 import type { UnifiedSong } from '@/lib/types';
 
-type MusicPageClientProps = {
-  locale: Locale;
-  text: {
-    title: string;
-    description: string;
-  };
-};
-
-export default function MusicPageClient({ locale, text }: MusicPageClientProps) {
+export default function MusicPageClient() {
+  const { dictionary, locale } = useI18n();
+  const text = dictionary.media.music;
   const {
     playlist,
     currentSong,

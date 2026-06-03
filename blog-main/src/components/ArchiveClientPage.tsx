@@ -4,17 +4,11 @@
 import Link from 'next/link';
 import type { Route } from 'next';
 import { useMemo, useState } from 'react';
-import { localizedHref, type Locale } from '@/lib/i18n';
+import { useI18n } from '@/components/I18nProvider';
 import { CategoryFilter } from './CategoryFilter';
 
 interface ArchiveClientPageProps {
-  locale: Locale;
   posts: any[];
-  text: {
-    empty: string;
-    stats: string;
-    title: string;
-  };
 }
 
 /**
@@ -40,7 +34,9 @@ function groupPostsByYear(posts: any[]) {
   return Object.entries(groups).sort((a, b) => Number(b[0]) - Number(a[0]));
 }
 
-export default function ArchiveClientPage({ locale, posts, text }: ArchiveClientPageProps) {
+export default function ArchiveClientPage({ posts }: ArchiveClientPageProps) {
+  const { dictionary, localizedHref } = useI18n();
+  const text = dictionary.archive;
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // 预处理：补充 year
@@ -119,7 +115,7 @@ export default function ArchiveClientPage({ locale, posts, text }: ArchiveClient
                   return (
                     <Link
                       key={post.slug}
-                      href={localizedHref(`/post/${post.slug}`, locale) as Route}
+                      href={localizedHref(`/post/${post.slug}`) as Route}
                       className="group block py-6 border-b border-black/[0.06] dark:border-white/[0.06] last:border-0 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] -mx-4 px-4 transition-colors"
                     >
                       <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-2 md:gap-4">

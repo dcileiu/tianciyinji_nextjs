@@ -25,7 +25,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useI18n } from "@/components/I18nProvider";
 import { Button } from "@/components/ui/button";
 import SiteTrafficTool from "@/components/SiteTrafficTool";
 import {
@@ -114,7 +115,6 @@ import {
   MinecraftServerTool,
   MobileAreaTool,
 } from "@/components/tools/data-tools";
-import { localizedHref, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { TranslationProvider } from "./tools/TranslationContext";
 
@@ -487,24 +487,31 @@ type ToolFilter = "all" | ToolId;
 type SectionFilter = "all" | SectionId;
 
 export default function ToolsClientPage({
-  locale = "zh-CN",
   section,
   initialTool,
 }: {
-  locale?: Locale;
   section?: SectionId;
   initialTool?: string;
 }) {
-  const catalog = toolCatalog.map((tool) => ({
-    ...tool,
-    title: locale === "en" ? toolTitleEn[tool.id] : toolTitleZh[tool.id],
-  }));
-  const sections = sectionMeta.map((sectionItem) => ({
-    ...sectionItem,
-    ...(locale === "en" ? sectionMetaEn[sectionItem.id] : sectionMetaZh[sectionItem.id]),
-    count: catalog.filter((tool) => tool.sectionId === sectionItem.id).length,
-    tools: catalog.filter((tool) => tool.sectionId === sectionItem.id),
-  }));
+  const { locale: currentLocale, localizedHref } = useI18n();
+  const catalog = useMemo(
+    () =>
+      toolCatalog.map((tool) => ({
+        ...tool,
+        title: currentLocale === "en" ? toolTitleEn[tool.id] : toolTitleZh[tool.id],
+      })),
+    [currentLocale]
+  );
+  const sections = useMemo(
+    () =>
+      sectionMeta.map((sectionItem) => ({
+        ...sectionItem,
+        ...(currentLocale === "en" ? sectionMetaEn[sectionItem.id] : sectionMetaZh[sectionItem.id]),
+        count: catalog.filter((tool) => tool.sectionId === sectionItem.id).length,
+        tools: catalog.filter((tool) => tool.sectionId === sectionItem.id),
+      })),
+    [catalog, currentLocale]
+  );
   const validInitialTool: ToolFilter =
     initialTool &&
     catalog.some(
@@ -538,7 +545,7 @@ export default function ToolsClientPage({
   // 单模块页面（带 section）时，分区标题作为页面的 h1，便于 SEO
   const SectionHeading = section ? "h1" : "h2";
   const footerNote =
-    locale === "en"
+    currentLocale === "en"
       ? {
           before:
             "Most tools here run locally in your browser and do not upload your content; the few that require network access only read public information. For security reasons, network tools do not support querying",
@@ -570,7 +577,7 @@ export default function ToolsClientPage({
           onClick={() => setSelectedTool("all")}
           className={cn(tabBase, selectedTool === "all" ? tabActive : tabInactive)}
         >
-          {locale === "en" ? "All" : "全部"}
+          {currentLocale === "en" ? "All" : "全部"}
         </button>
         {toolsInSection.map((tool) => (
           <button
@@ -587,16 +594,16 @@ export default function ToolsClientPage({
   };
 
   return (
-    <TranslationProvider locale={locale}>
+    <TranslationProvider>
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:py-20">
       {section && (
         <div className="mb-6 flex items-center gap-2 text-sm text-[#7b69a5] dark:text-[#af9fda]">
           <Link
-            href={localizedHref("/tools", locale) as Route}
+            href={localizedHref("/tools") as Route}
             className="inline-flex items-center gap-1.5 rounded-full border border-[#ddd0ff] bg-white/70 px-3.5 py-1.5 font-medium text-[#5b3df5] transition hover:border-[#8b6bff] hover:bg-[#f3edff] dark:border-[#3a2f58] dark:bg-white/[0.05] dark:text-[#cbbcff] dark:hover:bg-white/[0.08]"
           >
             <ChevronDown className="h-4 w-4 rotate-90" />
-            {locale === "en" ? "Back to tools menu" : "返回工具菜单"}
+            {currentLocale === "en" ? "Back to tools menu" : "返回工具菜单"}
           </Link>
           <span className="text-[#c2b6e6] dark:text-[#6f6196]">/</span>
           <span className="text-[#5c4a88] dark:text-[#d2c6f3]">
@@ -1327,10 +1334,10 @@ export default function ToolsClientPage({
           {footerNote.after}
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
-          <Link href={localizedHref("/resources", locale) as Route} className="text-[#5b3df5] hover:underline">
+          <Link href={localizedHref("/resources") as Route} className="text-[#5b3df5] hover:underline">
             {footerNote.resources}
           </Link>
-          <Link href={localizedHref("/about", locale) as Route} className="text-[#5b3df5] hover:underline">
+          <Link href={localizedHref("/about") as Route} className="text-[#5b3df5] hover:underline">
             {footerNote.about}
           </Link>
         </div>

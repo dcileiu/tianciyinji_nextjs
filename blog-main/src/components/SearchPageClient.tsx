@@ -4,9 +4,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Search, X } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getPathLocale, localizedHref } from '@/lib/i18n';
+import { useI18n } from '@/components/I18nProvider';
 
 interface SearchResult {
   slug: string;
@@ -56,7 +55,7 @@ function highlightText(text: string, query: string) {
 }
 
 export default function SearchPageClient() {
-  const locale = getPathLocale(usePathname());
+  const { locale, localizedHref } = useI18n();
   const text =
     locale === 'en'
       ? {
@@ -179,7 +178,7 @@ export default function SearchPageClient() {
                       transition={{ delay: index * 0.02, duration: 0.3 }}
                     >
                       <Link
-                        href={localizedHref(`/post/${result.slug}`, locale) as Route}
+                        href={localizedHref(`/post/${result.slug}`) as Route}
                         className="group -mx-4 grid grid-cols-[80px_1fr] gap-8 border-b border-black/5 px-4 py-10 transition-colors last:border-0 hover:bg-black/[0.01] md:grid-cols-[120px_1fr] md:gap-12 dark:border-white/5 dark:hover:bg-white/[0.01]"
                       >
                         <time className="pt-1 font-mono text-sm text-black/40 dark:text-white/40">

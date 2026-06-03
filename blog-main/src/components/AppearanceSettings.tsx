@@ -3,9 +3,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Grid3x3, Maximize2, Minimize2, Monitor, Moon, Settings, Square, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { getPathLocale } from '@/lib/i18n';
+import { useI18n } from '@/components/I18nProvider';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
 export type BackgroundOption = 'none' | 'fabric';
@@ -17,7 +16,7 @@ interface AppearanceConfig {
 }
 
 export default function AppearanceSettings() {
-  const locale = getPathLocale(usePathname());
+  const { locale } = useI18n();
   const text =
     locale === 'en'
       ? {

@@ -1,12 +1,11 @@
 'use client';
 
 import { ClipboardPaste, Copy, Eraser, ExternalLink, Loader2, Wand2 } from 'lucide-react';
-import { usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { useI18n } from '@/components/I18nProvider';
 import { Button } from '@/components/ui/button';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
-import { getPathLocale } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
@@ -271,7 +270,7 @@ function normalizeResult(locale: 'zh-CN' | 'en', platform: Exclude<Platform, 'un
 }
 
 export default function DewatermarkClient() {
-  const locale = getPathLocale(usePathname());
+  const { locale } = useI18n();
   const t = labels(locale);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);

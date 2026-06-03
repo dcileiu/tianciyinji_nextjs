@@ -33,7 +33,7 @@ export default async function NetworkToolsPage({ searchParams }: { searchParams:
   return (
     <>
       <JsonLd data={buildCollectionPageJsonLd({ title: pageTitle(text.title), description: text.description, path: '/tools/network' })} />
-      <ToolsClientPage locale={locale} section="network-tools" initialTool={tool} />
+      <ToolsClientPage section="network-tools" initialTool={tool} />
     </>
   );
 }

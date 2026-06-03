@@ -18,7 +18,6 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function GamesPage() {
-  const locale = await getLocale();
-  return <GamesPageClient locale={locale} />;
+export default function GamesPage() {
+  return <GamesPageClient />;
 }

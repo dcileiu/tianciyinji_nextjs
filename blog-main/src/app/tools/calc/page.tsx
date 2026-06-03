@@ -33,7 +33,7 @@ export default async function CalcToolsPage({ searchParams }: { searchParams: Pr
   return (
     <>
       <JsonLd data={buildCollectionPageJsonLd({ title: pageTitle(text.title), description: text.description, path: '/tools/calc' })} />
-      <ToolsClientPage locale={locale} section="calc-tools" initialTool={tool} />
+      <ToolsClientPage section="calc-tools" initialTool={tool} />
     </>
   );
 }

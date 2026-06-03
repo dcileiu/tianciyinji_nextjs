@@ -3,11 +3,10 @@
 import { ArrowLeft, Home } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { getPathLocale, localizedHref } from '@/lib/i18n';
+import { useI18n } from '@/components/I18nProvider';
 
 export default function NotFound() {
-  const locale = getPathLocale(usePathname());
+  const { locale, localizedHref } = useI18n();
   const text =
     locale === 'en'
       ? {
@@ -58,7 +57,7 @@ export default function NotFound() {
         {/* 操作按钮 */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           <Link
-            href={localizedHref('/', locale) as Route}
+            href={localizedHref('/') as Route}
             className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-black dark:bg-white text-white dark:text-black hover:bg-black/80 dark:hover:bg-white/80 transition-all group w-full sm:w-auto"
           >
             <Home className="w-4 h-4" />
@@ -79,25 +78,25 @@ export default function NotFound() {
           <p className="text-sm text-black/40 dark:text-white/40">{text.suggestions}</p>
           <div className="flex flex-wrap items-center justify-center gap-2">
             <Link
-              href={localizedHref('/archive', locale) as Route}
+              href={localizedHref('/archive') as Route}
               className="px-4 py-2 text-sm rounded-full bg-black/[0.04] dark:bg-white/[0.04] text-black/60 dark:text-white/60 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] hover:text-black dark:hover:text-white transition-all"
             >
               {text.archive}
             </Link>
             <Link
-              href={localizedHref('/works', locale) as Route}
+              href={localizedHref('/works') as Route}
               className="px-4 py-2 text-sm rounded-full bg-black/[0.04] dark:bg-white/[0.04] text-black/60 dark:text-white/60 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] hover:text-black dark:hover:text-white transition-all"
             >
               {text.works}
             </Link>
             <Link
-              href={localizedHref('/music', locale) as Route}
+              href={localizedHref('/music') as Route}
               className="px-4 py-2 text-sm rounded-full bg-black/[0.04] dark:bg-white/[0.04] text-black/60 dark:text-white/60 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] hover:text-black dark:hover:text-white transition-all"
             >
               {text.music}
             </Link>
             <Link
-              href={localizedHref('/about', locale) as Route}
+              href={localizedHref('/about') as Route}
               className="px-4 py-2 text-sm rounded-full bg-black/[0.04] dark:bg-white/[0.04] text-black/60 dark:text-white/60 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] hover:text-black dark:hover:text-white transition-all"
             >
               {text.about}

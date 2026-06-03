@@ -1,44 +1,43 @@
 'use client';
 
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Footer from '@/components/Footer';
+import { I18nProvider, useI18n } from '@/components/I18nProvider';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/Sidebar';
-import type { getDictionary } from '@/lib/i18n';
-import type { Locale } from '@/lib/i18n';
-import { siteConfig } from '@/lib/site-config';
-import type { NavItem } from '@/lib/types';
+import type { getDictionary, Locale } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
 interface LayoutClientProps {
   children: React.ReactNode;
   dictionary: ReturnType<typeof getDictionary>;
   locale: Locale;
-  navItems: NavItem[];
-  siteName?: string;
-  tagline?: string;
 }
 
 export function LayoutClient({
   children,
   dictionary,
   locale,
-  navItems,
-  siteName = siteConfig.name,
-  tagline = siteConfig.tagline,
 }: LayoutClientProps) {
+  return (
+    <I18nProvider initialDictionary={dictionary} initialLocale={locale}>
+      <LayoutShell>{children}</LayoutShell>
+    </I18nProvider>
+  );
+}
+
+function LayoutShell({ children }: { children: React.ReactNode }) {
+  const { cleanPathname, dictionary, navItems, siteConfig } = useI18n();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-  const pathname = usePathname();
 
   // 某些页面可能不需要显示侧边栏
-  const isAuthPage = pathname === '/login' || pathname === '/setup';
+  const isAuthPage = cleanPathname === '/login' || cleanPathname === '/setup';
 
   // 全屏页面（无 padding，无 max-width 限制）
-  const isFullscreenPage = pathname === '/games' || pathname === '/designs';
+  const isFullscreenPage = cleanPathname === '/games' || cleanPathname === '/designs';
 
   // 初始化：从 localStorage 读取侧边栏状态
   useEffect(() => {
@@ -75,7 +74,7 @@ export function LayoutClient({
     if (document.documentElement) {
       document.documentElement.style.setProperty('--sidebar-padding', paddingValue);
     }
-  }, [isSidebarOpen, isMobile, isInitialized]);
+  }, [isAuthPage, isSidebarOpen, isMobile, isInitialized]);
 
   // 检测移动端
   useEffect(() => {
@@ -121,9 +120,8 @@ export function LayoutClient({
         <Header
           isSidebarOpen={isSidebarOpen}
           labels={dictionary.header}
-          locale={locale}
           onToggleSidebar={handleToggleSidebar}
-          title={siteName}
+          title={siteConfig.name}
           showSidebarToggle={!isAuthPage}
         />
       )}
@@ -132,7 +130,6 @@ export function LayoutClient({
         <Sidebar
           isOpen={isSidebarOpen}
           labels={dictionary.sidebar}
-          locale={locale}
           navItems={navItems}
           onClose={handleCloseSidebar}
         />
@@ -175,7 +172,7 @@ export function LayoutClient({
             paddingLeft: !isMobile && !isAuthPage ? 'var(--sidebar-padding)' : undefined,
           }}
         >
-          <Footer siteName={siteName} tagline={tagline} />
+          <Footer siteName={siteConfig.name} tagline={siteConfig.tagline} />
         </footer>
       )}
     </div>

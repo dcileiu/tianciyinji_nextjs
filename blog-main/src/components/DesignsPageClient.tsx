@@ -5,7 +5,7 @@ import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import designsData from '@/app/designs/designs-data.json';
-import { localizedHref, type Locale } from '@/lib/i18n';
+import { useI18n } from '@/components/I18nProvider';
 
 interface Design {
   id: string;
@@ -20,7 +20,8 @@ interface Design {
   user_name: string;
 }
 
-export default function DesignsPageClient({ locale }: { locale: Locale }) {
+export default function DesignsPageClient() {
+  const { locale, localizedHref } = useI18n();
   const router = useRouter();
   const allDesigns: Design[] = designsData as Design[];
   const labels =
@@ -186,7 +187,7 @@ export default function DesignsPageClient({ locale }: { locale: Locale }) {
     e.preventDefault();
     setExiting(true);
     localStorage.setItem('sidebar-open', 'false');
-    setTimeout(() => router.push(localizedHref('/', locale) as Route), 500);
+    setTimeout(() => router.push(localizedHref('/') as Route), 500);
   };
 
   const current = designs[activeIndex];
@@ -387,7 +388,7 @@ export default function DesignsPageClient({ locale }: { locale: Locale }) {
         animate={{ opacity: entered ? 1 : 0, x: entered ? 0 : -20 }}
         transition={{ duration: 0.6, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
       >
-        <a href={localizedHref('/', locale)} onClick={exit} className="text-white/40 hover:text-white transition-colors duration-300">
+        <a href={localizedHref('/')} onClick={exit} className="text-white/40 hover:text-white transition-colors duration-300">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>

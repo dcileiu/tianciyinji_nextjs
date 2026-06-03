@@ -1,3 +1,5 @@
+'use client';
+
 import {
   ArrowRight,
   DatabaseZap,
@@ -13,7 +15,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import type { Route } from 'next';
-import { localizedHref, type Locale } from '@/lib/i18n';
+import { useI18n } from '@/components/I18nProvider';
 
 interface ToolChip {
   id: string;
@@ -276,21 +278,9 @@ const MODULES_EN: ModuleEntry[] = [
   },
 ];
 
-interface ToolsHubProps {
-  locale: Locale;
-  text: {
-    countLabel: string;
-    description: string;
-    enterModule: string;
-    eyebrow: string;
-    featuredDescription: string;
-    featuredTitle: string;
-    recommended: string;
-    title: string;
-  };
-}
-
-export default function ToolsHub({ locale, text }: ToolsHubProps) {
+export default function ToolsHub() {
+  const { dictionary, locale, localizedHref } = useI18n();
+  const text = dictionary.toolsHub;
   const modules = locale === 'en' ? MODULES_EN : MODULES_ZH;
 
   return (
@@ -312,7 +302,7 @@ export default function ToolsHub({ locale, text }: ToolsHubProps) {
 
       {/* 特色工具：去水印 */}
       <Link
-        href={localizedHref('/tools/dewatermark', locale) as Route}
+        href={localizedHref('/tools/dewatermark') as Route}
         className="group mt-6 block overflow-hidden rounded-[28px] border border-[#e4d8ff] bg-[linear-gradient(135deg,rgba(124,92,255,0.12),rgba(244,237,255,0.6))] p-5 shadow-[0_18px_55px_rgba(91,61,245,0.08)] transition hover:border-[#8b6bff] hover:shadow-[0_22px_70px_rgba(91,61,245,0.16)] dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(60,42,120,0.5),rgba(18,13,31,0.92))] sm:p-6"
       >
         <div className="flex items-center gap-4">
@@ -343,7 +333,7 @@ export default function ToolsHub({ locale, text }: ToolsHubProps) {
               key={module.href}
               className="group flex flex-col rounded-[28px] border border-[#e4d8ff] bg-[linear-gradient(135deg,rgba(255,255,255,0.97),rgba(247,242,255,0.92))] p-5 shadow-[0_22px_70px_rgba(91,61,245,0.06)] transition hover:border-[#8b6bff] hover:shadow-[0_26px_80px_rgba(91,61,245,0.14)] dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.92),rgba(15,11,27,0.96))] sm:p-6"
             >
-              <Link href={localizedHref(module.href, locale) as Route} className="flex items-start justify-between gap-3">
+              <Link href={localizedHref(module.href) as Route} className="flex items-start justify-between gap-3">
                 <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ece3ff] text-[#5b3df5] transition group-hover:scale-105 dark:bg-[#2b1f43] dark:text-[#cbbcff]">
                   <Icon className="h-6 w-6" />
                 </span>
@@ -352,7 +342,7 @@ export default function ToolsHub({ locale, text }: ToolsHubProps) {
                 </span>
               </Link>
 
-              <Link href={localizedHref(module.href, locale) as Route} className="mt-4 block">
+              <Link href={localizedHref(module.href) as Route} className="mt-4 block">
                 <h2 className="text-xl font-semibold tracking-tight text-[#2e2150] transition group-hover:text-[#4f31d7] dark:text-[#f4efff] dark:group-hover:text-[#cbbcff]">
                   {module.title}
                 </h2>
@@ -365,7 +355,7 @@ export default function ToolsHub({ locale, text }: ToolsHubProps) {
                 {module.tools.map((tool) => (
                   <Link
                     key={tool.id}
-                    href={`${localizedHref(module.base, locale)}?tool=${tool.id}` as Route}
+                    href={`${localizedHref(module.base)}?tool=${tool.id}` as Route}
                     className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1 text-xs text-[#5f4e89] transition hover:border-[#8b6bff] hover:bg-[#ece3ff] hover:text-[#4f31d7] dark:border-[#392d56] dark:bg-white/[0.03] dark:text-[#cabbef] dark:hover:border-[#8b6bff] dark:hover:bg-[#2b1f43] dark:hover:text-[#efe9ff]"
                   >
                     {tool.name}
@@ -374,7 +364,7 @@ export default function ToolsHub({ locale, text }: ToolsHubProps) {
               </div>
 
               <Link
-                href={localizedHref(module.href, locale) as Route}
+                href={localizedHref(module.href) as Route}
                 className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-[#5b3df5] dark:text-[#cbbcff]"
               >
                 {text.enterModule}

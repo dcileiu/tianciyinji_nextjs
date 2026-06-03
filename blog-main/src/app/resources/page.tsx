@@ -36,7 +36,7 @@ export default async function ResourcesPage() {
           path: '/resources',
         })}
       />
-      <ResourcesClient locale={locale} resources={resources} text={text} />
+      <ResourcesClient resources={resources} />
     </>
   );
 }

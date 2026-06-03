@@ -2,11 +2,10 @@
 
 import * as FramerMotion from 'framer-motion';
 import * as LucideIcons from 'lucide-react';
-import { usePathname } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { transform } from 'sucrase';
-import { getPathLocale } from '@/lib/i18n';
+import { useI18n } from '@/components/I18nProvider';
 import { cn } from '@/lib/utils';
 
 interface LiveCodeRendererProps {
@@ -80,8 +79,7 @@ function Portal({ children }: { children: React.ReactNode }) {
 }
 
 export function LiveCodeRenderer({ code, className = '' }: LiveCodeRendererProps) {
-  const pathname = usePathname();
-  const locale = getPathLocale(pathname);
+  const { locale } = useI18n();
   const text =
     locale === 'en'
       ? { componentNotFound: 'Component not found', renderFailed: 'Render failed', unknownError: 'Unknown error' }

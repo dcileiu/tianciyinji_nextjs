@@ -33,7 +33,7 @@ export default async function DataToolsPage({ searchParams }: { searchParams: Pr
   return (
     <>
       <JsonLd data={buildCollectionPageJsonLd({ title: pageTitle(text.title), description: text.description, path: '/tools/data' })} />
-      <ToolsClientPage locale={locale} section="public-data-tools" initialTool={tool} />
+      <ToolsClientPage section="public-data-tools" initialTool={tool} />
     </>
   );
 }

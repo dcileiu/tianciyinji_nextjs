@@ -2,9 +2,8 @@
 
 import type { Route } from 'next';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { getPathLocale, localizedHref } from '@/lib/i18n';
+import { useI18n } from '@/components/I18nProvider';
 import type { Post } from '@/types/post';
 
 interface TimelineProps {
@@ -54,8 +53,7 @@ function TimelineItem({ post, readMore, href }: { post: Post & { displayDate: st
 }
 
 export default function ExpandableTimeline({ posts }: TimelineProps) {
-  const pathname = usePathname();
-  const locale = getPathLocale(pathname);
+  const { locale, localizedHref } = useI18n();
   const [isExpanded, setIsExpanded] = useState(false);
   const text =
     locale === 'en'
@@ -103,7 +101,7 @@ export default function ExpandableTimeline({ posts }: TimelineProps) {
             key={post.slug}
             post={post}
             readMore={text.readMore}
-            href={localizedHref(`/post/${post.slug}`, locale) as Route}
+            href={localizedHref(`/post/${post.slug}`) as Route}
           />
         ))}
 
@@ -118,7 +116,7 @@ export default function ExpandableTimeline({ posts }: TimelineProps) {
                 key={post.slug}
                 post={post}
                 readMore={text.readMore}
-                href={localizedHref(`/post/${post.slug}`, locale) as Route}
+                href={localizedHref(`/post/${post.slug}`) as Route}
               />
             ))}
           </div>

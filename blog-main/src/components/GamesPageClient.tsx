@@ -5,7 +5,7 @@ import Lenis from 'lenis';
 import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { localizedHref, type Locale } from '@/lib/i18n';
+import { useI18n } from '@/components/I18nProvider';
 
 interface Game {
   title: string;
@@ -290,7 +290,8 @@ function GameSection({ game, index }: { game: Game; index: number }) {
   );
 }
 
-export default function GamesPageClient({ locale }: { locale: Locale }) {
+export default function GamesPageClient() {
+  const { locale, localizedHref } = useI18n();
   const [isExiting, setIsExiting] = useState(false);
   const router = useRouter();
   const games = gamesByLocale[locale];
@@ -322,13 +323,13 @@ export default function GamesPageClient({ locale }: { locale: Locale }) {
     event.preventDefault();
     setIsExiting(true);
     localStorage.setItem('sidebar-open', 'false');
-    setTimeout(() => router.push(localizedHref('/', locale) as Route), 500);
+    setTimeout(() => router.push(localizedHref('/') as Route), 500);
   };
 
   return (
     <motion.div className="fullscreen-page min-h-screen" style={{ backgroundColor: '#0B0B0B' }} animate={{ opacity: isExiting ? 0 : 1 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
       <motion.a
-        href={localizedHref('/', locale)}
+        href={localizedHref('/')}
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: isExiting ? 0 : 1, x: isExiting ? -20 : 0 }}
         transition={{ duration: 0.6, delay: isExiting ? 0 : 0.8, ease: [0.22, 1, 0.36, 1] }}

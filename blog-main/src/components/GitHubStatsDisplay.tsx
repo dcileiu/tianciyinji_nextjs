@@ -1,8 +1,7 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { useI18n } from '@/components/I18nProvider';
 import { getRepoStats, useGitHubStats } from '@/hooks/useGitHubStats';
-import { getPathLocale } from '@/lib/i18n';
 
 interface GitHubStatsHeaderProps {
   fallbackStars?: number;
@@ -15,8 +14,7 @@ export function GitHubStatsHeader({
   fallbackUsers = '7,000+',
   fallbackContributions = 2132,
 }: GitHubStatsHeaderProps) {
-  const pathname = usePathname();
-  const locale = getPathLocale(pathname);
+  const { locale } = useI18n();
   const { stats, isLoading } = useGitHubStats();
 
   const totalStars = stats?.totalStars ?? fallbackStars;

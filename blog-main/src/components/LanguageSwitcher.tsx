@@ -3,20 +3,22 @@
 import { Check, Languages } from 'lucide-react';
 import type { Route } from 'next';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useI18n } from '@/components/I18nProvider';
 import { Button } from '@/components/ui/button';
 import { SimpleDropdown, SimpleDropdownItem } from '@/components/ui/simple-dropdown';
 import { localizePath, LOCALE_COOKIE, type Locale } from '@/lib/i18n';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
 interface LanguageSwitcherProps {
-  locale: Locale;
-  label: string;
+  label?: string;
 }
 
-export function LanguageSwitcher({ locale, label }: LanguageSwitcherProps) {
-  const pathname = usePathname();
+export function LanguageSwitcher({ label }: LanguageSwitcherProps) {
+  const { dictionary, locale } = useI18n();
+  const pathname = usePathname() || '/';
   const router = useRouter();
   const searchParams = useSearchParams();
+  const ariaLabel = label ?? dictionary.header.language;
 
   const handleSelect = (nextLocale: Locale) => {
     if (nextLocale === locale) return;
@@ -31,8 +33,8 @@ export function LanguageSwitcher({ locale, label }: LanguageSwitcherProps) {
     <Button
       type="button"
       variant="ghost"
-      aria-label={label}
-      title={label}
+      aria-label={ariaLabel}
+      title={ariaLabel}
       className="rounded-full text-[#75689e] dark:text-[#ae9fda] hover:bg-[#ece5ff] dark:hover:bg-[#231c38] hover:text-[#4f31d7] dark:hover:text-[#f3efff] h-8 px-2 md:h-8 flex items-center gap-1.5"
     >
       <Languages className="h-4 w-4 md:h-4 md:w-4" />

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 import type { Locale } from '@/lib/i18n';
 
 const exactPairs: Record<string, string> = {
@@ -8,6 +9,12 @@ const exactPairs: Record<string, string> = {
   '支持点击选择或拖拽上传': 'Click to choose or drag to upload',
   '获取客户端信息': 'Get client info',
   '开始查询': 'Start lookup',
+  '查询': 'Lookup',
+  '查询玩家': 'Lookup player',
+  '查询服务器': 'Lookup server',
+  '查询仓库': 'Lookup repository',
+  '查询归属': 'Lookup location',
+  '查询归属地': 'Lookup area',
   '开始 Ping': 'Start ping',
   '扫描端口': 'Scan ports',
   '检测状态': 'Check status',
@@ -19,6 +26,7 @@ const exactPairs: Record<string, string> = {
   '复制': 'Copy',
   '已复制': 'Copied',
   '复制失败': 'Copy failed',
+  '复制失败，请手动选中文本复制。': 'Copy failed. Please select and copy manually.',
   '总字符数': 'Total characters',
   '字符数(不含空格)': 'Characters (no spaces)',
   '中文字数': 'Chinese characters',
@@ -155,6 +163,7 @@ const exactPairs: Record<string, string> = {
   '历史今天': 'Today in History',
   '皮肤': 'Skin',
   '披风': 'Cape',
+  '玩家': 'Players',
   '在线状态': 'Online status',
   '在线': 'Online',
   '离线': 'Offline',
@@ -162,11 +171,16 @@ const exactPairs: Record<string, string> = {
   '城市': 'City',
   '时区': 'Timezone',
   '号码': 'Number',
+  '国家 / 地区': 'Country / Region',
   '省份': 'Province',
   '运营商': 'Carrier',
   '原图大小': 'Original size',
   '输出大小': 'Output size',
   '例如 openai.com': 'For example openai.com',
+  '例如 Notch': 'For example Notch',
+  '例如 mc.hypixel.net': 'For example mc.hypixel.net',
+  '例如 vercel/next.js': 'For example vercel/next.js',
+  '例如 13800138000': 'For example 13800138000',
   '搜索文章...': 'Search posts...',
   '目标主机': 'Target host',
   '端口，例如 443': 'Port, for example 443',
@@ -218,7 +232,17 @@ const exactPairs: Record<string, string> = {
   '月': 'Month',
   '日': 'Day',
   '邮箱地址': 'Email address',
+  '生成头像地址': 'Generate avatar URL',
+  '打开 Gravatar 资料页': 'Open Gravatar profile',
   '可留空，默认查询当前访问 IP': 'Leave empty to query the current request IP',
+  '选择 Bing 区域': 'Select Bing region',
+  '中国大陆（zh-CN）': 'Mainland China (zh-CN)',
+  '美国（en-US）': 'United States (en-US)',
+  '日本（ja-JP）': 'Japan (ja-JP)',
+  '获取壁纸': 'Get wallpaper',
+  '打开原图': 'Open original image',
+  '翻一页': 'Turn a page',
+  '来一首': 'Give me a poem',
   '点击或拖拽图片到此处': 'Click or drag an image here',
   '处理全部在浏览器本地完成': 'Processing runs locally in your browser',
   '宽': 'Width',
@@ -472,11 +496,10 @@ const TranslationContext = createContext<{
 
 export function TranslationProvider({
   children,
-  locale,
 }: {
   children: React.ReactNode;
-  locale: Locale;
 }) {
+  const { locale } = useI18n();
   const t = React.useCallback(
     (text: string) => {
       return translateText(text, locale);

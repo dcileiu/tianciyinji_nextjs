@@ -1,12 +1,11 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { getPathLocale } from '@/lib/i18n';
+import { useI18n } from '@/components/I18nProvider';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
 export function CopyUrlButton() {
-  const locale = getPathLocale(usePathname());
+  const { locale } = useI18n();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {

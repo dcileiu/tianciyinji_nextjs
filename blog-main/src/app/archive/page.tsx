@@ -21,9 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export const revalidate = 60;
 
 export default async function ArchivePage() {
-  const locale = await getLocale();
-  const dictionary = getDictionary(locale);
   const posts = await getAllBlogPosts();
 
-  return <ArchiveClientPage locale={locale} posts={posts} text={dictionary.archive} />;
+  return <ArchiveClientPage posts={posts} />;
 }

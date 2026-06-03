@@ -8,7 +8,7 @@ import {
   type ResourceCategoryId,
   matchResourceCategory,
 } from '@/lib/resource-categories';
-import { localizedHref, type Locale } from '@/lib/i18n';
+import { useI18n } from '@/components/I18nProvider';
 import { LiveCodeRenderer } from './LiveCodeRenderer';
 
 interface Resource {
@@ -26,28 +26,7 @@ interface Resource {
 }
 
 interface ResourcesClientProps {
-  locale: Locale;
   resources: Resource[];
-  text: {
-    all: string;
-    copied: string;
-    copy: string;
-    copyCode: string;
-    download: string;
-    emptyCategory: string;
-    emptyCategoryDescription: string;
-    emptyCommands: string;
-    emptyDesign: string;
-    emptyResources: string;
-    emptyResourcesDescription: string;
-    fileSize: string;
-    noPreview: string;
-    tabs: Record<MainTab, string>;
-    title: string;
-    description: string;
-    updatedAt: string;
-    viewDetails: string;
-  };
 }
 
 // 解码 HTML 实体
@@ -89,7 +68,9 @@ const tabContentMotion = {
 
 const pillTransition = { duration: 0.22, ease: [0.16, 1, 0.3, 1] as const };
 
-export default function ResourcesClient({ locale, resources, text }: ResourcesClientProps) {
+export default function ResourcesClient({ resources }: ResourcesClientProps) {
+  const { dictionary, locale, localizedHref } = useI18n();
+  const text = dictionary.resources;
   const [activeTab, setActiveTab] = useState<MainTab>('resources');
   const [activeCategory, setActiveCategory] = useState<ResourceCategoryId>('all');
   const [isHydrated, setIsHydrated] = useState(false);
@@ -281,7 +262,7 @@ export default function ResourcesClient({ locale, resources, text }: ResourcesCl
                     <div className="space-y-4 sm:space-y-5">
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
                         <div className="flex-1 min-w-0">
-                          <Link href={localizedHref(`/resources/${resource.slug}`, locale) as any}>
+                          <Link href={localizedHref(`/resources/${resource.slug}`) as any}>
                             <h2 className="text-xl sm:text-2xl md:text-3xl font-medium text-black dark:text-white mb-2 sm:mb-2 hover:text-black/70 dark:hover:text-white/70 transition-colors cursor-pointer">
                               {resource.title}
                             </h2>
@@ -330,7 +311,7 @@ export default function ResourcesClient({ locale, resources, text }: ResourcesCl
 
                           <div className="flex flex-col sm:flex-row gap-2 md:items-end md:flex-shrink-0 w-full sm:w-auto md:w-auto">
                             <Link
-                              href={localizedHref(`/resources/${resource.slug}`, locale) as any}
+                              href={localizedHref(`/resources/${resource.slug}`) as any}
                               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2.5 md:py-2 rounded-full bg-black/[0.06] dark:bg-white/[0.08] text-black dark:text-white text-sm font-medium hover:bg-black/[0.10] dark:hover:bg-white/[0.12] transition-colors whitespace-nowrap w-full sm:w-auto"
                             >
                               <svg
@@ -410,7 +391,7 @@ export default function ResourcesClient({ locale, resources, text }: ResourcesCl
                   >
                     <div className="px-5 py-4 flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
-                        <Link href={localizedHref(`/resources/${cmd.slug}`, locale) as any}>
+                        <Link href={localizedHref(`/resources/${cmd.slug}`) as any}>
                           <h3 className="text-base font-medium text-black dark:text-white mb-1 hover:text-black/70 dark:hover:text-white/70 transition-colors cursor-pointer">
                             {cmd.title}
                           </h3>
@@ -522,7 +503,7 @@ export default function ResourcesClient({ locale, resources, text }: ResourcesCl
                         >
                           {/* 预览区域 - 可点击跳转 */}
                           <Link
-                            href={localizedHref(`/resources/${component.slug}`, locale) as any}
+                            href={localizedHref(`/resources/${component.slug}`) as any}
                             onClickCapture={(e) => {
                               if (shouldBlockPreviewNavigation(e.target)) {
                                 e.preventDefault();
@@ -538,7 +519,7 @@ export default function ResourcesClient({ locale, resources, text }: ResourcesCl
                           </Link>
                           {/* 底部信息栏 */}
                           <div className="px-4 py-3 border-t border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
-                            <Link href={localizedHref(`/resources/${component.slug}`, locale) as any} className="min-w-0 flex-1">
+                            <Link href={localizedHref(`/resources/${component.slug}`) as any} className="min-w-0 flex-1">
                               <h3 className="text-sm font-medium text-black dark:text-white truncate hover:text-black/70 dark:hover:text-white/70 transition-colors">
                                 {component.title}
                               </h3>

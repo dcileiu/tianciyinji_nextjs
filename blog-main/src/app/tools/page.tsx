@@ -30,7 +30,7 @@ export default async function ToolsPage() {
           path: '/tools',
         })}
       />
-      <ToolsHub locale={locale} text={text} />
+      <ToolsHub />
     </>
   );
 }

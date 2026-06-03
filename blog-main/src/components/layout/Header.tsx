@@ -5,9 +5,9 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import AppearanceSettings from '@/components/AppearanceSettings';
 import BrandLogo from '@/components/BrandLogo';
+import { useI18n } from '@/components/I18nProvider';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Button } from '@/components/ui/button';
-import { localizedHref, type Locale } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
@@ -20,7 +20,6 @@ interface HeaderProps {
     openSidebar: string;
     search: string;
   };
-  locale: Locale;
   onToggleSidebar: () => void;
   title: string;
   showSidebarToggle?: boolean;
@@ -29,11 +28,12 @@ interface HeaderProps {
 export function Header({
   isSidebarOpen,
   labels,
-  locale,
   onToggleSidebar,
   title,
   showSidebarToggle = true,
 }: HeaderProps) {
+  const { localizedHref } = useI18n();
+
   return (
     <header
       className={cn(
@@ -48,7 +48,7 @@ export function Header({
         {/* 左侧区域 - 固定宽度 */}
         <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
           <Link
-            href={localizedHref('/', locale) as Route}
+            href={localizedHref('/') as Route}
             className="inline-flex items-center gap-2.5 font-semibold tracking-tight text-[#2e2150] transition-colors hover:text-[#5b3df5] dark:text-[#f3efff] dark:hover:text-[#cdc1ff] text-sm md:text-base"
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-2xl border border-[#e4d8ff] bg-[#f6f1ff] text-[#3f2a8f] shadow-[0_8px_24px_rgba(91,61,245,0.12)] dark:border-white/10 dark:bg-white/[0.04] dark:text-[#f4efff]">
@@ -81,7 +81,7 @@ export function Header({
         {/* 右侧区域 - 固定宽度 */}
         <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
           {/* 搜索按钮 */}
-          <Link href={localizedHref('/search', locale) as Route} onClick={() => triggerHaptic(HapticFeedback.Light)}>
+          <Link href={localizedHref('/search') as Route} onClick={() => triggerHaptic(HapticFeedback.Light)}>
             <Button
               variant="ghost"
               aria-label={labels.search}
@@ -93,7 +93,7 @@ export function Header({
 
           {/* 外观设置 */}
           <AppearanceSettings />
-          <LanguageSwitcher label={labels.language} locale={locale} />
+          <LanguageSwitcher label={labels.language} />
         </div>
       </div>
     </header>

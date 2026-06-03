@@ -32,7 +32,7 @@ export default async function CssToolsPage({ searchParams }: { searchParams: Pro
   return (
     <>
       <JsonLd data={buildCollectionPageJsonLd({ title: pageTitle(text.title), description: text.description, path: '/tools/css' })} />
-      <ToolsClientPage locale={locale} section="css-tools" initialTool={tool} />
+      <ToolsClientPage section="css-tools" initialTool={tool} />
     </>
   );
 }

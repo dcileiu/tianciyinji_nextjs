@@ -33,7 +33,7 @@ export default async function ImageToolsPage({ searchParams }: { searchParams: P
   return (
     <>
       <JsonLd data={buildCollectionPageJsonLd({ title: pageTitle(text.title), description: text.description, path: '/tools/image' })} />
-      <ToolsClientPage locale={locale} section="image-tools" initialTool={tool} />
+      <ToolsClientPage section="image-tools" initialTool={tool} />
     </>
   );
 }

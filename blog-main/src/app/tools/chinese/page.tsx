@@ -33,7 +33,7 @@ export default async function ChineseToolsPage({ searchParams }: { searchParams:
   return (
     <>
       <JsonLd data={buildCollectionPageJsonLd({ title: pageTitle(text.title), description: text.description, path: '/tools/chinese' })} />
-      <ToolsClientPage locale={locale} section="cn-tools" initialTool={tool} />
+      <ToolsClientPage section="cn-tools" initialTool={tool} />
     </>
   );
 }

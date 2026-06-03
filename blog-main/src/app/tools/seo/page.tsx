@@ -33,7 +33,7 @@ export default async function SeoToolsPage({ searchParams }: { searchParams: Pro
   return (
     <>
       <JsonLd data={buildCollectionPageJsonLd({ title: pageTitle(text.title), description: text.description, path: '/tools/seo' })} />
-      <ToolsClientPage locale={locale} section="seo-geo-tools" initialTool={tool} />
+      <ToolsClientPage section="seo-geo-tools" initialTool={tool} />
     </>
   );
 }

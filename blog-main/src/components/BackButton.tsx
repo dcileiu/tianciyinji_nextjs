@@ -1,12 +1,12 @@
 'use client';
 
 import { ArrowLeft } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
-import { getPathLocale } from '@/lib/i18n';
+import { useRouter } from 'next/navigation';
+import { useI18n } from '@/components/I18nProvider';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
 export default function BackButton() {
-  const locale = getPathLocale(usePathname());
+  const { locale } = useI18n();
   const router = useRouter();
   const label = locale === 'en' ? 'Back' : '返回';
 

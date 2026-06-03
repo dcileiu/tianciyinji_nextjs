@@ -18,9 +18,6 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function MusicPage() {
-  const locale = await getLocale();
-  const text = getDictionary(locale).media.music;
-
-  return <MusicPageClient locale={locale} text={{ title: text.title, description: text.description }} />;
+export default function MusicPage() {
+  return <MusicPageClient />;
 }

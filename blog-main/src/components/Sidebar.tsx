@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, ChevronRight, X } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { localizedHref, type Locale } from '@/lib/i18n';
+import { useI18n } from '@/components/I18nProvider';
 import type { NavItem } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
@@ -17,12 +17,12 @@ interface SidebarProps {
     collapseSubmenu: string;
     expandSubmenu: string;
   };
-  locale: Locale;
   navItems: NavItem[];
   onClose?: () => void;
 }
 
-export function Sidebar({ isOpen, labels, locale, navItems, onClose }: SidebarProps) {
+export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
+  const { localizedHref } = useI18n();
   const asideRef = useRef<HTMLElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [shouldRender, setShouldRender] = useState(isOpen);
@@ -105,7 +105,7 @@ export function Sidebar({ isOpen, labels, locale, navItems, onClose }: SidebarPr
               return (
                 <li key={item.label} className="group/navitem relative">
                   <Link
-                    href={localizedHref(item.href, locale) as any}
+                    href={localizedHref(item.href) as any}
                     className={cn(
                       'group inline-flex h-9 w-fit min-w-0 items-center gap-1 rounded-md px-3 text-sm whitespace-nowrap',
                       'text-[#34265d] dark:text-[#efeaff]',
@@ -146,7 +146,7 @@ export function Sidebar({ isOpen, labels, locale, navItems, onClose }: SidebarPr
                         {children.map((child) => (
                           <li key={child.label}>
                             <Link
-                              href={localizedHref(child.href, locale) as any}
+                              href={localizedHref(child.href) as any}
                               className={cn(
                                 'block rounded-lg px-3 py-2 text-sm whitespace-nowrap',
                                 'text-foreground/80',
@@ -220,7 +220,7 @@ export function Sidebar({ isOpen, labels, locale, navItems, onClose }: SidebarPr
                       <li key={item.label}>
                         <div className="flex items-center">
                           <Link
-                            href={localizedHref(item.href, locale) as any}
+                            href={localizedHref(item.href) as any}
                             onClick={(e) => {
                               e.stopPropagation();
                               handleClose();
@@ -284,7 +284,7 @@ export function Sidebar({ isOpen, labels, locale, navItems, onClose }: SidebarPr
                                 {children.map((child) => (
                                   <li key={child.label}>
                                     <Link
-                                      href={localizedHref(child.href, locale) as any}
+                                      href={localizedHref(child.href) as any}
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         handleClose();

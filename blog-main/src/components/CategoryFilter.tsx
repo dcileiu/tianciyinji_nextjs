@@ -1,8 +1,7 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { getPathLocale } from '@/lib/i18n';
+import { useI18n } from '@/components/I18nProvider';
 
 interface CategoryFilterProps {
   posts: any[];
@@ -10,7 +9,7 @@ interface CategoryFilterProps {
 }
 
 export function CategoryFilter({ posts, onFilterChange }: CategoryFilterProps) {
-  const locale = getPathLocale(usePathname());
+  const { locale } = useI18n();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const categoryCounts = useMemo(() => {
