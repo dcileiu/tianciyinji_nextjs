@@ -11,15 +11,25 @@ import {
   buildItemListJsonLd,
   buildPageMetadata,
 } from "@/lib/seo";
+import { getDictionary, localizedHref, type Locale } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 import type { Post } from "@/types/post";
 import { getBlogPosts } from "@/utils/posts";
 
-export const metadata: Metadata = buildPageMetadata({
-  title: siteConfig.name,
-  description: siteConfig.home.intro,
-  path: "/",
-  keywords: ["个人博客", "全栈开发", "作品集", "资源整理"],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const dictionary = getDictionary(locale);
+  return buildPageMetadata({
+    title: siteConfig.name,
+    description: dictionary.home.intro,
+    path: "/",
+    keywords:
+      locale === 'en'
+        ? ['personal blog', 'full-stack development', 'portfolio', 'resources']
+        : ["个人博客", "全栈开发", "作品集", "资源整理"],
+    locale,
+  });
+}
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -29,13 +39,21 @@ function formatDate(dateString: string): string {
   return `${year}.${month}.${day}`;
 }
 
-function PostItem({ post }: { post: Post }) {
+function PostItem({
+  locale,
+  post,
+  localeText,
+}: {
+  locale: Locale;
+  post: Post;
+  localeText: ReturnType<typeof getDictionary>["home"];
+}) {
   const formattedDate = formatDate(post.date);
-  const categoryLabel = post.category?.trim() || "博客";
+  const categoryLabel = post.category?.trim() || localeText.blogFallback;
 
   return (
     <Link
-      href={`/post/${post.slug}`}
+      href={localizedHref(`/post/${post.slug}`, locale) as Route}
       className="group block rounded-3xl border border-black/6 bg-black/[0.02] p-6 transition-colors hover:bg-black/[0.03] sm:p-8 dark:border-white/6 dark:bg-white/[0.02] dark:hover:bg-white/[0.04]"
     >
       <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
@@ -70,7 +88,7 @@ function PostItem({ post }: { post: Post }) {
         </div>
 
         <span className="inline-flex shrink-0 items-center gap-2 text-sm text-black/55 transition-colors group-hover:text-black md:mt-1 dark:text-white/55 dark:group-hover:text-white">
-          阅读文章
+          {localeText.readArticle}
           <ArrowUpRight className="h-4 w-4" />
         </span>
       </div>
@@ -79,11 +97,11 @@ function PostItem({ post }: { post: Post }) {
 }
 
 export default async function Page() {
+  const locale = await getLocale();
+  const dictionary = getDictionary(locale);
+  const homeText = dictionary.home;
   const { posts, total } = await getBlogPosts(1);
-  const homeTitleLines: [string, string] = [
-    "全栈开发一枚",
-    "记录博客、作品、资源与一些长期主义的尝试",
-  ];
+  const homeTitleLines = homeText.titleLines;
 
   return (
     <>
@@ -109,7 +127,7 @@ export default async function Page() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(126,92,255,0.16),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(216,205,255,0.18),transparent_34%)]" />
           <div className="relative">
             <p className="mb-4 text-xs uppercase tracking-[0.24em] text-[#7f71ab] sm:mb-5 sm:text-sm dark:text-[#ab9cd8]">
-              {siteConfig.home.eyebrow}
+              {homeText.eyebrow}
             </p>
 
             <h1 className="mb-4 sm:mb-5 md:mb-6">
@@ -121,33 +139,33 @@ export default async function Page() {
             </h1>
 
             <p className="mb-6 max-w-2xl text-sm leading-relaxed text-[#615488] sm:mb-8 sm:text-base md:text-lg dark:text-[#c7baf1]">
-              {siteConfig.home.intro}
+              {homeText.intro}
             </p>
 
             <div className="mb-6 flex flex-wrap items-center gap-4 text-sm text-[#7769a0] sm:mb-8 dark:text-[#b5a8df]">
               <Link
-                href="/about"
+                href={localizedHref('/about', locale) as Route}
                 className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]"
               >
-                了解我
+                {homeText.actions.about}
               </Link>
               <Link
-                href="/works"
+                href={localizedHref('/works', locale) as Route}
                 className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]"
               >
-                查看作品
+                {homeText.actions.works}
               </Link>
               <Link
-                href="/resources"
+                href={localizedHref('/resources', locale) as Route}
                 className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]"
               >
-                浏览资源
+                {homeText.actions.resources}
               </Link>
               <Link
-                href={"/tools" as Route}
+                href={localizedHref('/tools', locale) as Route}
                 className="transition-colors hover:text-[#5b3df5] dark:hover:text-[#d8cdff]"
               >
-                实用工具
+                {homeText.actions.tools}
               </Link>
             </div>
 
@@ -158,16 +176,16 @@ export default async function Page() {
         <section>
           <div className="mb-6 sm:mb-8">
             <h2 className="text-lg font-medium text-[#2e2150] sm:text-xl md:text-2xl dark:text-white">
-              最近更新
+              {homeText.latestTitle}
             </h2>
             <p className="mt-2 text-sm text-[#7769a0] sm:text-base dark:text-[#b5a8df]">
-              最新发布的文章会出现在这里。
+              {homeText.latestDescription}
             </p>
           </div>
 
           <div className="space-y-4">
             {posts.map((post) => (
-              <PostItem key={post.slug} post={post as unknown as Post} />
+              <PostItem key={post.slug} locale={locale} localeText={homeText} post={post as unknown as Post} />
             ))}
           </div>
         </section>
@@ -175,10 +193,10 @@ export default async function Page() {
         {total > 10 && (
           <div className="mt-10 border-t border-[#e7defe] pt-10 sm:mt-12 sm:pt-12 md:mt-16 md:pt-16 dark:border-white/5">
             <Link
-              href="/archive"
+              href={localizedHref('/archive', locale) as Route}
               className="inline-flex text-sm text-[#7769a0] transition-colors hover:text-[#5b3df5] sm:text-base dark:text-[#b5a8df] dark:hover:text-[#d8cdff]"
             >
-              查看全部 →
+              {homeText.viewAll}
             </Link>
           </div>
         )}

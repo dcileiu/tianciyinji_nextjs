@@ -1,11 +1,14 @@
 'use client';
 
 import { ArrowLeft } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { getPathLocale } from '@/lib/i18n';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
 export default function BackButton() {
+  const locale = getPathLocale(usePathname());
   const router = useRouter();
+  const label = locale === 'en' ? 'Back' : '返回';
 
   return (
     <button
@@ -13,11 +16,11 @@ export default function BackButton() {
         triggerHaptic(HapticFeedback.Medium);
         router.back();
       }}
-      className="inline-flex items-center gap-2 text-sm text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white transition-colors"
-      aria-label="返回上一页"
+      className="inline-flex items-center gap-2 text-sm text-black/40 transition-colors hover:text-black dark:text-white/40 dark:hover:text-white"
+      aria-label={locale === 'en' ? 'Go back to previous page' : '返回上一页'}
     >
-      <ArrowLeft className="w-4 h-4" />
-      <span>返回</span>
+      <ArrowLeft className="h-4 w-4" />
+      <span>{label}</span>
     </button>
   );
 }

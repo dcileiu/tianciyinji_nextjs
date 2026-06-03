@@ -3,20 +3,33 @@
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import DomTextTranslator from '@/components/DomTextTranslator';
 import Footer from '@/components/Footer';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/Sidebar';
+import type { getDictionary } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
 import { siteConfig } from '@/lib/site-config';
 import type { NavItem } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 interface LayoutClientProps {
   children: React.ReactNode;
+  dictionary: ReturnType<typeof getDictionary>;
+  locale: Locale;
   navItems: NavItem[];
   siteName?: string;
+  tagline?: string;
 }
 
-export function LayoutClient({ children, navItems, siteName = siteConfig.name }: LayoutClientProps) {
+export function LayoutClient({
+  children,
+  dictionary,
+  locale,
+  navItems,
+  siteName = siteConfig.name,
+  tagline = siteConfig.tagline,
+}: LayoutClientProps) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -104,9 +117,13 @@ export function LayoutClient({ children, navItems, siteName = siteConfig.name }:
 
   return (
     <div className="relative min-h-dvh w-full text-foreground">
+      <DomTextTranslator locale={locale} />
+
       {!isFullscreenPage && (
         <Header
           isSidebarOpen={isSidebarOpen}
+          labels={dictionary.header}
+          locale={locale}
           onToggleSidebar={handleToggleSidebar}
           title={siteName}
           showSidebarToggle={!isAuthPage}
@@ -114,7 +131,13 @@ export function LayoutClient({ children, navItems, siteName = siteConfig.name }:
       )}
 
       {!isAuthPage && !isFullscreenPage && (
-        <Sidebar isOpen={isSidebarOpen} navItems={navItems} onClose={handleCloseSidebar} />
+        <Sidebar
+          isOpen={isSidebarOpen}
+          labels={dictionary.sidebar}
+          locale={locale}
+          navItems={navItems}
+          onClose={handleCloseSidebar}
+        />
       )}
 
       {!isAuthPage && !isFullscreenPage && (
@@ -154,7 +177,7 @@ export function LayoutClient({ children, navItems, siteName = siteConfig.name }:
             paddingLeft: !isMobile && !isAuthPage ? 'var(--sidebar-padding)' : undefined,
           }}
         >
-          <Footer />
+          <Footer siteName={siteName} tagline={tagline} />
         </footer>
       )}
     </div>

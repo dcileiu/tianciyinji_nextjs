@@ -24,6 +24,7 @@ import {
   Wifi,
 } from "lucide-react";
 import Link from "next/link";
+import type { Route } from "next";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import SiteTrafficTool from "@/components/SiteTrafficTool";
@@ -113,6 +114,7 @@ import {
   MinecraftServerTool,
   MobileAreaTool,
 } from "@/components/tools/data-tools";
+import { localizedHref, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 const sectionMeta = [
@@ -167,6 +169,49 @@ const sectionMeta = [
 ] as const;
 
 type SectionId = (typeof sectionMeta)[number]["id"];
+
+const sectionMetaEn = {
+  "local-tools": {
+    title: "Local Tools",
+    description:
+      "Common browser-local utilities for word count, RMB uppercase, regex testing, JSON, Base64, MD5, timestamps, colors, and encoding conversion.",
+  },
+  "image-tools": {
+    title: "Image Tools",
+    description:
+      "Online image tools for QR codes, format conversion, compression, cropping, watermarks, favicons, and dominant color extraction.",
+  },
+  "network-tools": {
+    title: "Network Basics",
+    description:
+      "Network utilities for DNS lookup, ping, port scanning, URL status, webpage metadata, image extraction, and web-to-Markdown conversion.",
+  },
+  "public-data-tools": {
+    title: "Public Data",
+    description:
+      "Useful lookups for Minecraft, GitHub repositories, Gravatar, IP and mobile number location, Bing daily wallpaper, and more.",
+  },
+  "seo-geo-tools": {
+    title: "SEO | GEO Tools",
+    description:
+      "Optimization tools for search engines and generative AI: llms.txt, meta tags, robots.txt, JSON-LD, and keyword density analysis.",
+  },
+  "calc-tools": {
+    title: "Calculators",
+    description:
+      "Practical calculators for mortgage, income tax, BMI, date difference, and common unit conversion.",
+  },
+  "cn-tools": {
+    title: "Chinese Tools",
+    description:
+      "Utilities for Chinese scenarios: simplified/traditional conversion, Chinese-to-pinyin, and Chinese fake data generation.",
+  },
+  "css-tools": {
+    title: "Frontend / CSS",
+    description:
+      "Visual generators for CSS gradients, box-shadow, border radius, and color palettes with copy-ready code.",
+  },
+} as const satisfies Record<SectionId, { title: string; description: string }>;
 
 const toolCatalog = [
   { id: "word-count", title: "字数统计", sectionId: "local-tools" },
@@ -260,25 +305,208 @@ const toolCatalog = [
 }>;
 
 type ToolId = (typeof toolCatalog)[number]["id"];
+
+const toolTitleEn: Record<ToolId, string> = {
+  "word-count": "Word Count",
+  "rmb-capital": "RMB Uppercase",
+  "regex-tester": "Regex Tester",
+  "color-tool": "Color Tool / Gradient",
+  "data-convert": "JSON <-> CSV",
+  "jwt-decode": "JWT Decode",
+  cron: "Cron Parser",
+  "sha-hash": "SHA Hash",
+  "base-convert": "Base Conversion",
+  "text-diff": "Text Diff",
+  "case-convert": "Case Conversion",
+  aes: "AES Encrypt / Decrypt",
+  base64: "Base64 Encode / Decode",
+  md5: "MD5 Calculate / Verify",
+  random: "Random Number / String",
+  timestamp: "Timestamp Converter",
+  json: "JSON Format / Minify",
+  "code-obfuscate": "Code Obfuscate / Minify",
+  params: "Parameter Analyzer",
+  sensitive: "Sensitive Word Check",
+  favicon: "Favicon Generator",
+  "image-convert": "Image Format Converter",
+  "image-resize": "Crop / Resize",
+  "image-watermark": "Image Watermark",
+  "color-extract": "Dominant Color Extractor",
+  qrcode: "QR Code Generator",
+  "image-base64": "Image / Base64",
+  "svg-image": "SVG to Image",
+  "image-compress": "Image Compression",
+  "pet-gif": "Pet GIF",
+  "llms-txt": "llms.txt Generator",
+  "site-traffic": "Site Traffic Analysis",
+  "meta-tags": "Meta Tags / TDK",
+  "robots-txt": "robots.txt Generator",
+  "json-ld": "Structured Data JSON-LD",
+  "keyword-density": "Keyword Density",
+  "client-ip": "Client IP",
+  "dns-lookup": "DNS Lookup",
+  ping: "Ping",
+  "port-scan": "Port Scan",
+  "url-status": "URL Status",
+  "web-metadata": "Web Metadata",
+  "web-images": "Web Images",
+  "web-markdown": "Web to Markdown",
+  "minecraft-player": "Minecraft Player",
+  "minecraft-server": "Minecraft Server",
+  "github-repo": "GitHub Repository",
+  gravatar: "Gravatar",
+  "ip-geo": "Basic IP Location",
+  "mobile-area": "Mobile Number Area",
+  "bing-wallpaper": "Bing Daily Wallpaper",
+  "content-tools": "Book of Answers / Poetry / Today in History",
+  loan: "Mortgage Calculator",
+  "income-tax": "Income Tax Calculator",
+  bmi: "BMI Calculator",
+  "date-diff": "Date Difference",
+  "unit-convert": "Unit Converter",
+  "hanzi-convert": "Simplified / Traditional",
+  pinyin: "Chinese to Pinyin",
+  "chinese-faker": "Chinese Fake Data",
+  "css-gradient": "CSS Gradient",
+  "box-shadow": "box-shadow",
+  "border-radius": "Border Radius",
+  palette: "Palette",
+};
+
+const sectionMetaZh: Record<SectionId, { title: string; description: string }> = {
+  "local-tools": {
+    title: "纯本地工具",
+    description:
+      "常用的本地小工具：字数统计、金额大写、正则测试、JSON、Base64、MD5、时间戳、颜色与编码转换，全部在浏览器本地完成，安全不上传。",
+  },
+  "image-tools": {
+    title: "图片处理",
+    description:
+      "在线图片工具：二维码生成、格式转换、压缩、裁剪、加水印、Favicon 与主色提取，图片在本地处理无需上传。",
+  },
+  "network-tools": {
+    title: "网络基础",
+    description:
+      "在线网络工具：DNS 查询、Ping 连通性、端口扫描、URL 状态检测、网页元数据与图片提取、网页转 Markdown。",
+  },
+  "public-data-tools": {
+    title: "公开数据",
+    description:
+      "实用信息查询：Minecraft、GitHub 仓库、Gravatar、IP 与手机号归属、Bing 每日壁纸等公开数据，一键查询。",
+  },
+  "seo-geo-tools": {
+    title: "SEO | GEO 工具",
+    description:
+      "面向搜索引擎（SEO）与生成式 AI（GEO）的优化工具：llms.txt、Meta 标签 / TDK、robots.txt、结构化数据 JSON-LD 与关键词密度分析。",
+  },
+  "calc-tools": {
+    title: "计算换算",
+    description:
+      "贴近生活与工作的计算器：房贷、个税、BMI、日期间隔与常用单位换算，输入即算，结果仅供参考。",
+  },
+  "cn-tools": {
+    title: "中文工具",
+    description:
+      "面向中文场景的实用工具：简繁体转换、汉字转拼音与中文测试假数据生成。",
+  },
+  "css-tools": {
+    title: "前端 / CSS",
+    description:
+      "面向前端与设计的可视化生成器：CSS 渐变、box-shadow 阴影、圆角与调色板，所见即所得并一键复制代码。",
+  },
+};
+
+const toolTitleZh: Record<ToolId, string> = {
+  "word-count": "字数统计",
+  "rmb-capital": "人民币金额大写",
+  "regex-tester": "正则表达式测试",
+  "color-tool": "颜色工具 / 渐变",
+  "data-convert": "JSON <-> CSV 互转",
+  "jwt-decode": "JWT 解码",
+  cron: "Cron 表达式解析",
+  "sha-hash": "SHA 哈希",
+  "base-convert": "进制转换",
+  "text-diff": "文本 Diff 对比",
+  "case-convert": "命名 / 大小写转换",
+  aes: "AES 加解密",
+  base64: "Base64 编解码",
+  md5: "MD5 计算与校验",
+  random: "随机数 / 随机字符串",
+  timestamp: "时间戳转换",
+  json: "JSON 美化 / 压缩",
+  "code-obfuscate": "代码混淆 / 压缩",
+  params: "参数分析",
+  sensitive: "敏感词快速检测",
+  favicon: "Favicon 生成器",
+  "image-convert": "图片格式转换",
+  "image-resize": "图片裁剪 / 改尺寸",
+  "image-watermark": "图片加水印",
+  "color-extract": "图片主色调提取",
+  qrcode: "二维码生成",
+  "image-base64": "图片与 Base64 互转",
+  "svg-image": "SVG 转图片",
+  "image-compress": "图片压缩",
+  "pet-gif": "摸头 GIF",
+  "llms-txt": "llms.txt 生成器",
+  "site-traffic": "网站流量分析",
+  "meta-tags": "Meta 标签 / TDK 生成",
+  "robots-txt": "robots.txt 生成器",
+  "json-ld": "结构化数据 JSON-LD",
+  "keyword-density": "关键词密度分析",
+  "client-ip": "客户端 IP",
+  "dns-lookup": "DNS 查询",
+  ping: "Ping（TCP 连通性）",
+  "port-scan": "端口扫描",
+  "url-status": "URL 状态检测",
+  "web-metadata": "网页元数据提取",
+  "web-images": "网页图片提取",
+  "web-markdown": "网页转 Markdown",
+  "minecraft-player": "Minecraft 玩家信息",
+  "minecraft-server": "Minecraft 服务器信息",
+  "github-repo": "GitHub 仓库信息",
+  gravatar: "Gravatar",
+  "ip-geo": "基础 IP 归属",
+  "mobile-area": "手机号归属地",
+  "bing-wallpaper": "Bing 每日壁纸",
+  "content-tools": "答案之书 / 诗词 / 历史今天",
+  loan: "房贷计算器",
+  "income-tax": "个税计算器",
+  bmi: "BMI 计算器",
+  "date-diff": "日期间隔计算",
+  "unit-convert": "单位换算",
+  "hanzi-convert": "简繁体转换",
+  pinyin: "汉字转拼音",
+  "chinese-faker": "中文假数据生成",
+  "css-gradient": "CSS 渐变生成",
+  "box-shadow": "box-shadow 生成",
+  "border-radius": "圆角生成",
+  palette: "调色板生成",
+};
 type ToolFilter = "all" | ToolId;
 type SectionFilter = "all" | SectionId;
 
-const sections = sectionMeta.map((section) => ({
-  ...section,
-  count: toolCatalog.filter((tool) => tool.sectionId === section.id).length,
-  tools: toolCatalog.filter((tool) => tool.sectionId === section.id),
-}));
-
 export default function ToolsClientPage({
+  locale = "zh-CN",
   section,
   initialTool,
 }: {
+  locale?: Locale;
   section?: SectionId;
   initialTool?: string;
 }) {
+  const catalog = toolCatalog.map((tool) => ({
+    ...tool,
+    title: locale === "en" ? toolTitleEn[tool.id] : toolTitleZh[tool.id],
+  }));
+  const sections = sectionMeta.map((sectionItem) => ({
+    ...sectionItem,
+    ...(locale === "en" ? sectionMetaEn[sectionItem.id] : sectionMetaZh[sectionItem.id]),
+    count: catalog.filter((tool) => tool.sectionId === sectionItem.id).length,
+    tools: catalog.filter((tool) => tool.sectionId === sectionItem.id),
+  }));
   const validInitialTool: ToolFilter =
     initialTool &&
-    toolCatalog.some(
+    catalog.some(
       (tool) =>
         tool.id === initialTool && (!section || tool.sectionId === section),
     )
@@ -293,7 +521,7 @@ export default function ToolsClientPage({
   const activeTool =
     selectedTool === "all"
       ? null
-      : toolCatalog.find((tool) => tool.id === selectedTool) || null;
+      : catalog.find((tool) => tool.id === selectedTool) || null;
   const isToolVisible = (toolId: ToolId) =>
     selectedTool === "all" || selectedTool === toolId;
   const isSectionVisible = (sectionId: SectionId) =>
@@ -310,7 +538,7 @@ export default function ToolsClientPage({
   const SectionHeading = section ? "h1" : "h2";
 
   const renderToolTabs = (sectionId: SectionId) => {
-    const toolsInSection = toolCatalog.filter((tool) => tool.sectionId === sectionId);
+    const toolsInSection = catalog.filter((tool) => tool.sectionId === sectionId);
     if (toolsInSection.length <= 1) return null;
     const tabBase = "rounded-full border px-4 py-2 text-sm transition";
     const tabActive =
@@ -324,7 +552,7 @@ export default function ToolsClientPage({
           onClick={() => setSelectedTool("all")}
           className={cn(tabBase, selectedTool === "all" ? tabActive : tabInactive)}
         >
-          全部
+          {locale === "en" ? "All" : "全部"}
         </button>
         {toolsInSection.map((tool) => (
           <button
@@ -345,11 +573,11 @@ export default function ToolsClientPage({
       {section && (
         <div className="mb-6 flex items-center gap-2 text-sm text-[#7b69a5] dark:text-[#af9fda]">
           <Link
-            href="/tools"
+            href={localizedHref("/tools", locale) as Route}
             className="inline-flex items-center gap-1.5 rounded-full border border-[#ddd0ff] bg-white/70 px-3.5 py-1.5 font-medium text-[#5b3df5] transition hover:border-[#8b6bff] hover:bg-[#f3edff] dark:border-[#3a2f58] dark:bg-white/[0.05] dark:text-[#cbbcff] dark:hover:bg-white/[0.08]"
           >
             <ChevronDown className="h-4 w-4 rotate-90" />
-            返回工具菜单
+            {locale === "en" ? "Back to tools menu" : "返回工具菜单"}
           </Link>
           <span className="text-[#c2b6e6] dark:text-[#6f6196]">/</span>
           <span className="text-[#5c4a88] dark:text-[#d2c6f3]">

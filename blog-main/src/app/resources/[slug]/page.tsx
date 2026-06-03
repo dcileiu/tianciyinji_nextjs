@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation';
 import { CodeCopyButton } from '@/components/CodeCopyButton';
 import { DesignPreview } from '@/components/DesignPreview';
 import JsonLd from '@/components/JsonLd';
+import { getDictionary, localizedHref } from '@/lib/i18n';
+import { getLocale } from '@/lib/i18n-server';
 import { pageTitle, siteConfig } from '@/lib/site-config';
 import { buildBreadcrumbJsonLd, buildCreativeWorkJsonLd, buildPageMetadata } from '@/lib/seo';
 import { getResourceBySlug, getResources } from '@/utils/resources';
@@ -20,27 +22,31 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const locale = await getLocale();
   const { slug } = await params;
   const resource = await getResourceBySlug(slug);
 
   if (!resource) {
     return {
-      title: pageTitle('资源未找到'),
+      title: pageTitle(locale === 'en' ? 'Resource not found' : '资源未找到'),
     };
   }
 
   return buildPageMetadata({
-    title: pageTitle(`资源 / ${resource.title}`),
+    title: pageTitle(`${locale === 'en' ? 'Resource' : '资源'} / ${resource.title}`),
     description: resource.description,
     path: `/resources/${resource.slug}`,
     image: siteConfig.avatar,
-    keywords: [...(resource.tags || []), resource.type, resource.format || '资源'],
+    keywords: [...(resource.tags || []), resource.type, resource.format || (locale === 'en' ? 'Resource' : '资源')],
     publishedTime: resource.date,
     modifiedTime: resource.date,
+    locale,
   });
 }
 
 export default async function ResourceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const locale = await getLocale();
+  const text = getDictionary(locale).resources;
   const { slug } = await params;
   const resource = await getResourceBySlug(slug);
 
@@ -64,18 +70,18 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
             image: siteConfig.avatar,
           }),
           buildBreadcrumbJsonLd([
-            { name: '首页', path: '/' },
-            { name: '资源', path: '/resources' },
-            { name: resource.title, path: `/resources/${resource.slug}` },
+            { name: locale === 'en' ? 'Home' : '首页', path: localizedHref('/', locale) },
+            { name: text.title, path: localizedHref('/resources', locale) },
+            { name: resource.title, path: localizedHref(`/resources/${resource.slug}`, locale) },
           ]),
         ]}
       />
       <Link
-        href={'/resources' as any}
+        href={localizedHref('/resources', locale) as any}
         className="mb-8 inline-flex items-center gap-2 text-sm text-black/60 transition-colors hover:text-black dark:text-white/60 dark:hover:text-white"
       >
         <ArrowLeft className="h-4 w-4" />
-        返回资源列表
+        {locale === 'en' ? 'Back to resources' : '返回资源列表'}
       </Link>
 
       <header className="mb-12">
@@ -101,7 +107,9 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
                 <h4 className="text-xl font-semibold tracking-tight text-black sm:text-2xl md:text-3xl dark:text-white">
                   {resource.format}
                 </h4>
-                <p className="whitespace-nowrap text-xs text-black/70 sm:text-xs md:text-sm dark:text-white/70">格式</p>
+                <p className="whitespace-nowrap text-xs text-black/70 sm:text-xs md:text-sm dark:text-white/70">
+                  {locale === 'en' ? 'Format' : '格式'}
+                </p>
               </div>
             )}
             {resource.size && (
@@ -110,7 +118,7 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
                   {resource.size}
                 </h4>
                 <p className="whitespace-nowrap text-xs text-black/70 sm:text-xs md:text-sm dark:text-white/70">
-                  文件大小
+                  {text.fileSize}
                 </p>
               </div>
             )}
@@ -120,7 +128,7 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
                   {resource.lastUpdated}
                 </h4>
                 <p className="whitespace-nowrap text-xs text-black/70 sm:text-xs md:text-sm dark:text-white/70">
-                  更新时间
+                  {text.updatedAt}
                 </p>
               </div>
             )}
@@ -135,7 +143,7 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-black px-6 py-3 text-base font-medium text-white transition-colors hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/80 sm:w-auto"
               >
                 <Download className="h-5 w-5" />
-                下载资源
+                {text.download}
               </a>
             </div>
           )}
@@ -144,7 +152,9 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
 
       {resource.details && Object.keys(resource.details).length > 0 && (
         <section className="mb-12">
-          <h2 className="mb-6 text-xl font-medium text-black sm:text-2xl dark:text-white">详细信息</h2>
+          <h2 className="mb-6 text-xl font-medium text-black sm:text-2xl dark:text-white">
+            {locale === 'en' ? 'Details' : '详细信息'}
+          </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {Object.entries(resource.details).map(([key, value]) => (
               <div key={key} className="rounded-lg border border-black/[0.06] p-4 dark:border-white/[0.06]">
@@ -162,7 +172,9 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
             <DesignPreview code={resource.sample} title={resource.title} />
           ) : (
             <>
-              <h2 className="mb-6 text-xl font-medium text-black sm:text-2xl dark:text-white">详细说明</h2>
+              <h2 className="mb-6 text-xl font-medium text-black sm:text-2xl dark:text-white">
+                {locale === 'en' ? 'Description' : '详细说明'}
+              </h2>
               <div
                 className="prose markdown-body max-w-none dark:prose-invert"
                 dangerouslySetInnerHTML={{ __html: resource.sample }}
@@ -175,16 +187,20 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
 
       {resource.usage && resource.usage.length > 0 && (
         <section className="mb-12">
-          <h2 className="mb-6 text-xl font-medium text-black sm:text-2xl dark:text-white">使用场景</h2>
+          <h2 className="mb-6 text-xl font-medium text-black sm:text-2xl dark:text-white">
+            {locale === 'en' ? 'Use Cases' : '使用场景'}
+          </h2>
           <p className="text-sm leading-relaxed text-black/60 sm:text-base dark:text-white/60">
-            {resource.usage.join('、')}
+            {resource.usage.join(locale === 'en' ? ', ' : '、')}
           </p>
         </section>
       )}
 
       {resource.tags && resource.tags.length > 0 && (
         <section>
-          <h2 className="mb-6 text-xl font-medium text-black sm:text-2xl dark:text-white">标签</h2>
+          <h2 className="mb-6 text-xl font-medium text-black sm:text-2xl dark:text-white">
+            {locale === 'en' ? 'Tags' : '标签'}
+          </h2>
           <div className="flex flex-wrap gap-2">
             {resource.tags.map((tag) => (
               <span

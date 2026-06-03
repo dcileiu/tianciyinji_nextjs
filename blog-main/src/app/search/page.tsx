@@ -1,17 +1,23 @@
 import type { Metadata } from 'next';
 import SearchPageClient from '@/components/SearchPageClient';
+import { getDictionary } from '@/lib/i18n';
+import { getLocale } from '@/lib/i18n-server';
 import { pageTitle } from '@/lib/site-config';
 import { buildPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = buildPageMetadata({
-  title: pageTitle('搜索'),
-  description: '站内文章搜索页。',
-  path: '/search',
-  keywords: ['站内搜索'],
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const text = getDictionary(locale).search;
+  return buildPageMetadata({
+    title: pageTitle(text.metadataTitle),
+    description: text.metadataDescription,
+    path: '/search',
+    keywords: [...text.metadataKeywords],
+    noIndex: true,
+    locale,
+  });
+}
 
 export default function SearchPage() {
   return <SearchPageClient />;
 }
-

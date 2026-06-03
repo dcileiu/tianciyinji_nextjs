@@ -2,8 +2,11 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Search, X } from 'lucide-react';
+import type { Route } from 'next';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { getPathLocale, localizedHref } from '@/lib/i18n';
 
 interface SearchResult {
   slug: string;
@@ -53,6 +56,23 @@ function highlightText(text: string, query: string) {
 }
 
 export default function SearchPageClient() {
+  const locale = getPathLocale(usePathname());
+  const text =
+    locale === 'en'
+      ? {
+          clear: 'Clear',
+          count: (count: number) => `${count} posts`,
+          notFound: 'No related posts found',
+          placeholder: 'Type to search...',
+          title: 'Search',
+        }
+      : {
+          clear: '清空',
+          count: (count: number) => `${count} 篇文章`,
+          notFound: '未找到相关文章',
+          placeholder: '输入即可搜索...',
+          title: '搜索',
+        };
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -113,7 +133,7 @@ export default function SearchPageClient() {
     <div className="mx-auto px-4 py-16 article-content-width md:px-6 md:py-24">
       <header className="mb-16 md:mb-20">
         <h1 className="mb-6 text-5xl font-medium tracking-tight text-black dark:text-white md:text-6xl lg:text-7xl">
-          搜索
+          {text.title}
         </h1>
         <div className="mb-12 h-[2px] w-16 bg-black dark:bg-white" />
 
@@ -128,14 +148,14 @@ export default function SearchPageClient() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="输入即可搜索..."
+            placeholder={text.placeholder}
             className="w-full border-b border-black/10 bg-transparent py-3 pl-8 pr-8 text-xl text-black transition-colors placeholder:text-black/30 focus:border-black/30 focus:outline-none dark:border-white/10 dark:text-white dark:placeholder:text-white/30 dark:focus:border-white/30"
           />
           {query && (
             <button
               onClick={clearSearch}
               className="absolute right-0 top-1/2 -translate-y-1/2 text-black/30 transition-colors hover:text-black dark:text-white/30 dark:hover:text-white"
-              aria-label="清空"
+              aria-label={text.clear}
             >
               <X className="h-5 w-5" />
             </button>
@@ -147,7 +167,7 @@ export default function SearchPageClient() {
         <>
           {results.length > 0 ? (
             <>
-              <div className="mb-8 text-sm text-black/40 dark:text-white/40">{results.length} 篇文章</div>
+              <div className="mb-8 text-sm text-black/40 dark:text-white/40">{text.count(results.length)}</div>
               <div>
                 <AnimatePresence mode="popLayout">
                   {results.map((result, index) => (
@@ -159,7 +179,7 @@ export default function SearchPageClient() {
                       transition={{ delay: index * 0.02, duration: 0.3 }}
                     >
                       <Link
-                        href={`/post/${result.slug}`}
+                        href={localizedHref(`/post/${result.slug}`, locale) as Route}
                         className="group -mx-4 grid grid-cols-[80px_1fr] gap-8 border-b border-black/5 px-4 py-10 transition-colors last:border-0 hover:bg-black/[0.01] md:grid-cols-[120px_1fr] md:gap-12 dark:border-white/5 dark:hover:bg-white/[0.01]"
                       >
                         <time className="pt-1 font-mono text-sm text-black/40 dark:text-white/40">
@@ -195,7 +215,7 @@ export default function SearchPageClient() {
             </>
           ) : (
             <div className="py-16 text-center">
-              <p className="text-lg text-black/40 dark:text-white/40">未找到相关文章</p>
+              <p className="text-lg text-black/40 dark:text-white/40">{text.notFound}</p>
             </div>
           )}
         </>
@@ -203,4 +223,3 @@ export default function SearchPageClient() {
     </div>
   );
 }
-

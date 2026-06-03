@@ -2,11 +2,19 @@
 'use client';
 
 import Link from 'next/link';
+import type { Route } from 'next';
 import { useMemo, useState } from 'react';
+import { localizedHref, type Locale } from '@/lib/i18n';
 import { CategoryFilter } from './CategoryFilter';
 
 interface ArchiveClientPageProps {
+  locale: Locale;
   posts: any[];
+  text: {
+    empty: string;
+    stats: string;
+    title: string;
+  };
 }
 
 /**
@@ -32,7 +40,7 @@ function groupPostsByYear(posts: any[]) {
   return Object.entries(groups).sort((a, b) => Number(b[0]) - Number(a[0]));
 }
 
-export default function ArchiveClientPage({ posts }: ArchiveClientPageProps) {
+export default function ArchiveClientPage({ locale, posts, text }: ArchiveClientPageProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // 预处理：补充 year
@@ -79,10 +87,10 @@ export default function ArchiveClientPage({ posts }: ArchiveClientPageProps) {
       <header className="mb-12 md:mb-16">
         <div className="rounded-2xl border border-black/6 bg-black/[0.02] px-5 py-5 dark:border-white/6 dark:bg-white/[0.02] md:px-6 md:py-6">
           <h1 className="mb-4 text-4xl font-medium tracking-tight text-black md:text-5xl lg:text-6xl dark:text-white">
-            归档
+            {text.title}
           </h1>
           <p className="mb-8 text-lg text-black/50 dark:text-white/50">
-            今年我写了 {stats.thisYearCount} 篇文章，一共 {stats.totalWords} 字
+            {text.stats.replace('{count}', String(stats.thisYearCount)).replace('{words}', stats.totalWords)}
           </p>
           <div className="h-[2px] w-16 bg-black dark:bg-white" />
         </div>
@@ -111,7 +119,7 @@ export default function ArchiveClientPage({ posts }: ArchiveClientPageProps) {
                   return (
                     <Link
                       key={post.slug}
-                      href={`/post/${post.slug}`}
+                      href={localizedHref(`/post/${post.slug}`, locale) as Route}
                       className="group block py-6 border-b border-black/[0.06] dark:border-white/[0.06] last:border-0 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] -mx-4 px-4 transition-colors"
                     >
                       <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-2 md:gap-4">
@@ -147,7 +155,7 @@ export default function ArchiveClientPage({ posts }: ArchiveClientPageProps) {
         </div>
       ) : (
         <div className="text-center py-16">
-          <p className="text-lg text-black/40 dark:text-white/40">该分类下暂无文章</p>
+          <p className="text-lg text-black/40 dark:text-white/40">{text.empty}</p>
         </div>
       )}
     </div>

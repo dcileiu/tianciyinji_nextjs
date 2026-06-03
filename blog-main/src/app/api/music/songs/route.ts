@@ -11,17 +11,24 @@ const MUSIC_CONFIG = {
   isEnabled: true,
 };
 
+function getLocale(request: NextRequest) {
+  const headerLocale = request.headers.get('x-locale');
+  const cookieLocale = request.headers.get('cookie')?.match(/(?:^|;\s*)locale=([^;]+)/)?.[1];
+  return headerLocale === 'en' || cookieLocale === 'en' ? 'en' : 'zh';
+}
+
 /**
  * GET - 获取歌单歌曲列表（支持 ISR）
  */
 export async function GET(request: NextRequest) {
   try {
+    const locale = getLocale(request);
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
 
     if (!MUSIC_CONFIG.isEnabled) {
-      return NextResponse.json({ error: '音乐功能未启用' }, { status: 404 });
+      return NextResponse.json({ error: locale === 'en' ? 'Music feature is not enabled' : '音乐功能未启用' }, { status: 404 });
     }
 
     // 请求网易云 API
@@ -57,6 +64,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('[!] 获取歌单失败:', error);
-    return NextResponse.json({ error: '获取失败，请稍后重试' }, { status: 500 });
+    const locale = getLocale(request);
+    return NextResponse.json({ error: locale === 'en' ? 'Request failed. Please try again later' : '获取失败，请稍后重试' }, { status: 500 });
   }
 }

@@ -1,24 +1,21 @@
 import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
+import { getDictionary } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 import { pageTitle } from "@/lib/site-config";
 import { buildCollectionPageJsonLd, buildPageMetadata } from "@/lib/seo";
 
-const friendsDescription =
-  "朋友站点、创作者主页与我常逛的实用网站，例如刘明野的工具箱（tools.liumingye.cn）。";
-
-export const metadata: Metadata = buildPageMetadata({
-  title: pageTitle("友链"),
-  description: friendsDescription,
-  path: "/friends",
-  keywords: [
-    "友链",
-    "友情链接",
-    "创作者推荐",
-    "刘明野",
-    "刘明野的工具箱",
-    "tools.liumingye.cn",
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const text = getDictionary(locale).friends;
+  return buildPageMetadata({
+    title: pageTitle(text.metadataTitle),
+    description: text.metadataDescription,
+    path: "/friends",
+    keywords: [...text.metadataKeywords],
+    locale,
+  });
+}
 
 const friends = [
   {
@@ -28,29 +25,30 @@ const friends = [
   },
 ] as const;
 
-export default function FriendsPage() {
+export default async function FriendsPage() {
+  const text = getDictionary(await getLocale()).friends;
   return (
     <>
       <JsonLd
         data={buildCollectionPageJsonLd({
-          title: pageTitle("友链"),
-          description: friendsDescription,
+          title: pageTitle(text.metadataTitle),
+          description: text.metadataDescription,
           path: "/friends",
         })}
       />
       <div className="mx-auto max-w-4xl px-4 py-16 md:px-6 md:py-24">
         <header className="mb-16">
           <h1 className="mb-4 text-4xl font-medium tracking-tight text-black md:text-5xl lg:text-6xl dark:text-white">
-            友链
+            {text.title}
           </h1>
           <p className="mb-8 text-lg text-black/50 dark:text-white/50">
-            {friendsDescription}
+            {text.metadataDescription}
           </p>
           <div className="h-[2px] w-16 bg-black dark:bg-white" />
         </header>
 
         <ul className="flex flex-col gap-4">
-          {friends.map((item) => (
+          {friends.map((item, index) => (
             <li key={item.href}>
               <a
                 href={item.href}
@@ -59,10 +57,10 @@ export default function FriendsPage() {
                 className="group flex h-full flex-col rounded-3xl border border-black/6 bg-black/[0.02] p-6 transition-colors hover:border-black/12 hover:bg-black/[0.04] sm:p-8 dark:border-white/6 dark:bg-white/[0.02] dark:hover:border-white/12 dark:hover:bg-white/[0.04]"
               >
                 <span className="mb-2 text-lg font-medium text-black group-hover:underline dark:text-white">
-                  {item.name}
+                  {text.items[index]?.name ?? item.name}
                 </span>
                 <span className="mb-4 flex-1 text-sm leading-relaxed text-black/65 dark:text-white/65">
-                  {item.description}
+                  {text.items[index]?.description ?? item.description}
                 </span>
                 <span className="text-sm text-black/45 dark:text-white/45">
                   {item.href.replace(/^https:\/\//, "")}

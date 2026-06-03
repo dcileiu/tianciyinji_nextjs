@@ -8,6 +8,12 @@ const GEO_URL = 'https://geoapi.qweather.com/v2';
 const cache = new Map();
 const CACHE_DURATION = 1800000; // 30分钟缓存
 
+function getLocale(request: Request) {
+  const headerLocale = request.headers.get('x-locale');
+  const cookieLocale = request.headers.get('cookie')?.match(/(?:^|;\s*)locale=([^;]+)/)?.[1];
+  return headerLocale === 'en' || cookieLocale === 'en' ? 'en' : 'zh';
+}
+
 async function fetchWithCache(url: string) {
   const now = Date.now();
   const cached = cache.get(url);
@@ -28,14 +34,14 @@ async function fetchWithCache(url: string) {
 }
 
 // 获取城市ID
-async function getCityId(city: string) {
+async function getCityId(city: string, locale: 'zh' | 'en') {
   const url = `${GEO_URL}/city/lookup?location=${encodeURIComponent(city)}&key=${API_KEY}`;
   const data = await fetchWithCache(url);
 
   if (data.code === '200' && data.location && data.location.length > 0) {
     return data.location[0].id;
   }
-  throw new Error('城市未找到');
+  throw new Error(locale === 'en' ? 'City not found' : '城市未找到');
 }
 
 // 获取实时天气
@@ -59,9 +65,10 @@ async function getIndices(cityId: string) {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const city = searchParams.get('city') || '北京';
+  const locale = getLocale(request);
 
   try {
-    const cityId = await getCityId(city);
+    const cityId = await getCityId(city, locale);
     const [now, forecast, indices] = await Promise.all([
       getNowWeather(cityId),
       getForecast(cityId),
@@ -81,7 +88,7 @@ export async function GET(request: Request) {
     return NextResponse.json(
       {
         code: 500,
-        error: error instanceof Error ? error.message : '获取天气数据失败',
+        error: error instanceof Error ? error.message : locale === 'en' ? 'Failed to fetch weather data' : '获取天气数据失败',
       },
       { status: 500 }
     );

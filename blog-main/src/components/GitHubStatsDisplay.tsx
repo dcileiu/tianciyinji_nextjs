@@ -1,6 +1,8 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { getRepoStats, useGitHubStats } from '@/hooks/useGitHubStats';
+import { getPathLocale } from '@/lib/i18n';
 
 interface GitHubStatsHeaderProps {
   fallbackStars?: number;
@@ -13,10 +15,23 @@ export function GitHubStatsHeader({
   fallbackUsers = '7,000+',
   fallbackContributions = 2132,
 }: GitHubStatsHeaderProps) {
+  const pathname = usePathname();
+  const locale = getPathLocale(pathname);
   const { stats, isLoading } = useGitHubStats();
 
   const totalStars = stats?.totalStars ?? fallbackStars;
   const contributions = stats?.contributions ?? fallbackContributions;
+
+  if (locale === 'en') {
+    return (
+      <p className="text-base sm:text-lg text-black/50 dark:text-white/50 mb-6 sm:mb-8 leading-relaxed">
+        I have earned <span className={isLoading ? 'opacity-50' : ''}>{totalStars.toLocaleString()}</span> stars in
+        total. My projects are used by {fallbackUsers} users, and I contributed{' '}
+        <span className={isLoading ? 'opacity-50' : ''}>{contributions.toLocaleString()}</span> times in the past
+        year.
+      </p>
+    );
+  }
 
   return (
     <p className="text-base sm:text-lg text-black/50 dark:text-white/50 mb-6 sm:mb-8 leading-relaxed">
@@ -27,7 +42,6 @@ export function GitHubStatsHeader({
   );
 }
 
-// 用于显示单个仓库的 stars
 export function RepoStars({ repoName, fallback = 0 }: { repoName: string; fallback?: number }) {
   const { stats, isLoading } = useGitHubStats();
   const repoStats = getRepoStats(stats, repoName);
@@ -36,7 +50,6 @@ export function RepoStars({ repoName, fallback = 0 }: { repoName: string; fallba
   return <span className={isLoading ? 'opacity-50' : ''}>{value.toLocaleString()}</span>;
 }
 
-// 用于显示单个仓库的 forks
 export function RepoForks({ repoName, fallback = 0 }: { repoName: string; fallback?: number }) {
   const { stats, isLoading } = useGitHubStats();
   const repoStats = getRepoStats(stats, repoName);

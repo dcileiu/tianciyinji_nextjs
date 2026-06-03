@@ -7,7 +7,8 @@ import { ChristmasEffect } from '@/components/ChristmasEffect';
 import { FabricBackground } from '@/components/FabricBackground';
 import { LayoutClient } from '@/components/LayoutClient';
 import { MusicRuntime } from '@/components/music/music-runtime';
-import { NAV_ITEMS } from '@/lib/navigation';
+import { getDictionary, getLocalizedSiteConfig } from '@/lib/i18n';
+import { getLocale } from '@/lib/i18n-server';
 import { absoluteUrl, siteConfig, siteKeywords } from '@/lib/site-config';
 import { buildPageMetadata, buildPersonJsonLd, buildWebSiteJsonLd } from '@/lib/seo';
 
@@ -74,11 +75,13 @@ export const metadata: Metadata = {
   },
 };
 
-const navItems = NAV_ITEMS;
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
+  const dictionary = getDictionary(locale);
+  const localizedSiteConfig = getLocalizedSiteConfig(locale);
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang={siteConfig.language} suppressHydrationWarning className="christmas">
+    <html lang={localizedSiteConfig.language} suppressHydrationWarning className="christmas">
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -135,7 +138,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <JsonLd data={[buildWebSiteJsonLd(), buildPersonJsonLd()]} />
           <MusicRuntime>
-            <LayoutClient navItems={navItems} siteName={siteConfig.name}>
+            <LayoutClient
+              dictionary={dictionary}
+              locale={locale}
+              navItems={dictionary.nav}
+              siteName={localizedSiteConfig.name}
+              tagline={localizedSiteConfig.tagline}
+            >
               {children}
             </LayoutClient>
             <FabricBackground />

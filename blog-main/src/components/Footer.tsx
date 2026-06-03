@@ -3,7 +3,12 @@
 import { Github, Mail, Rss } from 'lucide-react';
 import { siteConfig } from '@/lib/site-config';
 
-export default function Footer() {
+interface FooterProps {
+  siteName?: string;
+  tagline?: string;
+}
+
+export default function Footer({ siteName = siteConfig.name, tagline = siteConfig.tagline }: FooterProps) {
   const currentYear = new Date().getFullYear();
   const socialLinks = [
     siteConfig.socials.github ? { name: 'GitHub', href: siteConfig.socials.github, icon: Github } : null,
@@ -30,10 +35,10 @@ export default function Footer() {
             ))}
           </div>
 
-          <div className="text-[#615488] dark:text-[#c7baf1] text-base">{siteConfig.tagline}</div>
+          <div className="text-[#615488] dark:text-[#c7baf1] text-base">{tagline}</div>
 
           <div className="text-xs text-[#8779b3] dark:text-[#9e8eca]">
-            © {currentYear} {siteConfig.name}
+            © {currentYear} {siteName}
           </div>
         </div>
       </div>

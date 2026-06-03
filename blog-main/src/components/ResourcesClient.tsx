@@ -8,6 +8,7 @@ import {
   type ResourceCategoryId,
   matchResourceCategory,
 } from '@/lib/resource-categories';
+import { localizedHref, type Locale } from '@/lib/i18n';
 import { LiveCodeRenderer } from './LiveCodeRenderer';
 
 interface Resource {
@@ -25,7 +26,28 @@ interface Resource {
 }
 
 interface ResourcesClientProps {
+  locale: Locale;
   resources: Resource[];
+  text: {
+    all: string;
+    copied: string;
+    copy: string;
+    copyCode: string;
+    download: string;
+    emptyCategory: string;
+    emptyCategoryDescription: string;
+    emptyCommands: string;
+    emptyDesign: string;
+    emptyResources: string;
+    emptyResourcesDescription: string;
+    fileSize: string;
+    noPreview: string;
+    tabs: Record<MainTab, string>;
+    title: string;
+    description: string;
+    updatedAt: string;
+    viewDetails: string;
+  };
 }
 
 // 解码 HTML 实体
@@ -56,11 +78,7 @@ function extractDescriptionFromHtml(html: string): string {
 
 type MainTab = 'resources' | 'commands' | 'design';
 
-const MAIN_TABS: { id: MainTab; label: string }[] = [
-  { id: 'resources', label: '资源' },
-  { id: 'commands', label: '命令' },
-  { id: 'design', label: '设计' },
-];
+const MAIN_TABS: { id: MainTab }[] = [{ id: 'resources' }, { id: 'commands' }, { id: 'design' }];
 
 const tabContentMotion = {
   initial: { opacity: 0, y: 10 },
@@ -71,7 +89,7 @@ const tabContentMotion = {
 
 const pillTransition = { duration: 0.22, ease: [0.16, 1, 0.3, 1] as const };
 
-export default function ResourcesClient({ resources }: ResourcesClientProps) {
+export default function ResourcesClient({ locale, resources, text }: ResourcesClientProps) {
   const [activeTab, setActiveTab] = useState<MainTab>('resources');
   const [activeCategory, setActiveCategory] = useState<ResourceCategoryId>('all');
   const [isHydrated, setIsHydrated] = useState(false);
@@ -135,10 +153,10 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
       <div className="max-w-4xl mx-auto px-6 sm:px-8 md:px-6 py-12 sm:py-16 md:py-24">
         <header className="mb-6">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-black dark:text-white mb-3 sm:mb-4">
-            资源
+            {text.title}
           </h1>
           <p className="text-base sm:text-lg text-black/50 dark:text-white/50 mb-6 leading-relaxed">
-            整理的实用资源和数据集，全部免费开放使用
+            {text.description}
           </p>
           <div className="w-12 sm:w-16 h-[2px] bg-black dark:bg-white" />
         </header>
@@ -155,10 +173,10 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
     <div className="max-w-4xl mx-auto px-6 sm:px-8 md:px-6 py-12 sm:py-16 md:py-24">
       <header className="mb-6">
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-black dark:text-white mb-3 sm:mb-4">
-          资源
+          {text.title}
         </h1>
         <p className="text-base sm:text-lg text-black/50 dark:text-white/50 mb-6 leading-relaxed">
-          整理的实用资源和数据集，全部免费开放使用
+          {text.description}
         </p>
         <div className="w-12 sm:w-16 h-[2px] bg-black dark:bg-white" />
       </header>
@@ -174,7 +192,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
               : 'text-[#716397] dark:text-[#ac9cd8] hover:text-[#4f31d7] dark:hover:text-[#f0ebff]'
               }`}
           >
-            {tab.label}
+            {text.tabs[tab.id]}
             {activeTab === tab.id && (
               <motion.div
                 layoutId="resources-main-tab"
@@ -219,7 +237,9 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                       />
                     )}
                     <Icon className={`relative h-5 w-5 ${isActive ? 'text-[#5b3df5] dark:text-[#d8cdff]' : ''}`} />
-                    <span className="relative text-xs font-medium whitespace-nowrap">{category.label}</span>
+                    <span className="relative text-xs font-medium whitespace-nowrap">
+                      {locale === 'en' && category.id === 'all' ? text.all : category.label}
+                    </span>
                   </button>
                 );
               })}
@@ -234,18 +254,21 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
           <motion.div key="resources" {...tabContentMotion}>
             {normalResources.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-black/60 dark:text-white/60 mb-4">暂无资源</p>
+                <p className="text-black/60 dark:text-white/60 mb-4">{text.emptyResources}</p>
                 <p className="text-sm text-black/40 dark:text-white/40">
-                  资源正在持续整理中，欢迎稍后再来看看。
+                  {text.emptyResourcesDescription}
                 </p>
               </div>
             ) : filteredResources.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-black/60 dark:text-white/60 mb-2">
-                  {RESOURCE_CATEGORIES.find((item) => item.id === activeCategory)?.label ?? '该分类'} 下暂无资源
+                  {text.emptyCategory.replace(
+                    '{category}',
+                    RESOURCE_CATEGORIES.find((item) => item.id === activeCategory)?.label ?? text.all,
+                  )}
                 </p>
                 <p className="text-sm text-black/40 dark:text-white/40">
-                  换个分类看看，或稍后再来。
+                  {text.emptyCategoryDescription}
                 </p>
               </div>
             ) : (
@@ -258,7 +281,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                     <div className="space-y-4 sm:space-y-5">
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
                         <div className="flex-1 min-w-0">
-                          <Link href={`/resources/${resource.slug}` as any}>
+                          <Link href={localizedHref(`/resources/${resource.slug}`, locale) as any}>
                             <h2 className="text-xl sm:text-2xl md:text-3xl font-medium text-black dark:text-white mb-2 sm:mb-2 hover:text-black/70 dark:hover:text-white/70 transition-colors cursor-pointer">
                               {resource.title}
                             </h2>
@@ -289,7 +312,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                                   {resource.size}
                                 </h4>
                                 <p className="text-xs sm:text-xs md:text-sm text-black/70 dark:text-white/70 whitespace-nowrap">
-                                  文件大小
+                                  {text.fileSize}
                                 </p>
                               </div>
                             )}
@@ -299,7 +322,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                                   {resource.lastUpdated}
                                 </h4>
                                 <p className="text-xs sm:text-xs md:text-sm text-black/70 dark:text-white/70 whitespace-nowrap">
-                                  更新时间
+                                  {text.updatedAt}
                                 </p>
                               </div>
                             )}
@@ -307,7 +330,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
 
                           <div className="flex flex-col sm:flex-row gap-2 md:items-end md:flex-shrink-0 w-full sm:w-auto md:w-auto">
                             <Link
-                              href={`/resources/${resource.slug}` as any}
+                              href={localizedHref(`/resources/${resource.slug}`, locale) as any}
                               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2.5 md:py-2 rounded-full bg-black/[0.06] dark:bg-white/[0.08] text-black dark:text-white text-sm font-medium hover:bg-black/[0.10] dark:hover:bg-white/[0.12] transition-colors whitespace-nowrap w-full sm:w-auto"
                             >
                               <svg
@@ -321,7 +344,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                 <circle cx="12" cy="12" r="3" />
                               </svg>
-                              查看详情
+                              {text.viewDetails}
                             </Link>
                             {resource.downloadUrl && (
                               <a
@@ -342,7 +365,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                                   <polyline points="7 10 12 15 17 10" />
                                   <line x1="12" y1="15" x2="12" y2="3" />
                                 </svg>
-                                下载资源
+                                {text.download}
                               </a>
                             )}
                           </div>
@@ -374,7 +397,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
           <motion.div key="commands" className="space-y-4 py-6" {...tabContentMotion}>
             {commandResources.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-black/60 dark:text-white/60">暂无收藏的命令</p>
+                <p className="text-black/60 dark:text-white/60">{text.emptyCommands}</p>
               </div>
             ) : (
               commandResources.map((cmd) => {
@@ -387,7 +410,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                   >
                     <div className="px-5 py-4 flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
-                        <Link href={`/resources/${cmd.slug}` as any}>
+                        <Link href={localizedHref(`/resources/${cmd.slug}`, locale) as any}>
                           <h3 className="text-base font-medium text-black dark:text-white mb-1 hover:text-black/70 dark:hover:text-white/70 transition-colors cursor-pointer">
                             {cmd.title}
                           </h3>
@@ -413,7 +436,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                             >
                               <polyline points="20 6 9 17 4 12" />
                             </svg>
-                            已复制
+                            {text.copied}
                           </>
                         ) : (
                           <>
@@ -428,7 +451,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                               <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                             </svg>
-                            复制
+                            {text.copy}
                           </>
                         )}
                       </button>
@@ -450,7 +473,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
           <motion.div key="design" className="py-6" {...tabContentMotion}>
             {designResources.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-black/60 dark:text-white/60">暂无设计组件</p>
+                <p className="text-black/60 dark:text-white/60">{text.emptyDesign}</p>
               </div>
             ) : (
               <>
@@ -467,7 +490,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                           : 'bg-black/[0.04] dark:bg-white/[0.06] text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
                           }`}
                       >
-                        全部
+                        {text.all}
                       </button>
                       {allTags.map((tag) => (
                         <button
@@ -499,7 +522,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                         >
                           {/* 预览区域 - 可点击跳转 */}
                           <Link
-                            href={`/resources/${component.slug}` as any}
+                            href={localizedHref(`/resources/${component.slug}`, locale) as any}
                             onClickCapture={(e) => {
                               if (shouldBlockPreviewNavigation(e.target)) {
                                 e.preventDefault();
@@ -510,12 +533,12 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                             {code ? (
                               <LiveCodeRenderer code={code} />
                             ) : (
-                              <span className="text-black/30 dark:text-white/30 text-sm">无预览</span>
+                              <span className="text-black/30 dark:text-white/30 text-sm">{text.noPreview}</span>
                             )}
                           </Link>
                           {/* 底部信息栏 */}
                           <div className="px-4 py-3 border-t border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
-                            <Link href={`/resources/${component.slug}` as any} className="min-w-0 flex-1">
+                            <Link href={localizedHref(`/resources/${component.slug}`, locale) as any} className="min-w-0 flex-1">
                               <h3 className="text-sm font-medium text-black dark:text-white truncate hover:text-black/70 dark:hover:text-white/70 transition-colors">
                                 {component.title}
                               </h3>
@@ -529,7 +552,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                                 ? 'text-black/40 dark:text-white/40'
                                 : 'text-black/50 dark:text-white/50 hover:bg-black/[0.06] dark:hover:bg-white/[0.08]'
                                 }`}
-                              title={copiedId === component.slug ? '已复制' : '复制代码'}
+                              title={copiedId === component.slug ? text.copied : text.copyCode}
                             >
                               {copiedId === component.slug ? (
                                 <svg

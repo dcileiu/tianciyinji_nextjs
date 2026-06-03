@@ -3,7 +3,9 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Grid3x3, Maximize2, Minimize2, Monitor, Moon, Settings, Square, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { getPathLocale } from '@/lib/i18n';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
 export type BackgroundOption = 'none' | 'fabric';
@@ -15,6 +17,37 @@ interface AppearanceConfig {
 }
 
 export default function AppearanceSettings() {
+  const locale = getPathLocale(usePathname());
+  const text =
+    locale === 'en'
+      ? {
+          aria: 'Appearance settings',
+          theme: 'Theme',
+          light: 'Light',
+          dark: 'Dark',
+          system: 'System',
+          background: 'Background',
+          fabric: 'Fabric',
+          none: 'Clean',
+          layout: 'Layout',
+          compact: 'Compact',
+          default: 'Default',
+          wide: 'Wide',
+        }
+      : {
+          aria: '外观设置',
+          theme: '主题',
+          light: '浅色',
+          dark: '深色',
+          system: '系统',
+          background: '背景',
+          fabric: '织物',
+          none: '纯净',
+          layout: '布局',
+          compact: '紧凑',
+          default: '默认',
+          wide: '宽屏',
+        };
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -97,7 +130,7 @@ export default function AppearanceSettings() {
           setIsOpen(!isOpen);
         }}
         className="w-8 h-8 rounded-full flex items-center justify-center text-[#75689e] dark:text-[#b3a4de] hover:text-[#4f31d7] dark:hover:text-[#f0ebff] hover:bg-[#ece5ff] dark:hover:bg-[#231c38] transition-all"
-        aria-label="外观设置"
+        aria-label={text.aria}
       >
         <Settings className="h-4 w-4" />
       </button>
@@ -115,13 +148,13 @@ export default function AppearanceSettings() {
             <div className="p-5 space-y-5">
               <div>
                 <div className="text-[11px] font-semibold text-[#8677b2] dark:text-[#b4a7db] mb-3 uppercase tracking-wider">
-                  主题
+                  {text.theme}
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { value: 'light', label: '浅色', Icon: Sun },
-                    { value: 'dark', label: '深色', Icon: Moon },
-                    { value: 'system', label: '系统', Icon: Monitor },
+                    { value: 'light', label: text.light, Icon: Sun },
+                    { value: 'dark', label: text.dark, Icon: Moon },
+                    { value: 'system', label: text.system, Icon: Monitor },
                   ].map((item) => (
                     <button
                       key={item.value}
@@ -163,12 +196,12 @@ export default function AppearanceSettings() {
 
               <div>
                 <div className="text-[11px] font-semibold text-[#8677b2] dark:text-[#b4a7db] mb-3 uppercase tracking-wider">
-                  背景
+                  {text.background}
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { value: 'fabric' as const, label: '织物', Icon: Grid3x3 },
-                    { value: 'none' as const, label: '纯净', Icon: Square },
+                    { value: 'fabric' as const, label: text.fabric, Icon: Grid3x3 },
+                    { value: 'none' as const, label: text.none, Icon: Square },
                   ].map((item) => (
                     <button
                       key={item.value}
@@ -214,13 +247,13 @@ export default function AppearanceSettings() {
 
               <div>
                 <div className="text-[11px] font-semibold text-[#8677b2] dark:text-[#b4a7db] mb-3 uppercase tracking-wider">
-                  布局
+                  {text.layout}
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { value: 'compact' as const, label: '紧凑', Icon: Minimize2 },
-                    { value: 'default' as const, label: '默认', Icon: Square },
-                    { value: 'wide' as const, label: '宽屏', Icon: Maximize2 },
+                    { value: 'compact' as const, label: text.compact, Icon: Minimize2 },
+                    { value: 'default' as const, label: text.default, Icon: Square },
+                    { value: 'wide' as const, label: text.wide, Icon: Maximize2 },
                   ].map((item) => (
                     <button
                       key={item.value}

@@ -1,3 +1,5 @@
+import type { Locale } from './i18n';
+
 /**
  * 作品数据
  * ──────────────────────────────────────────────
@@ -67,3 +69,47 @@ export const works: WorkItem[] = [
     images: [],
   },
 ];
+
+const worksEn: WorkItem[] = [
+  {
+    title: 'Personal Blog',
+    summary: 'A personal site built with Next.js for publishing posts, collecting works, organizing resources, and hosting online tools.',
+    description: [
+      'A full-stack personal site built from scratch, supporting Markdown / Obsidian writing, post archives, resource collections, and dozens of small online tools.',
+      'The site focuses on reading experience and performance, with dark mode, responsive layouts, and continuous first-screen loading optimizations.',
+    ],
+    year: 'Ongoing',
+    status: 'Live',
+    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Markdown'],
+    href: '/',
+    linkLabel: 'Open home',
+    images: [],
+    featured: true,
+  },
+  {
+    title: 'Works Gallery',
+    summary: 'A growing collection of web design, product cases, and visual experiments.',
+    year: 'To be expanded',
+    status: 'Preparing',
+    tags: ['Portfolio', 'UI', 'Motion'],
+    images: [],
+  },
+  {
+    title: 'Side Projects',
+    summary: 'Open-source tools, automation scripts, and small AI experiments maintained over the long term.',
+    year: 'Long-term',
+    status: 'Updating',
+    tags: ['Open Source', 'Automation', 'AI'],
+    images: [],
+  },
+];
+
+export function getWorks(locale: Locale) {
+  return locale === 'en' ? worksEn : works;
+}
+
+export function getWorksIntro(locale: Locale) {
+  return locale === 'en'
+    ? 'A collection of projects, products, and experiments I have built. Open an item to see the overview, screenshots, tech stack, and related links.'
+    : worksIntro;
+}

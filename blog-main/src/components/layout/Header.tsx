@@ -1,21 +1,39 @@
 'use client';
 
 import { PanelLeftClose, PanelLeftOpen, Search } from 'lucide-react';
+import type { Route } from 'next';
 import Link from 'next/link';
 import AppearanceSettings from '@/components/AppearanceSettings';
 import BrandLogo from '@/components/BrandLogo';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Button } from '@/components/ui/button';
+import { localizedHref, type Locale } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
 interface HeaderProps {
   isSidebarOpen: boolean;
+  labels: {
+    ariaLabel: string;
+    closeSidebar: string;
+    language: string;
+    openSidebar: string;
+    search: string;
+  };
+  locale: Locale;
   onToggleSidebar: () => void;
   title: string;
   showSidebarToggle?: boolean;
 }
 
-export function Header({ isSidebarOpen, onToggleSidebar, title, showSidebarToggle = true }: HeaderProps) {
+export function Header({
+  isSidebarOpen,
+  labels,
+  locale,
+  onToggleSidebar,
+  title,
+  showSidebarToggle = true,
+}: HeaderProps) {
   return (
     <header
       className={cn(
@@ -24,13 +42,13 @@ export function Header({ isSidebarOpen, onToggleSidebar, title, showSidebarToggl
         'border-b border-[#e5dcff]/70 dark:border-[#2a2140]/80',
         'backdrop-blur supports-[backdrop-filter]:bg-[#fbf8ff]/80 supports-[backdrop-filter]:dark:bg-[#120f1f]/82'
       )}
-      aria-label="全局顶部导航"
+      aria-label={labels.ariaLabel}
     >
       <div className="mx-auto flex h-16 items-center gap-2 md:gap-3 px-4 md:px-6">
         {/* 左侧区域 - 固定宽度 */}
         <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
           <Link
-            href="/"
+            href={localizedHref('/', locale) as Route}
             className="inline-flex items-center gap-2.5 font-semibold tracking-tight text-[#2e2150] transition-colors hover:text-[#5b3df5] dark:text-[#f3efff] dark:hover:text-[#cdc1ff] text-sm md:text-base"
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-2xl border border-[#e4d8ff] bg-[#f6f1ff] text-[#3f2a8f] shadow-[0_8px_24px_rgba(91,61,245,0.12)] dark:border-white/10 dark:bg-white/[0.04] dark:text-[#f4efff]">
@@ -41,7 +59,7 @@ export function Header({ isSidebarOpen, onToggleSidebar, title, showSidebarToggl
 
           {showSidebarToggle && (
             <Button
-              aria-label={isSidebarOpen ? '关闭侧边栏' : '打开侧边栏'}
+              aria-label={isSidebarOpen ? labels.closeSidebar : labels.openSidebar}
               onClick={() => {
                 triggerHaptic(HapticFeedback.Medium);
                 onToggleSidebar();
@@ -63,10 +81,10 @@ export function Header({ isSidebarOpen, onToggleSidebar, title, showSidebarToggl
         {/* 右侧区域 - 固定宽度 */}
         <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
           {/* 搜索按钮 */}
-          <Link href="/search" onClick={() => triggerHaptic(HapticFeedback.Light)}>
+          <Link href={localizedHref('/search', locale) as Route} onClick={() => triggerHaptic(HapticFeedback.Light)}>
             <Button
               variant="ghost"
-              aria-label="搜索"
+              aria-label={labels.search}
               className="rounded-full text-[#75689e] dark:text-[#ae9fda] hover:bg-[#ece5ff] dark:hover:bg-[#231c38] hover:text-[#4f31d7] dark:hover:text-[#f3efff] h-8 w-8 md:h-8 md:w-8"
             >
               <Search className="h-4 w-4 md:h-4 md:w-4" />
@@ -75,6 +93,7 @@ export function Header({ isSidebarOpen, onToggleSidebar, title, showSidebarToggl
 
           {/* 外观设置 */}
           <AppearanceSettings />
+          <LanguageSwitcher label={labels.language} locale={locale} />
         </div>
       </div>
     </header>

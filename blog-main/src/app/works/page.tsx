@@ -2,23 +2,36 @@ import { ArrowUpRight } from 'lucide-react';
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { WorkCarousel } from '@/components/WorkCarousel';
+import { getDictionary } from '@/lib/i18n';
+import { getLocale } from '@/lib/i18n-server';
 import { pageTitle } from '@/lib/site-config';
 import { buildPageMetadata } from '@/lib/seo';
-import { works, worksIntro } from '@/lib/works';
+import { getWorks, getWorksIntro } from '@/lib/works';
 
-export const metadata: Metadata = buildPageMetadata({
-  title: pageTitle('作品'),
-  description: '我做过的项目、案例与长期维护中的作品集，含项目截图、技术栈与相关链接。',
-  path: '/works',
-  keywords: ['作品集', '项目展示', '案例', '截图'],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const text = getDictionary(locale).works;
+  return buildPageMetadata({
+    title: pageTitle(text.metadataTitle),
+    description: text.metadataDescription,
+    path: '/works',
+    keywords: [...text.metadataKeywords],
+    locale,
+  });
+}
 
-export default function WorksPage() {
+export default async function WorksPage() {
+  const locale = await getLocale();
+  const dictionary = getDictionary(locale);
+  const worksText = dictionary.works;
+  const works = getWorks(locale);
+  const worksIntro = getWorksIntro(locale);
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-12 sm:px-8 sm:py-16 md:px-6 md:py-24">
       <header className="mb-12 sm:mb-16">
         <h1 className="mb-4 text-3xl font-medium tracking-tight text-black sm:text-4xl md:text-5xl lg:text-6xl dark:text-white">
-          作品
+          {worksText.title}
         </h1>
         <p className="max-w-3xl text-sm leading-relaxed text-black/55 sm:text-base md:text-lg dark:text-white/55">
           {worksIntro}
@@ -76,7 +89,7 @@ export default function WorksPage() {
                     href={work.href as Route}
                     className="inline-flex shrink-0 items-center gap-2 text-sm text-black/55 transition-colors hover:text-black md:mt-1 dark:text-white/55 dark:hover:text-white"
                   >
-                    {work.linkLabel || '查看作品'}
+                    {work.linkLabel || worksText.linkFallback}
                     <ArrowUpRight className="h-4 w-4" />
                   </Link>
                 )}

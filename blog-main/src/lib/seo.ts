@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { defaultLocale, localizePath, type Locale } from './i18n';
 import { absoluteUrl, siteConfig, siteKeywords } from './site-config';
 
 type PageMetadataOptions = {
@@ -9,6 +10,7 @@ type PageMetadataOptions = {
   type?: 'website' | 'article';
   image?: string | string[];
   noIndex?: boolean;
+  locale?: Locale;
   publishedTime?: string;
   modifiedTime?: string;
   authors?: string[];
@@ -65,12 +67,13 @@ export function buildPageMetadata({
   type = 'website',
   image,
   noIndex = false,
+  locale = defaultLocale,
   publishedTime,
   modifiedTime,
   authors,
   section,
 }: PageMetadataOptions): Metadata {
-  const canonical = absoluteUrl(path);
+  const canonical = absoluteUrl(localizePath(path, locale));
   const socialImage = Array.isArray(image) ? image.map((item) => normalizeImage(item)) : [normalizeImage(image)];
   const mergedKeywords = Array.from(new Set([...siteKeywords, ...keywords]));
 
@@ -80,6 +83,11 @@ export function buildPageMetadata({
     keywords: mergedKeywords,
     alternates: {
       canonical,
+      languages: {
+        'zh-CN': absoluteUrl(localizePath(path, 'zh-CN')),
+        en: absoluteUrl(localizePath(path, 'en')),
+        'x-default': absoluteUrl(localizePath(path, 'zh-CN')),
+      },
     },
     robots: noIndex
       ? {
@@ -109,7 +117,7 @@ export function buildPageMetadata({
       description,
       url: canonical,
       siteName: siteConfig.name,
-      locale: siteConfig.locale,
+      locale: locale === 'en' ? 'en_US' : siteConfig.locale,
       type,
       images: socialImage.map((url) => ({
         url,
@@ -299,4 +307,3 @@ export function buildItemListJsonLd(items: Array<{ name: string; path: string }>
     })),
   };
 }
-

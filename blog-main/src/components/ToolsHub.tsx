@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import type { Route } from 'next';
+import { localizedHref, type Locale } from '@/lib/i18n';
 
 interface ToolChip {
   id: string;
@@ -29,7 +30,7 @@ interface ModuleEntry {
   tools: ToolChip[];
 }
 
-const MODULES: ModuleEntry[] = [
+const MODULES_ZH: ModuleEntry[] = [
   {
     base: '/tools/local',
     href: '/tools/local' as Route,
@@ -152,27 +153,166 @@ const MODULES: ModuleEntry[] = [
   },
 ];
 
-export default function ToolsHub() {
+const MODULES_EN: ModuleEntry[] = [
+  {
+    base: '/tools/local',
+    href: '/tools/local' as Route,
+    title: 'Local Tools',
+    description: 'Word count, RMB uppercase, regex testing, color tools, JSON, Base64, MD5, and other utilities that run locally in your browser.',
+    count: 20,
+    icon: SquareTerminal,
+    tools: [
+      { id: 'word-count', name: 'Word Count' },
+      { id: 'rmb-capital', name: 'RMB Uppercase' },
+      { id: 'regex-tester', name: 'Regex Tester' },
+      { id: 'color-tool', name: 'Color Tool' },
+      { id: 'json', name: 'JSON Formatter' },
+      { id: 'aes', name: 'AES Encrypt' },
+    ],
+  },
+  {
+    base: '/tools/image',
+    href: '/tools/image' as Route,
+    title: 'Image Tools',
+    description: 'Favicon generation, format conversion, cropping, resizing, watermarking, color extraction, QR codes, and compression in the browser.',
+    count: 10,
+    icon: ImageIcon,
+    tools: [
+      { id: 'favicon', name: 'Favicon' },
+      { id: 'image-convert', name: 'Convert' },
+      { id: 'image-watermark', name: 'Watermark' },
+      { id: 'color-extract', name: 'Extract Colors' },
+      { id: 'qrcode', name: 'QR Code' },
+      { id: 'image-compress', name: 'Compress' },
+    ],
+  },
+  {
+    base: '/tools/seo',
+    href: '/tools/seo' as Route,
+    title: 'SEO | GEO Tools',
+    description: 'Optimization tools for search engines and generative AI: llms.txt, meta tags, robots.txt, structured data, keywords, and traffic analysis.',
+    count: 6,
+    icon: Search,
+    tools: [
+      { id: 'site-traffic', name: 'Traffic' },
+      { id: 'llms-txt', name: 'llms.txt' },
+      { id: 'meta-tags', name: 'Meta / TDK' },
+      { id: 'robots-txt', name: 'robots.txt' },
+      { id: 'json-ld', name: 'JSON-LD' },
+      { id: 'keyword-density', name: 'Keywords' },
+    ],
+  },
+  {
+    base: '/tools/network',
+    href: '/tools/network' as Route,
+    title: 'Network Basics',
+    description: 'Basic observation and analysis tools for URLs, domains, ports, and web page content.',
+    count: 8,
+    icon: Network,
+    tools: [
+      { id: 'dns-lookup', name: 'DNS Lookup' },
+      { id: 'ping', name: 'Ping' },
+      { id: 'port-scan', name: 'Port Scan' },
+      { id: 'url-status', name: 'URL Status' },
+      { id: 'web-markdown', name: 'Web to Markdown' },
+    ],
+  },
+  {
+    base: '/tools/calc',
+    href: '/tools/calc' as Route,
+    title: 'Calculators',
+    description: 'Mortgage, income tax, BMI, date difference, and common unit converters for daily work and life.',
+    count: 5,
+    icon: Calculator,
+    tools: [
+      { id: 'loan', name: 'Mortgage' },
+      { id: 'income-tax', name: 'Income Tax' },
+      { id: 'bmi', name: 'BMI' },
+      { id: 'date-diff', name: 'Date Diff' },
+      { id: 'unit-convert', name: 'Unit Convert' },
+    ],
+  },
+  {
+    base: '/tools/chinese',
+    href: '/tools/chinese' as Route,
+    title: 'Chinese Tools',
+    description: 'Simplified/traditional conversion, Chinese to pinyin, and Chinese fake data generation.',
+    count: 3,
+    icon: Languages,
+    tools: [
+      { id: 'hanzi-convert', name: 'Hanzi Convert' },
+      { id: 'pinyin', name: 'Pinyin' },
+      { id: 'chinese-faker', name: 'Fake Data' },
+    ],
+  },
+  {
+    base: '/tools/css',
+    href: '/tools/css' as Route,
+    title: 'Frontend / CSS',
+    description: 'Visual generators for CSS gradients, box-shadow, border radius, and palettes with copy-ready code.',
+    count: 4,
+    icon: Palette,
+    tools: [
+      { id: 'css-gradient', name: 'CSS Gradient' },
+      { id: 'box-shadow', name: 'box-shadow' },
+      { id: 'border-radius', name: 'Border Radius' },
+      { id: 'palette', name: 'Palette' },
+    ],
+  },
+  {
+    base: '/tools/data',
+    href: '/tools/data' as Route,
+    title: 'Public Data',
+    description: 'Useful lookup tools built from public protocols and free data sources.',
+    count: 8,
+    icon: DatabaseZap,
+    tools: [
+      { id: 'minecraft-player', name: 'Minecraft' },
+      { id: 'github-repo', name: 'GitHub Repo' },
+      { id: 'gravatar', name: 'Gravatar' },
+      { id: 'mobile-area', name: 'Mobile Area' },
+      { id: 'bing-wallpaper', name: 'Bing Wallpaper' },
+    ],
+  },
+];
+
+interface ToolsHubProps {
+  locale: Locale;
+  text: {
+    countLabel: string;
+    description: string;
+    enterModule: string;
+    eyebrow: string;
+    featuredDescription: string;
+    featuredTitle: string;
+    recommended: string;
+    title: string;
+  };
+}
+
+export default function ToolsHub({ locale, text }: ToolsHubProps) {
+  const modules = locale === 'en' ? MODULES_EN : MODULES_ZH;
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:py-20">
       <header className="relative overflow-hidden rounded-[34px] border border-[#e4d8ff] bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(244,237,255,0.94))] px-6 py-8 shadow-[0_24px_80px_rgba(91,61,245,0.10)] sm:px-8 sm:py-10 md:px-10 md:py-12 dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.92),rgba(15,11,27,0.96))]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(130,96,255,0.16),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(218,208,255,0.18),transparent_30%)]" />
         <div className="relative">
           <p className="text-xs uppercase tracking-[0.28em] text-[#7f71ab] dark:text-[#ab9cd8]">
-            Tools Menu
+            {text.eyebrow}
           </p>
           <h1 className="mt-4 max-w-4xl text-3xl font-semibold tracking-tight text-[#2e2150] sm:text-4xl md:text-5xl dark:text-[#f4efff]">
-            工具菜单
+            {text.title}
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-[#66568f] sm:text-base dark:text-[#c4b6eb]">
-            免费在线工具箱，涵盖文本与编码、图片处理、SEO / GEO、网络查询、计算换算、中文工具与去水印等。多数工具在浏览器本地完成、安全不上传，点选下方分类即可使用。
+            {text.description}
           </p>
         </div>
       </header>
 
       {/* 特色工具：去水印 */}
       <Link
-        href={'/tools/dewatermark' as Route}
+        href={localizedHref('/tools/dewatermark', locale) as Route}
         className="group mt-6 block overflow-hidden rounded-[28px] border border-[#e4d8ff] bg-[linear-gradient(135deg,rgba(124,92,255,0.12),rgba(244,237,255,0.6))] p-5 shadow-[0_18px_55px_rgba(91,61,245,0.08)] transition hover:border-[#8b6bff] hover:shadow-[0_22px_70px_rgba(91,61,245,0.16)] dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(60,42,120,0.5),rgba(18,13,31,0.92))] sm:p-6"
       >
         <div className="flex items-center gap-4">
@@ -181,13 +321,13 @@ export default function ToolsHub() {
           </span>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-semibold text-[#2e2150] dark:text-[#f4efff]">去水印</h2>
+              <h2 className="text-lg font-semibold text-[#2e2150] dark:text-[#f4efff]">{text.featuredTitle}</h2>
               <span className="rounded-full bg-[#efe6ff] px-2 py-0.5 text-[11px] font-semibold text-[#5b3df5] dark:bg-[#2b1f43] dark:text-[#efe9ff]">
-                推荐
+                {text.recommended}
               </span>
             </div>
             <p className="mt-1 text-sm leading-6 text-[#66568f] dark:text-[#c4b6eb]">
-              公众号 / 抖音 / 小红书分享链接一键解析，返回无水印图片与视频资源。
+              {text.featuredDescription}
             </p>
           </div>
           <ArrowRight className="h-5 w-5 flex-shrink-0 text-[#8b6bff] transition group-hover:translate-x-1" />
@@ -196,23 +336,23 @@ export default function ToolsHub() {
 
       {/* 四大模块 */}
       <div className="mt-6 grid gap-5 md:grid-cols-2">
-        {MODULES.map((module) => {
+        {modules.map((module) => {
           const Icon = module.icon;
           return (
             <div
               key={module.href}
               className="group flex flex-col rounded-[28px] border border-[#e4d8ff] bg-[linear-gradient(135deg,rgba(255,255,255,0.97),rgba(247,242,255,0.92))] p-5 shadow-[0_22px_70px_rgba(91,61,245,0.06)] transition hover:border-[#8b6bff] hover:shadow-[0_26px_80px_rgba(91,61,245,0.14)] dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.92),rgba(15,11,27,0.96))] sm:p-6"
             >
-              <Link href={module.href} className="flex items-start justify-between gap-3">
+              <Link href={localizedHref(module.href, locale) as Route} className="flex items-start justify-between gap-3">
                 <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ece3ff] text-[#5b3df5] transition group-hover:scale-105 dark:bg-[#2b1f43] dark:text-[#cbbcff]">
                   <Icon className="h-6 w-6" />
                 </span>
                 <span className="rounded-full bg-[#efe6ff] px-2.5 py-1 text-xs font-semibold text-[#5b3df5] dark:bg-[#2b1f43] dark:text-[#efe9ff]">
-                  {module.count} 个工具
+                  {text.countLabel.replace('{count}', String(module.count))}
                 </span>
               </Link>
 
-              <Link href={module.href} className="mt-4 block">
+              <Link href={localizedHref(module.href, locale) as Route} className="mt-4 block">
                 <h2 className="text-xl font-semibold tracking-tight text-[#2e2150] transition group-hover:text-[#4f31d7] dark:text-[#f4efff] dark:group-hover:text-[#cbbcff]">
                   {module.title}
                 </h2>
@@ -225,7 +365,7 @@ export default function ToolsHub() {
                 {module.tools.map((tool) => (
                   <Link
                     key={tool.id}
-                    href={`${module.base}?tool=${tool.id}` as Route}
+                    href={`${localizedHref(module.base, locale)}?tool=${tool.id}` as Route}
                     className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1 text-xs text-[#5f4e89] transition hover:border-[#8b6bff] hover:bg-[#ece3ff] hover:text-[#4f31d7] dark:border-[#392d56] dark:bg-white/[0.03] dark:text-[#cabbef] dark:hover:border-[#8b6bff] dark:hover:bg-[#2b1f43] dark:hover:text-[#efe9ff]"
                   >
                     {tool.name}
@@ -234,10 +374,10 @@ export default function ToolsHub() {
               </div>
 
               <Link
-                href={module.href}
+                href={localizedHref(module.href, locale) as Route}
                 className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-[#5b3df5] dark:text-[#cbbcff]"
               >
-                进入模块
+                {text.enterModule}
                 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
               </Link>
             </div>

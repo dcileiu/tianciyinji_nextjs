@@ -1,9 +1,12 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { getPathLocale } from '@/lib/i18n';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
 export function CopyUrlButton() {
+  const locale = getPathLocale(usePathname());
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -13,19 +16,19 @@ export function CopyUrlButton() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('复制失败:', err);
+      console.error('Copy failed:', err);
     }
   };
 
   return (
     <button
       onClick={handleCopy}
-      className="relative inline-flex items-center gap-1 text-xs sm:text-sm text-black/40 dark:text-white/40 hover:text-black/60 dark:hover:text-white/60 transition-colors cursor-pointer active:scale-95"
+      className="relative inline-flex cursor-pointer items-center gap-1 text-xs text-black/40 transition-colors hover:text-black/60 active:scale-95 sm:text-sm dark:text-white/40 dark:hover:text-white/60"
       type="button"
     >
       {!copied ? (
         <div className="flex items-center gap-1">
-          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" className="shrink-0 sm:w-3 sm:h-3">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" className="shrink-0 sm:h-3 sm:w-3">
             <path
               fillRule="evenodd"
               clipRule="evenodd"
@@ -33,11 +36,11 @@ export function CopyUrlButton() {
               fill="currentColor"
             />
           </svg>
-          <span className="whitespace-nowrap">复制链接</span>
+          <span className="whitespace-nowrap">{locale === 'en' ? 'Copy link' : '复制链接'}</span>
         </div>
       ) : (
         <div className="flex items-center gap-1">
-          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" className="shrink-0 sm:w-3 sm:h-3">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" className="shrink-0 sm:h-3 sm:w-3">
             <path
               fillRule="evenodd"
               clipRule="evenodd"
@@ -45,7 +48,7 @@ export function CopyUrlButton() {
               fill="currentColor"
             />
           </svg>
-          <span className="whitespace-nowrap">已复制</span>
+          <span className="whitespace-nowrap">{locale === 'en' ? 'Copied' : '已复制'}</span>
         </div>
       )}
     </button>

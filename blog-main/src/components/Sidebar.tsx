@@ -4,17 +4,25 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, ChevronRight, X } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { localizedHref, type Locale } from '@/lib/i18n';
 import type { NavItem } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
 interface SidebarProps {
   isOpen: boolean;
+  labels: {
+    ariaLabel: string;
+    closeMenu: string;
+    collapseSubmenu: string;
+    expandSubmenu: string;
+  };
+  locale: Locale;
   navItems: NavItem[];
   onClose?: () => void;
 }
 
-export function Sidebar({ isOpen, navItems, onClose }: SidebarProps) {
+export function Sidebar({ isOpen, labels, locale, navItems, onClose }: SidebarProps) {
   const asideRef = useRef<HTMLElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [shouldRender, setShouldRender] = useState(isOpen);
@@ -86,7 +94,7 @@ export function Sidebar({ isOpen, navItems, onClose }: SidebarProps) {
           // 初始加载时的淡入动画
           isInitialLoad && isOpen && 'animate-in fade-in slide-in-from-left-4 duration-400'
         )}
-        aria-label="侧边导航"
+        aria-label={labels.ariaLabel}
       >
         <nav className="flex h-full flex-col items-start justify-center px-3 lg:px-4">
           <ul className="space-y-2">
@@ -97,7 +105,7 @@ export function Sidebar({ isOpen, navItems, onClose }: SidebarProps) {
               return (
                 <li key={item.label} className="group/navitem relative">
                   <Link
-                    href={item.href as any}
+                    href={localizedHref(item.href, locale) as any}
                     className={cn(
                       'group inline-flex h-9 w-fit min-w-0 items-center gap-1 rounded-md px-3 text-sm whitespace-nowrap',
                       'text-[#34265d] dark:text-[#efeaff]',
@@ -138,7 +146,7 @@ export function Sidebar({ isOpen, navItems, onClose }: SidebarProps) {
                         {children.map((child) => (
                           <li key={child.label}>
                             <Link
-                              href={child.href as any}
+                              href={localizedHref(child.href, locale) as any}
                               className={cn(
                                 'block rounded-lg px-3 py-2 text-sm whitespace-nowrap',
                                 'text-foreground/80',
@@ -194,7 +202,7 @@ export function Sidebar({ isOpen, navItems, onClose }: SidebarProps) {
                     'hover:bg-accent hover:text-foreground',
                     'transition-colors duration-200'
                   )}
-                  aria-label="关闭菜单"
+                  aria-label={labels.closeMenu}
                 >
                   <X className="h-6 w-6" />
                 </button>
@@ -212,7 +220,7 @@ export function Sidebar({ isOpen, navItems, onClose }: SidebarProps) {
                       <li key={item.label}>
                         <div className="flex items-center">
                           <Link
-                            href={item.href as any}
+                            href={localizedHref(item.href, locale) as any}
                             onClick={(e) => {
                               e.stopPropagation();
                               handleClose();
@@ -243,7 +251,11 @@ export function Sidebar({ isOpen, navItems, onClose }: SidebarProps) {
                                 'hover:bg-accent hover:text-foreground',
                                 'transition-colors duration-200'
                               )}
-                              aria-label={isExpanded ? `收起${item.label}子菜单` : `展开${item.label}子菜单`}
+                              aria-label={
+                                isExpanded
+                                  ? labels.collapseSubmenu.replace('{label}', item.label)
+                                  : labels.expandSubmenu.replace('{label}', item.label)
+                              }
                               aria-expanded={isExpanded}
                             >
                               <ChevronDown
@@ -272,7 +284,7 @@ export function Sidebar({ isOpen, navItems, onClose }: SidebarProps) {
                                 {children.map((child) => (
                                   <li key={child.label}>
                                     <Link
-                                      href={child.href as any}
+                                      href={localizedHref(child.href, locale) as any}
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         handleClose();

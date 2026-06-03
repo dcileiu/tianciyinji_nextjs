@@ -16,20 +16,27 @@ const MUSIC_CONFIG = {
   isEnabled: true,
 };
 
+function getLocale(request: NextRequest) {
+  const headerLocale = request.headers.get('x-locale');
+  const cookieLocale = request.headers.get('cookie')?.match(/(?:^|;\s*)locale=([^;]+)/)?.[1];
+  return headerLocale === 'en' || cookieLocale === 'en' ? 'en' : 'zh';
+}
+
 /**
  * GET - 获取歌曲详情
  */
 export async function GET(request: NextRequest) {
   try {
+    const locale = getLocale(request);
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ error: '歌曲 ID 不能为空' }, { status: 400 });
+      return NextResponse.json({ error: locale === 'en' ? 'Song ID is required' : '歌曲 ID 不能为空' }, { status: 400 });
     }
 
     if (!MUSIC_CONFIG.isEnabled) {
-      return NextResponse.json({ error: '音乐功能未启用' }, { status: 404 });
+      return NextResponse.json({ error: locale === 'en' ? 'Music feature is not enabled' : '音乐功能未启用' }, { status: 404 });
     }
 
     // 请求详情 API
@@ -50,7 +57,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
 
     if (data.code !== 200) {
-      return NextResponse.json({ error: '获取歌曲详情失败' }, { status: 404 });
+      return NextResponse.json({ error: locale === 'en' ? 'Failed to fetch song details' : '获取歌曲详情失败' }, { status: 404 });
     }
 
     return NextResponse.json({
@@ -59,6 +66,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('[!] 获取歌曲详情失败:', error);
-    return NextResponse.json({ error: '获取失败，请稍后重试' }, { status: 500 });
+    const locale = getLocale(request);
+    return NextResponse.json({ error: locale === 'en' ? 'Request failed. Please try again later' : '获取失败，请稍后重试' }, { status: 500 });
   }
 }
