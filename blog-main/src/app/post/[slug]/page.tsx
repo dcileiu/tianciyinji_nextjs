@@ -76,9 +76,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const description =
-    post.excerpt ||
-    (locale === 'en' ? 'A post recording thoughts and project progress.' : '一篇记录思考与项目进展的文章。');
+  const description = post.excerpt || '一篇记录思考与项目进展的文章。';
   const authorProfile = resolveAuthorProfile(post.author, post.authorAvatar);
 
   return buildPageMetadata({
@@ -131,9 +129,7 @@ export default async function PostPage({ params, searchParams }: PageProps) {
   const readingTime = calculateReadingTime(post.content);
   const headings = extractHeadings(post.content);
   const authorProfile = resolveAuthorProfile(post.author, post.authorAvatar);
-  const articleDescription =
-    post.excerpt ||
-    (locale === 'en' ? 'A post recording thoughts and project progress.' : '一篇记录思考与项目进展的文章。');
+  const articleDescription = post.excerpt || '一篇记录思考与项目进展的文章。';
 
   return (
     <>

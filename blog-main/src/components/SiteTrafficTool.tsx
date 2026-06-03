@@ -42,18 +42,32 @@ interface BacklinkInfo {
 
 const SOURCE_LABELS: Record<string, string> = {
   Search: '搜索',
+  SearchOrganic: '自然搜索',
+  'Search Organic': '自然搜索',
+  SearchPaid: '付费搜索',
+  'Search Paid': '付费搜索',
   Direct: '直接访问',
   Referrals: '外链引荐',
+  Referral: '外链引荐',
   Social: '社交媒体',
+  SocialOrganic: '社交自然',
+  'Social Organic': '社交自然',
   Mail: '邮件',
   'Paid Referrals': '付费引荐',
 };
 
 const SOURCE_COLORS: Record<string, string> = {
   Search: '#5b3df5',
+  SearchOrganic: '#9b7cff',
+  'Search Organic': '#9b7cff',
+  SearchPaid: '#d18cff',
+  'Search Paid': '#d18cff',
   Direct: '#8b6bff',
   Referrals: '#6b8bff',
+  Referral: '#6b8bff',
   Social: '#b06bff',
+  SocialOrganic: '#b06bff',
+  'Social Organic': '#b06bff',
   Mail: '#34c7a8',
   'Paid Referrals': '#f59e42',
 };
@@ -180,8 +194,8 @@ function SourcesDonut({ sources }: { sources: Record<string, number> }) {
     return <p className="text-sm text-[#7b69a5] dark:text-[#af9fda]">暂无流量来源数据。</p>;
   }
 
-  const size = 180;
-  const stroke = 26;
+  const size = 172;
+  const stroke = 24;
   const r = (size - stroke) / 2;
   const cx = size / 2;
   const cy = size / 2;
@@ -190,8 +204,8 @@ function SourcesDonut({ sources }: { sources: Record<string, number> }) {
   let offsetAcc = 0;
 
   return (
-    <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
-      <svg viewBox={`0 0 ${size} ${size}`} className="h-40 w-40 shrink-0">
+    <div className="grid min-w-0 grid-cols-1 items-center gap-4 sm:grid-cols-[minmax(8.5rem,10rem)_minmax(0,1fr)]">
+      <svg viewBox={`0 0 ${size} ${size}`} className="mx-auto h-36 w-36 shrink-0 sm:h-40 sm:w-40">
         <circle cx={cx} cy={cy} r={r} fill="none" stroke="currentColor" strokeOpacity="0.08" strokeWidth={stroke} />
         <g transform={`rotate(-90 ${cx} ${cy})`}>
           {entries.map((item) => {
@@ -216,17 +230,17 @@ function SourcesDonut({ sources }: { sources: Record<string, number> }) {
         </g>
       </svg>
 
-      <div className="w-full space-y-2">
+      <div className="min-w-0 w-full space-y-2">
         {entries.map((item) => (
-          <div key={item.key} className="flex items-center gap-2 text-sm">
+          <div key={item.key} className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 text-sm">
             <span
               className="h-3 w-3 shrink-0 rounded-full"
               style={{ backgroundColor: SOURCE_COLORS[item.key] || '#a78bfa' }}
             />
-            <span className="text-[#3a2c63] dark:text-[#e6def9]">
+            <span className="min-w-0 truncate text-[#3a2c63] dark:text-[#e6def9]" title={SOURCE_LABELS[item.key] || item.key}>
               {SOURCE_LABELS[item.key] || item.key}
             </span>
-            <span className="ml-auto font-medium text-[#5b3df5] dark:text-[#cbbcff]">
+            <span className="shrink-0 font-medium text-[#5b3df5] dark:text-[#cbbcff]">
               {((item.value / total) * 100).toFixed(1)}%
             </span>
           </div>
@@ -382,7 +396,7 @@ export default function SiteTrafficTool() {
             </div>
           )}
 
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,26rem),1fr))] gap-4">
             {/* 流量来源 */}
             {data.TrafficSources && (
               <div className={panelClass}>
