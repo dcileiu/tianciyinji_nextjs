@@ -15,7 +15,7 @@ export const metadata: Metadata = buildPageMetadata({
 
 export default function WorksPage() {
   return (
-    <div className="mx-auto max-w-4xl px-6 py-12 sm:px-8 sm:py-16 md:px-6 md:py-24">
+    <div className="mx-auto max-w-6xl px-6 py-12 sm:px-8 sm:py-16 md:px-6 md:py-24">
       <header className="mb-12 sm:mb-16">
         <h1 className="mb-4 text-3xl font-medium tracking-tight text-black sm:text-4xl md:text-5xl lg:text-6xl dark:text-white">
           作品
@@ -26,7 +26,7 @@ export default function WorksPage() {
         <div className="mt-6 h-[2px] w-12 bg-black sm:w-16 dark:bg-white" />
       </header>
 
-      <div className="space-y-8 sm:space-y-10">
+      <div className="grid gap-8 sm:grid-cols-2 sm:gap-10">
         {works.map((work) => (
           <article
             key={work.title}
