@@ -116,6 +116,7 @@ import {
 } from "@/components/tools/data-tools";
 import { localizedHref, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { TranslationProvider } from "./tools/TranslationContext";
 
 const sectionMeta = [
   {
@@ -569,6 +570,7 @@ export default function ToolsClientPage({
   };
 
   return (
+    <TranslationProvider locale={locale}>
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:py-20">
       {section && (
         <div className="mb-6 flex items-center gap-2 text-sm text-[#7b69a5] dark:text-[#af9fda]">
@@ -1317,5 +1319,6 @@ export default function ToolsClientPage({
         </div>
       </div>
     </div>
+    </TranslationProvider>
   );
 }

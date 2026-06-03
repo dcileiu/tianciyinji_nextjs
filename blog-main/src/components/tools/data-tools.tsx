@@ -7,11 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FancySelect, OutputBox, inputClass } from '@/components/tools/tool-ui';
 import { useServerTool } from '@/components/tools/use-server-tool';
+import { useTranslation } from '@/components/tools/TranslationContext';
 
 const runBtn = 'rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]';
 
 /* ===================== Minecraft 玩家信息 ===================== */
 export function MinecraftPlayerTool() {
+  const { t } = useTranslation();
   const [minecraftPlayerInput, setMinecraftPlayerInput] = useState('Notch');
   const { loading, result, error, run } = useServerTool<any>('minecraft-player');
   return (
@@ -20,10 +22,10 @@ export function MinecraftPlayerTool() {
         className={inputClass}
         value={minecraftPlayerInput}
         onChange={(e) => setMinecraftPlayerInput(e.target.value)}
-        placeholder="例如 Notch"
+        placeholder={t('例如 Notch')}
       />
       <Button onClick={() => run({ username: minecraftPlayerInput })} className={runBtn}>
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '查询玩家'}
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('查询玩家')}
       </Button>
       {error && <OutputBox>{error}</OutputBox>}
       {result && (
@@ -35,8 +37,8 @@ export function MinecraftPlayerTool() {
               <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{result.id}</div>
             </div>
           </div>
-          <div className="break-all text-xs">皮肤：{result.skinUrl}</div>
-          {result.capeUrl && <div className="break-all text-xs">披风：{result.capeUrl}</div>}
+          <div className="break-all text-xs">{t('皮肤')}：{result.skinUrl}</div>
+          {result.capeUrl && <div className="break-all text-xs">{t('披风')}：{result.capeUrl}</div>}
         </OutputBox>
       )}
     </div>
@@ -45,6 +47,7 @@ export function MinecraftPlayerTool() {
 
 /* ===================== Minecraft 服务器信息 ===================== */
 export function MinecraftServerTool() {
+  const { t } = useTranslation();
   const [minecraftServerInput, setMinecraftServerInput] = useState('mc.hypixel.net');
   const [minecraftEdition, setMinecraftEdition] = useState<'java' | 'bedrock'>('java');
   const { loading, result, error, run } = useServerTool<any>('minecraft-server');
@@ -68,18 +71,18 @@ export function MinecraftServerTool() {
         className={inputClass}
         value={minecraftServerInput}
         onChange={(e) => setMinecraftServerInput(e.target.value)}
-        placeholder="例如 mc.hypixel.net"
+        placeholder={t('例如 mc.hypixel.net')}
       />
       <Button onClick={() => run({ address: minecraftServerInput, edition: minecraftEdition })} className={runBtn}>
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '查询服务器'}
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('查询服务器')}
       </Button>
       {error && <OutputBox>{error}</OutputBox>}
       {result && (
         <OutputBox className="space-y-2">
-          <div>在线状态：{result.data.online ? '在线' : '离线'}</div>
-          <div>版本：{result.data.version?.name_clean || result.data.version?.name || '-'}</div>
+          <div>{t('在线状态')}：{result.data.online ? t('在线') : t('离线')}</div>
+          <div>{t('版本')}：{result.data.version?.name_clean || result.data.version?.name || '-'}</div>
           <div>
-            玩家：{result.data.players?.online ?? '-'} / {result.data.players?.max ?? '-'}
+            {t('玩家')}：{result.data.players?.online ?? '-'} / {result.data.players?.max ?? '-'}
           </div>
           <div className="break-all">MOTD：{result.data.motd?.clean || result.data.motd?.raw || '-'}</div>
         </OutputBox>
@@ -90,13 +93,14 @@ export function MinecraftServerTool() {
 
 /* ===================== GitHub 仓库信息 ===================== */
 export function GithubRepoTool() {
+  const { t } = useTranslation();
   const [githubRepoInput, setGithubRepoInput] = useState('vercel/next.js');
   const { loading, result, error, run } = useServerTool<any>('github-repo');
   return (
     <div className="space-y-3">
-      <Input className={inputClass} value={githubRepoInput} onChange={(e) => setGithubRepoInput(e.target.value)} placeholder="例如 vercel/next.js" />
+      <Input className={inputClass} value={githubRepoInput} onChange={(e) => setGithubRepoInput(e.target.value)} placeholder={t('例如 vercel/next.js')} />
       <Button onClick={() => run({ repo: githubRepoInput })} className={runBtn}>
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '查询仓库'}
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('查询仓库')}
       </Button>
       {error && <OutputBox>{error}</OutputBox>}
       {result && (
@@ -121,13 +125,14 @@ export function GithubRepoTool() {
 
 /* ===================== Gravatar ===================== */
 export function GravatarTool() {
+  const { t } = useTranslation();
   const [gravatarEmail, setGravatarEmail] = useState('dcileiu@outlook.com');
   const { loading, result, error, run } = useServerTool<any>('gravatar');
   return (
     <div className="space-y-3">
-      <Input className={inputClass} value={gravatarEmail} onChange={(e) => setGravatarEmail(e.target.value)} placeholder="邮箱地址" />
+      <Input className={inputClass} value={gravatarEmail} onChange={(e) => setGravatarEmail(e.target.value)} placeholder={t('邮箱地址')} />
       <Button onClick={() => run({ email: gravatarEmail, size: 256 })} className={runBtn}>
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '生成头像地址'}
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('生成头像地址')}
       </Button>
       {error && <OutputBox>{error}</OutputBox>}
       {result && (
@@ -140,7 +145,7 @@ export function GravatarTool() {
             rel="noreferrer"
             className="inline-flex items-center gap-1 text-sm text-[#5b3df5] hover:underline"
           >
-            打开 Gravatar 资料页 <ExternalLink className="h-3.5 w-3.5" />
+            {t('打开 Gravatar 资料页')} <ExternalLink className="h-3.5 w-3.5" />
           </a>
         </OutputBox>
       )}
@@ -150,23 +155,24 @@ export function GravatarTool() {
 
 /* ===================== 基础 IP 归属 ===================== */
 export function IpGeoTool() {
+  const { t } = useTranslation();
   const [geoIpInput, setGeoIpInput] = useState('');
   const { loading, result, error, run } = useServerTool<any>('ip-geo');
   return (
     <div className="space-y-3">
-      <Input className={inputClass} value={geoIpInput} onChange={(e) => setGeoIpInput(e.target.value)} placeholder="可留空，默认查询当前访问 IP" />
+      <Input className={inputClass} value={geoIpInput} onChange={(e) => setGeoIpInput(e.target.value)} placeholder={t('可留空，默认查询当前访问 IP')} />
       <Button onClick={() => run({ ip: geoIpInput })} className={runBtn}>
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '查询归属'}
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('查询归属')}
       </Button>
       {error && <OutputBox>{error}</OutputBox>}
       {result && (
         <OutputBox className="space-y-2">
-          <div>IP：{result.ip}</div>
+          <div>{t('IP')}：{result.ip}</div>
           <div>
-            国家 / 地区：{result.country || '-'} / {result.region || '-'}
+            {t('国家 / 地区')}：{result.country || '-'} / {result.region || '-'}
           </div>
-          <div>城市：{result.city || '-'}</div>
-          <div>时区：{result.timezone || '-'}</div>
+          <div>{t('城市')}：{result.city || '-'}</div>
+          <div>{t('时区')}：{result.timezone || '-'}</div>
         </OutputBox>
       )}
     </div>
@@ -175,21 +181,22 @@ export function IpGeoTool() {
 
 /* ===================== 手机号归属地 ===================== */
 export function MobileAreaTool() {
+  const { t } = useTranslation();
   const [phoneInput, setPhoneInput] = useState('13800138000');
   const { loading, result, error, run } = useServerTool<any>('mobile-area');
   return (
     <div className="space-y-3">
-      <Input className={inputClass} value={phoneInput} onChange={(e) => setPhoneInput(e.target.value)} placeholder="例如 13800138000" />
+      <Input className={inputClass} value={phoneInput} onChange={(e) => setPhoneInput(e.target.value)} placeholder={t('例如 13800138000')} />
       <Button onClick={() => run({ phone: phoneInput })} className={runBtn}>
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '查询归属地'}
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('查询归属地')}
       </Button>
       {error && <OutputBox>{error}</OutputBox>}
       {result && (
         <OutputBox className="space-y-2">
-          <div>号码：{result.phone}</div>
-          <div>省份：{result.province || '-'}</div>
-          <div>城市：{result.city || '-'}</div>
-          <div>运营商：{result.carrier || '-'}</div>
+          <div>{t('号码')}：{result.phone}</div>
+          <div>{t('省份')}：{result.province || '-'}</div>
+          <div>{t('城市')}：{result.city || '-'}</div>
+          <div>{t('运营商')}：{result.carrier || '-'}</div>
         </OutputBox>
       )}
     </div>
@@ -198,6 +205,7 @@ export function MobileAreaTool() {
 
 /* ===================== Bing 每日壁纸 ===================== */
 export function BingWallpaperTool() {
+  const { t } = useTranslation();
   const [bingMarket, setBingMarket] = useState('zh-CN');
   const { loading, result, error, run } = useServerTool<any>('bing-wallpaper');
   return (
@@ -205,15 +213,15 @@ export function BingWallpaperTool() {
       <FancySelect
         value={bingMarket}
         onChange={setBingMarket}
-        ariaLabel="选择 Bing 区域"
+        ariaLabel={t('选择 Bing 区域')}
         options={[
-          { value: 'zh-CN', label: '中国大陆（zh-CN）' },
-          { value: 'en-US', label: '美国（en-US）' },
-          { value: 'ja-JP', label: '日本（ja-JP）' },
+          { value: 'zh-CN', label: t('中国大陆（zh-CN）') },
+          { value: 'en-US', label: t('美国（en-US）') },
+          { value: 'ja-JP', label: t('日本（ja-JP）') },
         ]}
       />
       <Button onClick={() => run({ market: bingMarket })} className={runBtn}>
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '获取壁纸'}
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('获取壁纸')}
       </Button>
       {error && <OutputBox>{error}</OutputBox>}
       {result && (
@@ -222,7 +230,7 @@ export function BingWallpaperTool() {
           <div className="font-medium text-[#2f2154] dark:text-[#f4efff]">{result.title}</div>
           <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{result.copyright}</div>
           <a href={result.url} target="_blank" rel="noreferrer" className="text-sm text-[#5b3df5] hover:underline">
-            打开原图
+            {t('打开原图')}
           </a>
         </OutputBox>
       )}
@@ -232,6 +240,7 @@ export function BingWallpaperTool() {
 
 /* ===================== 答案之书 / 诗词 / 历史今天 ===================== */
 export function ContentTools() {
+  const { t } = useTranslation();
   const [answerQuestion, setAnswerQuestion] = useState('我该不该继续把这个博客做成长期项目？');
   const [historyMonth, setHistoryMonth] = useState(String(new Date().getMonth() + 1));
   const [historyDay, setHistoryDay] = useState(String(new Date().getDate()));
@@ -242,18 +251,18 @@ export function ContentTools() {
   return (
     <div className="space-y-4">
       <div className="rounded-2xl border border-[#e3d7ff] bg-white/60 p-4 dark:border-[#34294f] dark:bg-white/[0.03]">
-        <div className="mb-2 text-sm font-medium text-[#2f2154] dark:text-[#f4efff]">答案之书</div>
-        <Input className={inputClass} value={answerQuestion} onChange={(e) => setAnswerQuestion(e.target.value)} placeholder="输入问题" />
+        <div className="mb-2 text-sm font-medium text-[#2f2154] dark:text-[#f4efff]">{t('答案之书')}</div>
+        <Input className={inputClass} value={answerQuestion} onChange={(e) => setAnswerQuestion(e.target.value)} placeholder={t('输入问题')} />
         <Button onClick={() => answer.run({ question: answerQuestion })} className="mt-3 rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
-          {answer.loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '翻一页'}
+          {answer.loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('翻一页')}
         </Button>
-        {answer.result && <div className="mt-3 text-sm leading-7 text-[#5b3df5] dark:text-[#d9ccff]">{answer.result.answer}</div>}
+        {answer.result && <div className="mt-3 text-sm leading-7 text-[#5b3df5] dark:text-[#d9ccff]">{t(answer.result.answer)}</div>}
       </div>
 
       <div className="rounded-2xl border border-[#e3d7ff] bg-white/60 p-4 dark:border-[#34294f] dark:bg-white/[0.03]">
-        <div className="mb-2 text-sm font-medium text-[#2f2154] dark:text-[#f4efff]">随机诗词</div>
+        <div className="mb-2 text-sm font-medium text-[#2f2154] dark:text-[#f4efff]">{t('随机诗词')}</div>
         <Button onClick={() => poetry.run()} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
-          {poetry.loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '来一首'}
+          {poetry.loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('来一首')}
         </Button>
         {poetry.result && (
           <div className="mt-3 space-y-2 text-sm leading-7 text-[#5c4a88] dark:text-[#d9ccff]">
@@ -267,12 +276,12 @@ export function ContentTools() {
       </div>
 
       <div className="rounded-2xl border border-[#e3d7ff] bg-white/60 p-4 dark:border-[#34294f] dark:bg-white/[0.03]">
-        <div className="mb-2 text-sm font-medium text-[#2f2154] dark:text-[#f4efff]">历史今天</div>
+        <div className="mb-2 text-sm font-medium text-[#2f2154] dark:text-[#f4efff]">{t('历史今天')}</div>
         <div className="grid gap-3 sm:grid-cols-3">
-          <Input className={inputClass} value={historyMonth} onChange={(e) => setHistoryMonth(e.target.value)} placeholder="月" />
-          <Input className={inputClass} value={historyDay} onChange={(e) => setHistoryDay(e.target.value)} placeholder="日" />
+          <Input className={inputClass} value={historyMonth} onChange={(e) => setHistoryMonth(e.target.value)} placeholder={t('月')} />
+          <Input className={inputClass} value={historyDay} onChange={(e) => setHistoryDay(e.target.value)} placeholder={t('日')} />
           <Button onClick={() => history.run({ month: historyMonth, day: historyDay })} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
-            {history.loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '查询'}
+            {history.loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('查询')}
           </Button>
         </div>
         {history.result && (

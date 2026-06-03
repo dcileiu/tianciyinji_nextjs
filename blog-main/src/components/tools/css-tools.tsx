@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/components/tools/TranslationContext';
 
 const inputClass =
   'w-full rounded-2xl border border-[#dfd3ff] bg-white/80 px-4 py-3 text-sm text-[#2f2154] placeholder:text-[#75689e] shadow-sm outline-none transition focus:border-[#8b6bff] focus:ring-2 focus:ring-[#8b6bff]/20 dark:border-[#33274f] dark:bg-[#140f22]/90 dark:text-[#f4efff] dark:placeholder:text-[#ae9fda]';
@@ -13,6 +14,7 @@ const outBox =
   'rounded-2xl border border-[#ece3ff] bg-white/60 p-3 dark:border-[#2c2347] dark:bg-white/[0.03]';
 
 function CopyCss({ css }: { css: string }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   return (
     <div className={`${outBox} flex items-start justify-between gap-2`}>
@@ -23,14 +25,14 @@ function CopyCss({ css }: { css: string }) {
           try {
             await navigator.clipboard.writeText(css);
             setCopied(true);
-            toast.success('已复制');
+            toast.success(t('已复制'));
             setTimeout(() => setCopied(false), 1500);
           } catch {
-            toast.error('复制失败');
+            toast.error(t('复制失败'));
           }
         }}
         className="shrink-0 text-[#9686c0] transition hover:text-[#5b3df5]"
-        aria-label="复制 CSS"
+        aria-label={t('复制 CSS')}
       >
         {copied ? <Check className="h-4 w-4 text-[#5b3df5]" /> : <Copy className="h-4 w-4" />}
       </button>
@@ -39,9 +41,10 @@ function CopyCss({ css }: { css: string }) {
 }
 
 function Slider({ label, value, onChange, min, max, step = 1, unit = 'px' }: { label: string; value: number; onChange: (v: number) => void; min: number; max: number; step?: number; unit?: string }) {
+  const { t } = useTranslation();
   return (
     <label className="flex items-center gap-2 text-sm text-[#5c4a88] dark:text-[#d2c6f3]">
-      <span className="w-20 shrink-0">{label}</span>
+      <span className="w-20 shrink-0">{t(label)}</span>
       <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className="flex-1 accent-[#5b3df5]" />
       <span className="w-14 shrink-0 text-right font-mono text-xs">
         {value}
@@ -53,6 +56,7 @@ function Slider({ label, value, onChange, min, max, step = 1, unit = 'px' }: { l
 
 /* ===================== CSS 渐变生成 ===================== */
 export function CssGradientTool() {
+  const { t } = useTranslation();
   const [type, setType] = useState<'linear' | 'radial'>('linear');
   const [angle, setAngle] = useState(135);
   const [c1, setC1] = useState('#5b3df5');
@@ -62,14 +66,14 @@ export function CssGradientTool() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        {(['linear', 'radial'] as const).map((t) => (
+        {(['linear', 'radial'] as const).map((tBtn) => (
           <button
-            key={t}
+            key={tBtn}
             type="button"
-            onClick={() => setType(t)}
-            className={cn('rounded-full px-4 py-2 text-sm transition', type === t ? 'bg-[#5b3df5] text-white' : 'bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]')}
+            onClick={() => setType(tBtn)}
+            className={cn('rounded-full px-4 py-2 text-sm transition', type === tBtn ? 'bg-[#5b3df5] text-white' : 'bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]')}
           >
-            {t === 'linear' ? '线性' : '径向'}
+            {tBtn === 'linear' ? t('线性') : t('径向')}
           </button>
         ))}
         <input type="color" value={c1} onChange={(e) => setC1(e.target.value)} className="h-9 w-10 cursor-pointer rounded-lg border border-[#dfd3ff] dark:border-[#33274f]" />
@@ -84,6 +88,7 @@ export function CssGradientTool() {
 
 /* ===================== box-shadow 生成 ===================== */
 export function BoxShadowTool() {
+  const { t } = useTranslation();
   const [x, setX] = useState(0);
   const [y, setY] = useState(12);
   const [blur, setBlur] = useState(30);
@@ -110,11 +115,11 @@ export function BoxShadowTool() {
         <Slider label="扩散" value={spread} onChange={setSpread} min={-50} max={50} />
         <Slider label="透明度" value={opacity} onChange={setOpacity} min={0} max={1} step={0.05} unit="" />
         <label className="flex items-center gap-2 text-sm text-[#5c4a88] dark:text-[#d2c6f3]">
-          <span className="w-20 shrink-0">颜色</span>
+          <span className="w-20 shrink-0">{t('颜色')}</span>
           <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-8 w-10 cursor-pointer rounded border border-[#dfd3ff] dark:border-[#33274f]" />
           <label className="ml-2 flex items-center gap-1.5">
             <input type="checkbox" checked={inset} onChange={(e) => setInset(e.target.checked)} className="accent-[#5b3df5]" />
-            内阴影
+            {t('内阴影')}
           </label>
         </label>
       </div>
@@ -184,6 +189,7 @@ function hslToHex(h: number, s: number, l: number) {
 }
 
 function PaletteSwatch({ hex }: { hex: string }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   return (
     <button
@@ -192,10 +198,10 @@ function PaletteSwatch({ hex }: { hex: string }) {
         try {
           await navigator.clipboard.writeText(hex);
           setCopied(true);
-          toast.success('已复制 ' + hex);
+          toast.success(t('已复制') + ' ' + hex);
           setTimeout(() => setCopied(false), 1200);
         } catch {
-          toast.error('复制失败');
+          toast.error(t('复制失败'));
         }
       }}
       className="group flex flex-col items-center gap-1"

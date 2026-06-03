@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/components/tools/TranslationContext';
 
 const inputClass =
   'w-full rounded-2xl border border-[#dfd3ff] bg-white/80 px-4 py-3 text-sm text-[#2f2154] placeholder:text-[#75689e] shadow-sm outline-none transition focus:border-[#8b6bff] focus:ring-2 focus:ring-[#8b6bff]/20 dark:border-[#33274f] dark:bg-[#140f22]/90 dark:text-[#f4efff] dark:placeholder:text-[#ae9fda]';
@@ -11,9 +12,10 @@ const statBox =
   'rounded-2xl border border-[#ece3ff] bg-white/60 px-3 py-3 text-center dark:border-[#2c2347] dark:bg-white/[0.03]';
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  const { t } = useTranslation();
   return (
     <label className="block">
-      <span className="mb-1 block text-xs text-[#7b69a5] dark:text-[#af9fda]">{label}</span>
+      <span className="mb-1 block text-xs text-[#7b69a5] dark:text-[#af9fda]">{t(label)}</span>
       {children}
     </label>
   );
@@ -30,6 +32,7 @@ function money(v: number) {
 
 /* ===================== 房贷计算器 ===================== */
 export function LoanCalcTool() {
+  const { t } = useTranslation();
   const [amount, setAmount] = useState('100'); // 万
   const [rate, setRate] = useState('3.5'); // 年利率 %
   const [years, setYears] = useState('30');
@@ -82,7 +85,7 @@ export function LoanCalcTool() {
               mode === m.id ? 'bg-[#5b3df5] text-white' : 'bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]',
             )}
           >
-            {m.label}
+            {t(m.label)}
           </button>
         ))}
       </div>
@@ -90,23 +93,23 @@ export function LoanCalcTool() {
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {mode === 'equal-payment' ? (
             <div className={statBox}>
-              <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">每月月供</div>
+              <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('每月月供')}</div>
               <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">¥{money(result.monthly)}</div>
             </div>
           ) : (
             <div className={statBox}>
-              <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">首月 / 末月</div>
+              <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('首月 / 末月')}</div>
               <div className="mt-1 text-sm font-semibold text-[#3a2c63] dark:text-[#f1ebff]">
                 ¥{money(result.first)} / ¥{money(result.last)}
               </div>
             </div>
           )}
           <div className={statBox}>
-            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">总利息</div>
+            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('总利息')}</div>
             <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">¥{money(result.interest)}</div>
           </div>
           <div className={statBox}>
-            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">总还款</div>
+            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('总还款')}</div>
             <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">¥{money(result.total)}</div>
           </div>
         </div>
@@ -127,6 +130,7 @@ const TAX_BRACKETS = [
 ];
 
 export function IncomeTaxTool() {
+  const { t } = useTranslation();
   const [salary, setSalary] = useState('15000');
   const [insurance, setInsurance] = useState('2000');
   const [special, setSpecial] = useState('0');
@@ -154,20 +158,20 @@ export function IncomeTaxTool() {
       </div>
       <div className="grid grid-cols-3 gap-2">
         <div className={statBox}>
-          <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">应纳税所得额</div>
+          <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('应纳税所得额')}</div>
           <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">¥{money(result.taxable)}</div>
         </div>
         <div className={statBox}>
-          <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">应缴个税</div>
+          <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('应缴个税')}</div>
           <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">¥{money(result.tax)}</div>
         </div>
         <div className={statBox}>
-          <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">税后到手</div>
+          <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('税后到手')}</div>
           <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">¥{money(result.after)}</div>
         </div>
       </div>
       <p className="text-xs leading-6 text-[#7b69a5] dark:text-[#af9fda]">
-        按月度税率表简化计算（起征点 5000 元），实际个税以累计预扣法为准，结果仅供参考。
+        {t('按月度税率表简化计算（起征点 5000 元），实际个税以累计预扣法为准，结果仅供参考。')}
       </p>
     </div>
   );
@@ -175,6 +179,7 @@ export function IncomeTaxTool() {
 
 /* ===================== BMI 计算器 ===================== */
 export function BmiTool() {
+  const { t } = useTranslation();
   const [height, setHeight] = useState('170');
   const [weight, setWeight] = useState('65');
 
@@ -211,11 +216,11 @@ export function BmiTool() {
       {result && (
         <div className={`${statBox} flex items-center justify-center gap-3`}>
           <span className="text-2xl font-bold text-[#3a2c63] dark:text-[#f1ebff]">{result.bmi.toFixed(1)}</span>
-          <span className={cn('text-lg font-semibold', result.color)}>{result.level}</span>
+          <span className={cn('text-lg font-semibold', result.color)}>{t(result.level)}</span>
         </div>
       )}
       <p className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-        参考中国标准：偏瘦 &lt;18.5，正常 18.5–24，超重 24–28，肥胖 ≥28。
+        {t('参考中国标准：偏瘦 <18.5，正常 18.5–24，超重 24–28，肥胖 ≥28。')}
       </p>
     </div>
   );
@@ -223,6 +228,7 @@ export function BmiTool() {
 
 /* ===================== 日期间隔计算 ===================== */
 export function DateDiffTool() {
+  const { t } = useTranslation();
   const today = new Date().toISOString().slice(0, 10);
   const [start, setStart] = useState('2000-01-01');
   const [end, setEnd] = useState(today);
@@ -258,17 +264,17 @@ export function DateDiffTool() {
       {result && (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           <div className={statBox}>
-            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">相差天数</div>
-            <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">{result.absDays} 天</div>
+            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('相差天数')}</div>
+            <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">{t(`${result.absDays} 天`)}</div>
           </div>
           <div className={statBox}>
-            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">约</div>
-            <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">{(result.absDays / 7).toFixed(1)} 周</div>
+            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('约')}</div>
+            <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">{t(`${(result.absDays / 7).toFixed(1)} 周`)}</div>
           </div>
           <div className={statBox}>
-            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">年/月</div>
+            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('年/月')}</div>
             <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">
-              {result.years}年{result.months}个月
+              {t(`${result.years}年${result.months}个月`)}
             </div>
           </div>
         </div>
@@ -298,6 +304,7 @@ const UNIT_CATEGORIES: Record<string, { label: string; units: Record<string, num
 };
 
 export function UnitConvertTool() {
+  const { t } = useTranslation();
   const [category, setCategory] = useState<keyof typeof UNIT_CATEGORIES | 'temperature'>('length');
   const [value, setValue] = useState('1');
   const [fromUnit, setFromUnit] = useState('米');
@@ -343,7 +350,7 @@ export function UnitConvertTool() {
               category === c.id ? 'bg-[#5b3df5] text-white' : 'bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]',
             )}
           >
-            {c.label}
+            {t(c.label)}
           </button>
         ))}
       </div>
@@ -356,7 +363,7 @@ export function UnitConvertTool() {
         >
           {currentUnits.map((u) => (
             <option key={u} value={u}>
-              {u}
+              {t(u)}
             </option>
           ))}
         </select>
@@ -364,7 +371,7 @@ export function UnitConvertTool() {
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {results.map((r) => (
           <div key={r.unit} className={statBox}>
-            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{r.unit}</div>
+            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t(r.unit)}</div>
             <div className="mt-1 truncate text-sm font-semibold text-[#3a2c63] dark:text-[#f1ebff]">
               {Number(r.value.toPrecision(6))}
             </div>

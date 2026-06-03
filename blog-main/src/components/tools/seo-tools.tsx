@@ -20,30 +20,32 @@ import {
   buildSeoMetaTags,
 } from '@/lib/tools/seo-builders';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/components/tools/TranslationContext';
 
 /* ===================== llms.txt 生成器（服务端） ===================== */
 export function LlmsTxtTool() {
+  const { t } = useTranslation();
   const [llmsUrlInput, setLlmsUrlInput] = useState('https://itianci.cn');
   const { loading, result, error, copied, run, copy } = useServerTool<any>('llms-txt');
 
   return (
     <div className="space-y-3">
-      <Input className={inputClass} value={llmsUrlInput} onChange={(e) => setLlmsUrlInput(e.target.value)} placeholder="例如 https://example.com" />
+      <Input className={inputClass} value={llmsUrlInput} onChange={(e) => setLlmsUrlInput(e.target.value)} placeholder={t('例如 https://example.com')} />
 
       <div className="flex flex-wrap gap-2">
         <Button onClick={() => run({ url: llmsUrlInput })} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '生成 llms.txt'}
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('生成 llms.txt')}
         </Button>
 
         {result?.generated && (
           <>
             <Button variant="outline" onClick={() => copy(result.generated)} className={secondaryButtonClass}>
               {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-              {copied ? '已复制' : '复制文本'}
+              {copied ? t('已复制') : t('复制文本')}
             </Button>
             <Button variant="outline" onClick={() => downloadPlainText('llms.txt', result.generated)} className={secondaryButtonClass}>
               <Download className="mr-2 h-4 w-4" />
-              下载 llms.txt
+              {t('下载 llms.txt')}
             </Button>
           </>
         )}
@@ -54,14 +56,11 @@ export function LlmsTxtTool() {
       {result && (
         <OutputBox className="space-y-3">
           <div className="grid gap-2 text-sm sm:grid-cols-2">
-            <div>站点标题：{result.siteTitle}</div>
-            <div>主语言：{result.language || '-'}</div>
-            <div className="break-all">站点地址：{result.siteUrl}</div>
-            <div>
-              语言版本：
-              {result.languageVariants.filter((item: { code: string }) => item.code !== 'x-default').length} 个
-            </div>
-            <div>主要栏目数：{result.primarySections.length} 个</div>
+            <div>{t(`站点标题：${result.siteTitle}`)}</div>
+            <div>{t(`主语言：${result.language || '-'}`)}</div>
+            <div className="break-all">{t(`站点地址：${result.siteUrl}`)}</div>
+            <div>{t(`语言版本：${result.languageVariants.filter((item: { code: string }) => item.code !== 'x-default').length} 个`)}</div>
+            <div>{t(`主要栏目数：${result.primarySections.length} 个`)}</div>
           </div>
 
           <div className="flex flex-wrap gap-2 text-xs">
@@ -127,16 +126,17 @@ export function LlmsTxtTool() {
 }
 
 function useCopyButton() {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const copy = async (text: string) => {
     if (!text) return;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-      toast.success('已复制');
+      toast.success(t('已复制'));
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      toast.error('复制失败');
+      toast.error(t('复制失败'));
     }
   };
   return { copied, copy };
@@ -144,6 +144,7 @@ function useCopyButton() {
 
 /* ===================== Meta 标签 / TDK ===================== */
 export function MetaTagsTool() {
+  const { t } = useTranslation();
   const [seoTitle, setSeoTitle] = useState('');
   const [seoDescription, setSeoDescription] = useState('');
   const [seoKeywords, setSeoKeywords] = useState('');
@@ -164,9 +165,9 @@ export function MetaTagsTool() {
   return (
     <div className="space-y-3">
       <div>
-        <Input className={inputClass} value={seoTitle} onChange={(e) => setSeoTitle(e.target.value)} placeholder="页面标题 Title" />
+        <Input className={inputClass} value={seoTitle} onChange={(e) => setSeoTitle(e.target.value)} placeholder={t('页面标题 Title')} />
         <div className={cn('mt-1 text-xs', seoTitle.length > 60 ? 'text-[#d8453f] dark:text-[#ff9b95]' : 'text-[#7b69a5] dark:text-[#af9fda]')}>
-          标题 {seoTitle.length} 字符（建议 ≤ 60）
+          {t(`标题 ${seoTitle.length} 字符（建议 ≤ 60）`)}
         </div>
       </div>
       <div>
@@ -174,22 +175,22 @@ export function MetaTagsTool() {
           className={`${inputClass} min-h-[88px] resize-y`}
           value={seoDescription}
           onChange={(e) => setSeoDescription(e.target.value)}
-          placeholder="页面描述 Description"
+          placeholder={t('页面描述 Description')}
         />
         <div className={cn('mt-1 text-xs', seoDescription.length > 160 ? 'text-[#d8453f] dark:text-[#ff9b95]' : 'text-[#7b69a5] dark:text-[#af9fda]')}>
-          描述 {seoDescription.length} 字符（建议 ≤ 160）
+          {t(`描述 ${seoDescription.length} 字符（建议 ≤ 160）`)}
         </div>
       </div>
-      <Input className={inputClass} value={seoKeywords} onChange={(e) => setSeoKeywords(e.target.value)} placeholder="关键词，逗号分隔（可选）" />
+      <Input className={inputClass} value={seoKeywords} onChange={(e) => setSeoKeywords(e.target.value)} placeholder={t('关键词，逗号分隔（可选）')} />
       <div className="grid gap-3 sm:grid-cols-2">
-        <Input className={inputClass} value={seoUrl} onChange={(e) => setSeoUrl(e.target.value)} placeholder="规范链接 URL" />
-        <Input className={inputClass} value={seoSiteName} onChange={(e) => setSeoSiteName(e.target.value)} placeholder="站点名称（可选）" />
+        <Input className={inputClass} value={seoUrl} onChange={(e) => setSeoUrl(e.target.value)} placeholder={t('规范链接 URL')} />
+        <Input className={inputClass} value={seoSiteName} onChange={(e) => setSeoSiteName(e.target.value)} placeholder={t('站点名称（可选）')} />
       </div>
-      <Input className={inputClass} value={seoImage} onChange={(e) => setSeoImage(e.target.value)} placeholder="社交分享图 URL（可选）" />
+      <Input className={inputClass} value={seoImage} onChange={(e) => setSeoImage(e.target.value)} placeholder={t('社交分享图 URL（可选）')} />
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" onClick={() => copy(metaTagsOutput)} className={secondaryButtonClass} disabled={!metaTagsOutput}>
           {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-          {copied ? '已复制' : '复制标签'}
+          {copied ? t('已复制') : t('复制标签')}
         </Button>
         <Button
           variant="outline"
@@ -198,7 +199,7 @@ export function MetaTagsTool() {
           disabled={!metaTagsOutput}
         >
           <Download className="mr-2 h-4 w-4" />
-          下载
+          {t('下载')}
         </Button>
       </div>
       {metaTagsOutput && (
@@ -210,6 +211,7 @@ export function MetaTagsTool() {
 
 /* ===================== robots.txt 生成器 ===================== */
 export function RobotsTxtTool() {
+  const { t } = useTranslation();
   const [robotsUserAgent, setRobotsUserAgent] = useState('*');
   const [robotsAllow, setRobotsAllow] = useState('');
   const [robotsDisallow, setRobotsDisallow] = useState('/admin\n/api');
@@ -225,35 +227,35 @@ export function RobotsTxtTool() {
 
   return (
     <div className="space-y-3">
-      <Input className={inputClass} value={robotsUserAgent} onChange={(e) => setRobotsUserAgent(e.target.value)} placeholder="User-agent（默认 *）" />
+      <Input className={inputClass} value={robotsUserAgent} onChange={(e) => setRobotsUserAgent(e.target.value)} placeholder={t('User-agent（默认 *）')} />
       <div className="grid gap-3 sm:grid-cols-2">
         <textarea
           className={`${inputClass} min-h-[96px] resize-y font-mono text-xs`}
           value={robotsAllow}
           onChange={(e) => setRobotsAllow(e.target.value)}
-          placeholder={'Allow 路径，每行一个\n例如 /'}
+          placeholder={t('Allow 路径，每行一个\n例如 /')}
         />
         <textarea
           className={`${inputClass} min-h-[96px] resize-y font-mono text-xs`}
           value={robotsDisallow}
           onChange={(e) => setRobotsDisallow(e.target.value)}
-          placeholder={'Disallow 路径，每行一个\n例如 /admin'}
+          placeholder={t('Disallow 路径，每行一个\n例如 /admin')}
         />
       </div>
       <textarea
         className={`${inputClass} min-h-[64px] resize-y font-mono text-xs`}
         value={robotsSitemap}
         onChange={(e) => setRobotsSitemap(e.target.value)}
-        placeholder="Sitemap 地址，每行一个（可选）"
+        placeholder={t('Sitemap 地址，每行一个（可选）')}
       />
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" onClick={() => copy(robotsOutput)} className={secondaryButtonClass}>
           {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-          {copied ? '已复制' : '复制'}
+          {copied ? t('已复制') : t('复制')}
         </Button>
         <Button variant="outline" onClick={() => downloadPlainText('robots.txt', robotsOutput)} className={secondaryButtonClass}>
           <Download className="mr-2 h-4 w-4" />
-          下载 robots.txt
+          {t('下载 robots.txt')}
         </Button>
       </div>
       <textarea className={`${inputClass} min-h-[160px] resize-y font-mono text-xs leading-6`} value={robotsOutput} readOnly />
@@ -263,6 +265,7 @@ export function RobotsTxtTool() {
 
 /* ===================== 结构化数据 JSON-LD ===================== */
 export function JsonLdTool() {
+  const { t } = useTranslation();
   const [jsonLdType, setJsonLdType] = useState<'Article' | 'WebSite' | 'Organization'>('Article');
   const [jsonLdName, setJsonLdName] = useState('');
   const [jsonLdUrl, setJsonLdUrl] = useState('https://itianci.cn');
@@ -284,44 +287,44 @@ export function JsonLdTool() {
   return (
     <div className="space-y-3">
       <FancySelect
-        ariaLabel="选择结构化数据类型"
+        ariaLabel={t('选择结构化数据类型')}
         value={jsonLdType}
         onChange={(value) => setJsonLdType(value)}
         options={[
-          { value: 'Article', label: '文章 Article' },
-          { value: 'WebSite', label: '网站 WebSite' },
-          { value: 'Organization', label: '组织 Organization' },
+          { value: 'Article', label: t('文章 Article') },
+          { value: 'WebSite', label: t('网站 WebSite') },
+          { value: 'Organization', label: t('组织 Organization') },
         ]}
       />
       <Input
         className={inputClass}
         value={jsonLdName}
         onChange={(e) => setJsonLdName(e.target.value)}
-        placeholder={jsonLdType === 'Article' ? '文章标题 headline' : '名称 name'}
+        placeholder={jsonLdType === 'Article' ? t('文章标题 headline') : t('名称 name')}
       />
       <Input className={inputClass} value={jsonLdUrl} onChange={(e) => setJsonLdUrl(e.target.value)} placeholder="URL" />
       <textarea
         className={`${inputClass} min-h-[72px] resize-y`}
         value={jsonLdDesc}
         onChange={(e) => setJsonLdDesc(e.target.value)}
-        placeholder="描述 description（可选）"
+        placeholder={t('描述 description（可选）')}
       />
       {jsonLdType === 'Article' && (
         <div className="grid gap-3 sm:grid-cols-2">
-          <Input className={inputClass} value={jsonLdAuthor} onChange={(e) => setJsonLdAuthor(e.target.value)} placeholder="作者 author（可选）" />
-          <Input className={inputClass} type="date" value={jsonLdDate} onChange={(e) => setJsonLdDate(e.target.value)} placeholder="发布日期" />
+          <Input className={inputClass} value={jsonLdAuthor} onChange={(e) => setJsonLdAuthor(e.target.value)} placeholder={t('作者 author（可选）')} />
+          <Input className={inputClass} type="date" value={jsonLdDate} onChange={(e) => setJsonLdDate(e.target.value)} placeholder={t('发布日期')} />
         </div>
       )}
       <Input
         className={inputClass}
         value={jsonLdImage}
         onChange={(e) => setJsonLdImage(e.target.value)}
-        placeholder={jsonLdType === 'Organization' ? 'Logo 图片 URL（可选）' : '图片 URL（可选）'}
+        placeholder={jsonLdType === 'Organization' ? t('Logo 图片 URL（可选）') : t('图片 URL（可选）')}
       />
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" onClick={() => copy(jsonLdOutput)} className={secondaryButtonClass}>
           {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-          {copied ? '已复制' : '复制 JSON-LD'}
+          {copied ? t('已复制') : t('复制 JSON-LD')}
         </Button>
       </div>
       <textarea className={`${inputClass} min-h-[200px] resize-y font-mono text-xs leading-6`} value={jsonLdOutput} readOnly />
@@ -331,6 +334,7 @@ export function JsonLdTool() {
 
 /* ===================== 关键词密度分析 ===================== */
 export function KeywordDensityTool() {
+  const { t } = useTranslation();
   const [densityText, setDensityText] = useState('');
   const [densityKeyword, setDensityKeyword] = useState('');
   const densityResult = analyzeKeywordDensity(densityText, densityKeyword);
@@ -341,25 +345,24 @@ export function KeywordDensityTool() {
         className={`${inputClass} min-h-[150px] resize-y`}
         value={densityText}
         onChange={(e) => setDensityText(e.target.value)}
-        placeholder="粘贴要分析的正文内容"
+        placeholder={t('粘贴要分析的正文内容')}
       />
-      <Input className={inputClass} value={densityKeyword} onChange={(e) => setDensityKeyword(e.target.value)} placeholder="目标关键词（可选）" />
+      <Input className={inputClass} value={densityKeyword} onChange={(e) => setDensityKeyword(e.target.value)} placeholder={t('目标关键词（可选）')} />
       {densityText.trim() && (
         <OutputBox className="space-y-3">
           <div className="grid gap-2 text-sm sm:grid-cols-2">
-            <div>总字数（去空白）：{densityResult.chars}</div>
-            <div>分词数：{densityResult.totalTokens}</div>
+            <div>{t(`总字数（去空白）：${densityResult.chars}`)}</div>
+            <div>{t(`分词数：${densityResult.totalTokens}`)}</div>
           </div>
           {densityResult.keyword && (
             <div className="rounded-2xl border border-[#ddd0ff] bg-white/60 px-3 py-2 text-sm dark:border-[#392d56] dark:bg-white/[0.03]">
-              关键词「{densityResult.keyword.keyword}」出现 {densityResult.keyword.occurrences} 次，密度约{' '}
-              {(densityResult.keyword.density * 100).toFixed(2)}%
+              {t(`关键词「${densityResult.keyword.keyword}」出现 ${densityResult.keyword.occurrences} 次，密度约 ${(densityResult.keyword.density * 100).toFixed(2)}%`)}
             </div>
           )}
           {densityResult.top.length > 0 && (
             <div className="space-y-2">
               <div className="text-xs uppercase tracking-[0.18em] text-[#7f71ab] dark:text-[#ab9cd8]">
-                高频词 Top {densityResult.top.length}
+                {t(`高频词 Top ${densityResult.top.length}`)}
               </div>
               <div className="flex flex-wrap gap-2">
                 {densityResult.top.map((item) => (

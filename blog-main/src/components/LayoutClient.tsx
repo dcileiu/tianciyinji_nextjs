@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import DomTextTranslator from '@/components/DomTextTranslator';
 import Footer from '@/components/Footer';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/Sidebar';
@@ -117,7 +116,6 @@ export function LayoutClient({
 
   return (
     <div className="relative min-h-dvh w-full text-foreground">
-      <DomTextTranslator locale={locale} />
 
       {!isFullscreenPage && (
         <Header

@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/components/tools/TranslationContext';
 
 const inputClass =
   'w-full rounded-2xl border border-[#dfd3ff] bg-white/80 px-4 py-3 text-sm text-[#2f2154] placeholder:text-[#75689e] shadow-sm outline-none transition focus:border-[#8b6bff] focus:ring-2 focus:ring-[#8b6bff]/20 dark:border-[#33274f] dark:bg-[#140f22]/90 dark:text-[#f4efff] dark:placeholder:text-[#ae9fda]';
@@ -17,6 +18,7 @@ const outBox =
   'rounded-2xl border border-[#ece3ff] bg-white/60 p-3 text-sm dark:border-[#2c2347] dark:bg-white/[0.03]';
 
 function CopyButton({ text, label = '复制' }: { text: string; label?: string }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   return (
     <Button
@@ -28,21 +30,22 @@ function CopyButton({ text, label = '复制' }: { text: string; label?: string }
         try {
           await navigator.clipboard.writeText(text);
           setCopied(true);
-          toast.success('已复制');
+          toast.success(t('已复制'));
           setTimeout(() => setCopied(false), 1500);
         } catch {
-          toast.error('复制失败');
+          toast.error(t('复制失败'));
         }
       }}
     >
       {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-      {label}
+      {t(label)}
     </Button>
   );
 }
 
 /* ============================ 字数统计 ============================ */
 export function WordCountTool() {
+  const { t } = useTranslation();
   const [text, setText] = useState('');
   const stats = useMemo(() => {
     const chinese = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
@@ -82,12 +85,12 @@ export function WordCountTool() {
         className={`${inputClass} min-h-[150px] resize-y`}
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="在这里输入或粘贴文本，实时统计字数"
+        placeholder={t('在这里输入或粘贴文本，实时统计字数')}
       />
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {items.map((item) => (
           <div key={item.label} className={statBox}>
-            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{item.label}</div>
+            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t(item.label)}</div>
             <div className="mt-1 text-lg font-semibold text-[#3a2c63] dark:text-[#f1ebff]">
               {item.value}
             </div>
@@ -132,14 +135,15 @@ function digitUppercase(money: number): string {
 }
 
 export function RmbCapitalTool() {
+  const { t } = useTranslation();
   const [value, setValue] = useState('');
   const result = useMemo(() => {
     if (value.trim() === '') return '';
     const num = Number(value.replace(/,/g, ''));
-    if (!Number.isFinite(num)) return '输入有误，请填写数字。';
-    if (Math.abs(num) >= 1e12) return '金额过大，请控制在万亿以内。';
+    if (!Number.isFinite(num)) return t('输入有误，请填写数字。');
+    if (Math.abs(num) >= 1e12) return t('金额过大，请控制在万亿以内。');
     return digitUppercase(num);
-  }, [value]);
+  }, [value, t]);
 
   return (
     <div className="space-y-3">
@@ -147,7 +151,7 @@ export function RmbCapitalTool() {
         className={inputClass}
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="输入金额，例如 10086.55"
+        placeholder={t('输入金额，例如 10086.55')}
         inputMode="decimal"
       />
       {result && (
@@ -164,6 +168,7 @@ export function RmbCapitalTool() {
 
 /* ============================ 正则测试器 ============================ */
 export function RegexTesterTool() {
+  const { t } = useTranslation();
   const [pattern, setPattern] = useState('\\b\\w+@\\w+\\.\\w+\\b');
   const [testText, setTestText] = useState('联系：hello@itianci.cn 或 admin@example.com');
   const [flags, setFlags] = useState({ g: true, i: false, m: false, s: false, u: false });
@@ -179,9 +184,9 @@ export function RegexTesterTool() {
       const found = Array.from(testText.matchAll(re));
       return { matches: found, error: '' };
     } catch (e) {
-      return { matches: [], error: e instanceof Error ? e.message : '正则无效' };
+      return { matches: [], error: e instanceof Error ? t(e.message) : t('正则无效') };
     }
-  }, [pattern, testText, flags]);
+  }, [pattern, testText, flags, t]);
 
   return (
     <div className="space-y-3">
@@ -193,7 +198,7 @@ export function RegexTesterTool() {
           className={`${inputClass} font-mono`}
           value={pattern}
           onChange={(e) => setPattern(e.target.value)}
-          placeholder="输入正则表达式"
+          placeholder={t('输入正则表达式')}
         />
       </div>
       <div className="flex flex-wrap gap-3 text-sm">
@@ -213,7 +218,7 @@ export function RegexTesterTool() {
         className={`${inputClass} min-h-[120px] resize-y font-mono`}
         value={testText}
         onChange={(e) => setTestText(e.target.value)}
-        placeholder="输入要匹配的测试文本"
+        placeholder={t('输入要匹配的测试文本')}
       />
       {error ? (
         <div className="rounded-2xl border border-[#ffd4dc] bg-[#fff1f3] px-4 py-3 text-sm text-[#c4304a] dark:border-[#5a2433] dark:bg-[#2a141b] dark:text-[#ff9aab]">
@@ -222,7 +227,7 @@ export function RegexTesterTool() {
       ) : (
         <div className={outBox}>
           <div className="mb-2 text-xs text-[#7b69a5] dark:text-[#af9fda]">
-            共匹配 {matches.length} 处
+            {t('共匹配')} {matches.length} {t('处')}
           </div>
           <div className="flex flex-wrap gap-2">
             {matches.map((m, i) => (
@@ -234,7 +239,7 @@ export function RegexTesterTool() {
               </span>
             ))}
             {matches.length === 0 && (
-              <span className="text-sm text-[#7b69a5] dark:text-[#af9fda]">无匹配</span>
+              <span className="text-sm text-[#7b69a5] dark:text-[#af9fda]">{t('无匹配')}</span>
             )}
           </div>
         </div>
@@ -282,6 +287,7 @@ function relLuminance([r, g, b]: [number, number, number]) {
 }
 
 export function ColorTool() {
+  const { t } = useTranslation();
   const [color, setColor] = useState('#5b3df5');
   const [fg, setFg] = useState('#ffffff');
   const [bg, setBg] = useState('#5b3df5');
@@ -311,7 +317,7 @@ export function ColorTool() {
           : 'bg-[#fdeaec] text-[#c4304a] dark:bg-[#2a141b] dark:text-[#ff9aab]',
       )}
     >
-      {text} {ok ? '✓' : '✗'}
+      {t(text)} {ok ? '✓' : '✗'}
     </span>
   );
 
@@ -319,14 +325,14 @@ export function ColorTool() {
     <div className="space-y-5">
       {/* 转换 */}
       <div className="space-y-2">
-        <div className="text-sm font-medium text-[#4f31d7] dark:text-[#cbbcff]">颜色转换</div>
+        <div className="text-sm font-medium text-[#4f31d7] dark:text-[#cbbcff]">{t('颜色转换')}</div>
         <div className="flex items-center gap-3">
           <input
             type="color"
             value={rgb ? color : '#5b3df5'}
             onChange={(e) => setColor(e.target.value)}
             className="h-10 w-12 cursor-pointer rounded-lg border border-[#dfd3ff] bg-transparent dark:border-[#33274f]"
-            aria-label="选择颜色"
+            aria-label={t('选择颜色')}
           />
           <Input className={inputClass} value={color} onChange={(e) => setColor(e.target.value)} placeholder="#5b3df5" />
         </div>
@@ -351,15 +357,15 @@ export function ColorTool() {
 
       {/* 对比度 */}
       <div className="space-y-2">
-        <div className="text-sm font-medium text-[#4f31d7] dark:text-[#cbbcff]">对比度检测 (WCAG)</div>
+        <div className="text-sm font-medium text-[#4f31d7] dark:text-[#cbbcff]">{t('对比度检测 (WCAG)')}</div>
         <div className="grid gap-2 sm:grid-cols-2">
           <div className="flex items-center gap-2">
-            <input type="color" value={fgRgb ? fg : '#ffffff'} onChange={(e) => setFg(e.target.value)} className="h-9 w-10 cursor-pointer rounded-lg border border-[#dfd3ff] dark:border-[#33274f]" aria-label="前景色" />
-            <Input className={inputClass} value={fg} onChange={(e) => setFg(e.target.value)} placeholder="前景色" />
+            <input type="color" value={fgRgb ? fg : '#ffffff'} onChange={(e) => setFg(e.target.value)} className="h-9 w-10 cursor-pointer rounded-lg border border-[#dfd3ff] dark:border-[#33274f]" aria-label={t('前景色')} />
+            <Input className={inputClass} value={fg} onChange={(e) => setFg(e.target.value)} placeholder={t('前景色')} />
           </div>
           <div className="flex items-center gap-2">
-            <input type="color" value={bgRgb ? bg : '#5b3df5'} onChange={(e) => setBg(e.target.value)} className="h-9 w-10 cursor-pointer rounded-lg border border-[#dfd3ff] dark:border-[#33274f]" aria-label="背景色" />
-            <Input className={inputClass} value={bg} onChange={(e) => setBg(e.target.value)} placeholder="背景色" />
+            <input type="color" value={bgRgb ? bg : '#5b3df5'} onChange={(e) => setBg(e.target.value)} className="h-9 w-10 cursor-pointer rounded-lg border border-[#dfd3ff] dark:border-[#33274f]" aria-label={t('背景色')} />
+            <Input className={inputClass} value={bg} onChange={(e) => setBg(e.target.value)} placeholder={t('背景色')} />
           </div>
         </div>
         <div className={outBox}>
@@ -368,10 +374,10 @@ export function ColorTool() {
               className="rounded-lg px-3 py-1.5 text-sm"
               style={{ color: fg, backgroundColor: bg }}
             >
-              示例文本 Aa
+              {t('示例文本 Aa')}
             </span>
             <span className="text-sm font-semibold text-[#3a2c63] dark:text-[#f1ebff]">
-              对比度 {ratio.toFixed(2)}:1
+              {t('对比度')} {ratio.toFixed(2)}:1
             </span>
             <div className="flex flex-wrap gap-1.5">
               {badge(ratio >= 4.5, 'AA 正文')}
@@ -384,15 +390,15 @@ export function ColorTool() {
 
       {/* 渐变 */}
       <div className="space-y-2">
-        <div className="text-sm font-medium text-[#4f31d7] dark:text-[#cbbcff]">CSS 渐变生成</div>
+        <div className="text-sm font-medium text-[#4f31d7] dark:text-[#cbbcff]">{t('CSS 渐变生成')}</div>
         <div className="flex flex-wrap items-center gap-2">
-          <input type="color" value={gradFrom} onChange={(e) => setGradFrom(e.target.value)} className="h-9 w-10 cursor-pointer rounded-lg border border-[#dfd3ff] dark:border-[#33274f]" aria-label="起始色" />
-          <input type="color" value={gradTo} onChange={(e) => setGradTo(e.target.value)} className="h-9 w-10 cursor-pointer rounded-lg border border-[#dfd3ff] dark:border-[#33274f]" aria-label="结束色" />
+          <input type="color" value={gradFrom} onChange={(e) => setGradFrom(e.target.value)} className="h-9 w-10 cursor-pointer rounded-lg border border-[#dfd3ff] dark:border-[#33274f]" aria-label={t('起始色')} />
+          <input type="color" value={gradTo} onChange={(e) => setGradTo(e.target.value)} className="h-9 w-10 cursor-pointer rounded-lg border border-[#dfd3ff] dark:border-[#33274f]" aria-label={t('结束色')} />
           <Input
             className={`${inputClass} max-w-[120px]`}
             value={angle}
             onChange={(e) => setAngle(e.target.value)}
-            placeholder="角度"
+            placeholder={t('角度')}
             inputMode="numeric"
           />
           <span className="text-sm text-[#7b69a5] dark:text-[#af9fda]">deg</span>
@@ -466,6 +472,7 @@ function csvToJson(csv: string): string {
 }
 
 export function DataConvertTool() {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<'json2csv' | 'csv2json'>('json2csv');
   const [input, setInput] = useState('[\n  { "name": "张三", "age": 28 },\n  { "name": "李四", "age": 32 }\n]');
   const [output, setOutput] = useState('');
@@ -477,7 +484,7 @@ export function DataConvertTool() {
       setOutput(mode === 'json2csv' ? jsonToCsv(input) : csvToJson(input));
     } catch (e) {
       setOutput('');
-      setError(e instanceof Error ? e.message : '转换失败，请检查输入格式。');
+      setError(e instanceof Error ? t(e.message) : t('转换失败，请检查输入格式。'));
     }
   }
 
@@ -509,11 +516,11 @@ export function DataConvertTool() {
         className={`${inputClass} min-h-[140px] resize-y font-mono text-xs`}
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder={mode === 'json2csv' ? '粘贴 JSON 数组' : '粘贴 CSV 文本'}
+        placeholder={mode === 'json2csv' ? t('粘贴 JSON 数组') : t('粘贴 CSV 文本')}
       />
       <div className="flex flex-wrap gap-2">
         <Button onClick={convert} className="bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
-          转换
+          {t('转换')}
         </Button>
         {output && <CopyButton text={output} />}
       </div>
@@ -533,6 +540,7 @@ export function DataConvertTool() {
 const FAVICON_SIZES = [16, 32, 48, 64, 180, 512];
 
 export function FaviconTool() {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [results, setResults] = useState<{ size: number; url: string }[]>([]);
   const [fileName, setFileName] = useState('');
@@ -591,9 +599,9 @@ export function FaviconTool() {
           <Upload className="h-5 w-5" />
         </span>
         <span className="text-sm font-medium text-[#4f31d7] dark:text-[#cbbcff]">
-          {fileName || '点击或拖拽图片（建议正方形）'}
+          {fileName || t('点击或拖拽图片（建议正方形）')}
         </span>
-        <span className="text-xs text-[#7b69a5] dark:text-[#af9fda]">本地生成多尺寸 PNG 图标</span>
+        <span className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('本地生成多尺寸 PNG 图标')}</span>
       </label>
 
       {results.length > 0 && (

@@ -7,6 +7,7 @@ import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/components/tools/TranslationContext';
 
 const inputClass =
   'w-full rounded-2xl border border-[#dfd3ff] bg-white/80 px-4 py-3 text-sm text-[#2f2154] placeholder:text-[#75689e] shadow-sm outline-none transition focus:border-[#8b6bff] focus:ring-2 focus:ring-[#8b6bff]/20 dark:border-[#33274f] dark:bg-[#140f22]/90 dark:text-[#f4efff] dark:placeholder:text-[#ae9fda]';
@@ -15,6 +16,7 @@ const outBox =
   'rounded-2xl border border-[#ece3ff] bg-white/60 p-3 text-sm dark:border-[#2c2347] dark:bg-white/[0.03]';
 
 function CopyButton({ text, label = '复制' }: { text: string; label?: string }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   return (
     <Button
@@ -26,21 +28,22 @@ function CopyButton({ text, label = '复制' }: { text: string; label?: string }
         try {
           await navigator.clipboard.writeText(text);
           setCopied(true);
-          toast.success('已复制');
+          toast.success(t('已复制'));
           setTimeout(() => setCopied(false), 1500);
         } catch {
-          toast.error('复制失败');
+          toast.error(t('复制失败'));
         }
       }}
     >
       {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-      {label}
+      {t(label)}
     </Button>
   );
 }
 
 /* ===================== 繁简转换 ===================== */
 export function HanziConvertTool() {
+  const { t } = useTranslation();
   const [text, setText] = useState('');
   const [direction, setDirection] = useState<'s2t' | 't2s'>('s2t');
 
@@ -79,7 +82,7 @@ export function HanziConvertTool() {
               direction === d.id ? 'bg-[#5b3df5] text-white' : 'bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]',
             )}
           >
-            {d.label}
+            {t(d.label)}
           </button>
         ))}
       </div>
@@ -87,7 +90,7 @@ export function HanziConvertTool() {
         className={`${inputClass} min-h-[120px] resize-y`}
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder={direction === 's2t' ? '输入简体中文' : '输入繁体中文'}
+        placeholder={direction === 's2t' ? t('输入简体中文') : t('输入繁体中文')}
       />
       {output && (
         <div className={`${outBox} flex items-start justify-between gap-2`}>
@@ -101,6 +104,7 @@ export function HanziConvertTool() {
 
 /* ===================== 拼音转换 ===================== */
 export function PinyinTool() {
+  const { t } = useTranslation();
   const [text, setText] = useState('');
   const [tone, setTone] = useState<'symbol' | 'num' | 'none' | 'first'>('symbol');
 
@@ -126,17 +130,17 @@ export function PinyinTool() {
             { id: 'num', label: '数字声调' },
             { id: 'first', label: '首字母' },
           ] as const
-        ).map((t) => (
+        ).map((tBtn) => (
           <button
-            key={t.id}
+            key={tBtn.id}
             type="button"
-            onClick={() => setTone(t.id)}
+            onClick={() => setTone(tBtn.id)}
             className={cn(
               'rounded-full px-4 py-2 text-sm transition',
-              tone === t.id ? 'bg-[#5b3df5] text-white' : 'bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]',
+              tone === tBtn.id ? 'bg-[#5b3df5] text-white' : 'bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]',
             )}
           >
-            {t.label}
+            {t(tBtn.label)}
           </button>
         ))}
       </div>
@@ -144,7 +148,7 @@ export function PinyinTool() {
         className={`${inputClass} min-h-[100px] resize-y`}
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="输入中文，转换为拼音"
+        placeholder={t('输入中文，转换为拼音')}
       />
       {output && (
         <div className={`${outBox} flex items-start justify-between gap-2`}>
@@ -191,6 +195,7 @@ function genPerson(): FakePerson {
 }
 
 export function ChineseFakerTool() {
+  const { t } = useTranslation();
   const [count, setCount] = useState(5);
   const [people, setPeople] = useState<FakePerson[]>([]);
 
@@ -205,7 +210,7 @@ export function ChineseFakerTool() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm text-[#5c4a88] dark:text-[#d2c6f3]">生成数量</span>
+        <span className="text-sm text-[#5c4a88] dark:text-[#d2c6f3]">{t('生成数量')}</span>
         {[5, 10, 20].map((c) => (
           <button
             key={c}
@@ -221,23 +226,23 @@ export function ChineseFakerTool() {
         ))}
         <Button onClick={generate} className="gap-1.5 bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
           <RefreshCcw className="h-4 w-4" />
-          生成
+          {t('生成')}
         </Button>
         {people.length > 0 && <CopyButton text={asText} label="复制全部" />}
       </div>
       <p className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-        全部为随机生成的虚构测试数据，与真实个人信息无关，请勿用于非法用途。
+        {t('全部为随机生成的虚构测试数据，与真实个人信息无关，请勿用于非法用途。')}
       </p>
       {people.length > 0 && (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] border-collapse text-sm">
             <thead>
               <tr className="text-left text-xs text-[#7b69a5] dark:text-[#af9fda]">
-                <th className="py-2 pr-3 font-medium">姓名</th>
-                <th className="py-2 pr-3 font-medium">手机号</th>
-                <th className="py-2 pr-3 font-medium">邮箱</th>
-                <th className="py-2 pr-3 font-medium">地址</th>
-                <th className="py-2 font-medium">证件号(虚构)</th>
+                <th className="py-2 pr-3 font-medium">{t('姓名')}</th>
+                <th className="py-2 pr-3 font-medium">{t('手机号')}</th>
+                <th className="py-2 pr-3 font-medium">{t('邮箱')}</th>
+                <th className="py-2 pr-3 font-medium">{t('地址')}</th>
+                <th className="py-2 font-medium">{t('证件号(虚构)')}</th>
               </tr>
             </thead>
             <tbody>

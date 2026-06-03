@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/components/tools/TranslationContext';
 
 const inputClass =
   'w-full rounded-2xl border border-[#dfd3ff] bg-white/80 px-4 py-3 text-sm text-[#2f2154] placeholder:text-[#75689e] shadow-sm outline-none transition focus:border-[#8b6bff] focus:ring-2 focus:ring-[#8b6bff]/20 dark:border-[#33274f] dark:bg-[#140f22]/90 dark:text-[#f4efff] dark:placeholder:text-[#ae9fda]';
@@ -17,6 +18,7 @@ const errBox =
   'rounded-2xl border border-[#ffd4dc] bg-[#fff1f3] px-4 py-3 text-sm text-[#c4304a] dark:border-[#5a2433] dark:bg-[#2a141b] dark:text-[#ff9aab]';
 
 function CopyButton({ text, label = '复制' }: { text: string; label?: string }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   return (
     <Button
@@ -28,15 +30,15 @@ function CopyButton({ text, label = '复制' }: { text: string; label?: string }
         try {
           await navigator.clipboard.writeText(text);
           setCopied(true);
-          toast.success('已复制');
+          toast.success(t('已复制'));
           setTimeout(() => setCopied(false), 1500);
         } catch {
-          toast.error('复制失败');
+          toast.error(t('复制失败'));
         }
       }}
     >
       {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-      {label}
+      {t(label)}
     </Button>
   );
 }
@@ -60,23 +62,24 @@ function base64UrlDecode(input: string): string {
 }
 
 export function JwtDecodeTool() {
+  const { t } = useTranslation();
   const [token, setToken] = useState('');
   const result = useMemo(() => {
     if (!token.trim()) return null;
     const parts = token.trim().split('.');
-    if (parts.length < 2) return { error: 'JWT 格式不正确（应为 header.payload.signature）。' };
+    if (parts.length < 2) return { error: t('JWT 格式不正确（应为 header.payload.signature）。') };
     try {
       const header = JSON.parse(base64UrlDecode(parts[0]));
       const payload = JSON.parse(base64UrlDecode(parts[1]));
       return { header, payload };
     } catch {
-      return { error: '解析失败，请检查 Token 是否完整有效。' };
+      return { error: t('解析失败，请检查 Token 是否完整有效。') };
     }
   }, [token]);
 
   const renderDates = (payload: Record<string, any>) => {
     const keys = ['iat', 'exp', 'nbf'];
-    const labels: Record<string, string> = { iat: '签发时间', exp: '过期时间', nbf: '生效时间' };
+    const labels: Record<string, string> = { iat: t('签发时间'), exp: t('过期时间'), nbf: t('生效时间') };
     const rows = keys.filter((k) => payload[k]).map((k) => ({
       label: labels[k],
       value: new Date(payload[k] * 1000).toLocaleString('zh-CN'),
@@ -96,7 +99,7 @@ export function JwtDecodeTool() {
             )}
           >
             {r.label}：{r.value}
-            {r.expired ? '（已过期）' : ''}
+            {r.expired ? t('（已过期）') : ''}
           </span>
         ))}
       </div>
@@ -109,19 +112,19 @@ export function JwtDecodeTool() {
         className={`${inputClass} min-h-[100px] resize-y font-mono text-xs`}
         value={token}
         onChange={(e) => setToken(e.target.value)}
-        placeholder="粘贴 JWT Token（eyJ...）"
+        placeholder={t('粘贴 JWT Token（eyJ...）')}
       />
       {result?.error && <div className={errBox}>{result.error}</div>}
       {result && !result.error && (
         <div className="space-y-3">
           <div className={outBox}>
-            <div className="mb-1 text-xs font-medium text-[#7b69a5] dark:text-[#af9fda]">Header</div>
+            <div className="mb-1 text-xs font-medium text-[#7b69a5] dark:text-[#af9fda]">{t('Header')}</div>
             <pre className="overflow-x-auto font-mono text-xs text-[#3a2c63] dark:text-[#e6def9]">
               {JSON.stringify(result.header, null, 2)}
             </pre>
           </div>
           <div className={outBox}>
-            <div className="mb-1 text-xs font-medium text-[#7b69a5] dark:text-[#af9fda]">Payload</div>
+            <div className="mb-1 text-xs font-medium text-[#7b69a5] dark:text-[#af9fda]">{t('Payload')}</div>
             <pre className="overflow-x-auto font-mono text-xs text-[#3a2c63] dark:text-[#e6def9]">
               {JSON.stringify(result.payload, null, 2)}
             </pre>
@@ -160,10 +163,11 @@ function parseCronField(field: string, min: number, max: number): number[] {
 }
 
 export function CronTool() {
+  const { t } = useTranslation();
   const [expr, setExpr] = useState('0 9 * * 1-5');
   const result = useMemo(() => {
     const fields = expr.trim().split(/\s+/);
-    if (fields.length !== 5) return { error: '请输入标准 5 段 cron：分 时 日 月 周' };
+    if (fields.length !== 5) return { error: t('请输入标准 5 段 cron：分 时 日 月 周') };
     try {
       const minute = parseCronField(fields[0], 0, 59);
       const hour = parseCronField(fields[1], 0, 23);
@@ -197,7 +201,7 @@ export function CronTool() {
       }
       return { runs };
     } catch {
-      return { error: 'cron 表达式解析失败，请检查格式。' };
+      return { error: t('cron 表达式解析失败，请检查格式。') };
     }
   }, [expr]);
 
@@ -207,23 +211,23 @@ export function CronTool() {
         className={`${inputClass} font-mono`}
         value={expr}
         onChange={(e) => setExpr(e.target.value)}
-        placeholder="分 时 日 月 周，例如 0 9 * * 1-5"
+        placeholder={t('分 时 日 月 周，例如 0 9 * * 1-5')}
       />
       <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-        字段顺序：分钟(0-59) 小时(0-23) 日(1-31) 月(1-12) 星期(0-6，0=周日)
+        {t('字段顺序：分钟(0-59) 小时(0-23) 日(1-31) 月(1-12) 星期(0-6，0=周日)')}
       </div>
       {result.error ? (
         <div className={errBox}>{result.error}</div>
       ) : (
         <div className={outBox}>
           <div className="mb-2 text-xs font-medium text-[#7b69a5] dark:text-[#af9fda]">
-            接下来 5 次执行时间
+            {t('接下来 5 次执行时间')}
           </div>
           <ul className="space-y-1 text-sm text-[#3a2c63] dark:text-[#e6def9]">
             {result.runs?.length ? (
               result.runs.map((r, i) => <li key={i}>· {r}</li>)
             ) : (
-              <li className="text-[#7b69a5] dark:text-[#af9fda]">一年内没有匹配的执行时间</li>
+              <li className="text-[#7b69a5] dark:text-[#af9fda]">{t('一年内没有匹配的执行时间')}</li>
             )}
           </ul>
         </div>
@@ -234,6 +238,7 @@ export function CronTool() {
 
 /* ============================ SHA 哈希 ============================ */
 export function ShaHashTool() {
+  const { t } = useTranslation();
   const [text, setText] = useState('');
   const [hashes, setHashes] = useState<Record<string, string>>({});
 
@@ -259,7 +264,7 @@ export function ShaHashTool() {
             .map((b) => b.toString(16).padStart(2, '0'))
             .join('');
         } catch {
-          next[label] = '不支持';
+          next[label] = t('不支持');
         }
       }
       if (!cancelled) setHashes(next);
@@ -268,7 +273,7 @@ export function ShaHashTool() {
     return () => {
       cancelled = true;
     };
-  }, [text]);
+  }, [text, t]);
 
   return (
     <div className="space-y-3">
@@ -276,7 +281,7 @@ export function ShaHashTool() {
         className={`${inputClass} min-h-[100px] resize-y`}
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="输入要计算哈希的文本"
+        placeholder={t('输入要计算哈希的文本')}
       />
       {Object.keys(hashes).length > 0 && (
         <div className="space-y-2">
@@ -317,6 +322,7 @@ function convertBase(value: string, from: number, to: number): string {
 }
 
 export function BaseConvertTool() {
+  const { t } = useTranslation();
   const [value, setValue] = useState('255');
   const [from, setFrom] = useState('10');
   const presets = [
@@ -328,16 +334,16 @@ export function BaseConvertTool() {
   const { results, error } = useMemo(() => {
     try {
       const fromBase = parseInt(from, 10);
-      if (fromBase < 2 || fromBase > 36) throw new Error('进制需在 2-36 之间');
+      if (fromBase < 2 || fromBase > 36) throw new Error(t('进制需在 2-36 之间'));
       const res = presets.map((p) => ({
         ...p,
         value: convertBase(value, fromBase, p.base).toUpperCase(),
       }));
       return { results: res, error: '' };
     } catch (e) {
-      return { results: [], error: e instanceof Error ? e.message : '转换失败' };
+      return { results: [], error: e instanceof Error ? t(e.message) : t('转换失败') };
     }
-  }, [value, from]);
+  }, [value, from, t]);
 
   return (
     <div className="space-y-3">
@@ -346,13 +352,13 @@ export function BaseConvertTool() {
           className={`${inputClass} font-mono`}
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          placeholder="输入数值"
+          placeholder={t('输入数值')}
         />
         <Input
           className={`${inputClass} sm:max-w-[160px]`}
           value={from}
           onChange={(e) => setFrom(e.target.value)}
-          placeholder="源进制(2-36)"
+          placeholder={t('源进制(2-36)')}
           inputMode="numeric"
         />
       </div>
@@ -364,7 +370,7 @@ export function BaseConvertTool() {
             <div key={r.base} className={`${outBox} flex items-center justify-between gap-2`}>
               <div className="min-w-0">
                 <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-                  {r.label}（{r.base}）
+                  {t(r.label)}（{r.base}）
                 </div>
                 <div className="break-all font-mono text-sm text-[#3a2c63] dark:text-[#e6def9]">{r.value}</div>
               </div>
@@ -409,6 +415,7 @@ function diffLines(a: string[], b: string[]) {
 }
 
 export function TextDiffTool() {
+  const { t } = useTranslation();
   const [left, setLeft] = useState('');
   const [right, setRight] = useState('');
   const diff = useMemo(
@@ -424,13 +431,13 @@ export function TextDiffTool() {
           className={`${inputClass} min-h-[120px] resize-y font-mono text-xs`}
           value={left}
           onChange={(e) => setLeft(e.target.value)}
-          placeholder="原始文本"
+          placeholder={t('原始文本')}
         />
         <textarea
           className={`${inputClass} min-h-[120px] resize-y font-mono text-xs`}
           value={right}
           onChange={(e) => setRight(e.target.value)}
-          placeholder="对比文本"
+          placeholder={t('对比文本')}
         />
       </div>
       {hasInput && (
@@ -467,6 +474,7 @@ function splitWords(input: string): string[] {
 }
 
 export function CaseConvertTool() {
+  const { t } = useTranslation();
   const [text, setText] = useState('hello world example');
   const words = useMemo(() => splitWords(text), [text]);
   const cap = (w: string) => w.charAt(0).toUpperCase() + w.slice(1);
@@ -485,7 +493,7 @@ export function CaseConvertTool() {
         className={inputClass}
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="输入任意命名，如 hello world / helloWorld / hello_world"
+        placeholder={t('输入任意命名，如 hello world / helloWorld / hello_world')}
       />
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {formats.map((f) => (

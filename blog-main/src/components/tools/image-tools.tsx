@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/components/tools/TranslationContext';
 
 const inputClass =
   'w-full rounded-2xl border border-[#dfd3ff] bg-white/80 px-4 py-3 text-sm text-[#2f2154] placeholder:text-[#75689e] shadow-sm outline-none transition focus:border-[#8b6bff] focus:ring-2 focus:ring-[#8b6bff]/20 dark:border-[#33274f] dark:bg-[#140f22]/90 dark:text-[#f4efff] dark:placeholder:text-[#ae9fda]';
@@ -13,17 +14,17 @@ const inputClass =
 const outBox =
   'rounded-2xl border border-[#ece3ff] bg-white/60 p-3 text-sm dark:border-[#2c2347] dark:bg-white/[0.03]';
 
-function loadImage(file: File): Promise<{ img: HTMLImageElement; dataUrl: string; size: number }> {
+function loadImage(file: File, t: (s: string) => string): Promise<{ img: HTMLImageElement; dataUrl: string; size: number }> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
       const dataUrl = String(reader.result || '');
       const img = new Image();
       img.onload = () => resolve({ img, dataUrl, size: file.size });
-      img.onerror = () => reject(new Error('图片加载失败'));
+      img.onerror = () => reject(new Error(t('图片加载失败')));
       img.src = dataUrl;
     };
-    reader.onerror = () => reject(new Error('读取文件失败'));
+    reader.onerror = () => reject(new Error(t('读取文件失败')));
     reader.readAsDataURL(file);
   });
 }
@@ -42,6 +43,7 @@ function dataUrlSize(dataUrl: string) {
 }
 
 function FileDrop({ onFile, hint, fileName }: { onFile: (file: File) => void; hint?: string; fileName?: string }) {
+  const { t } = useTranslation();
   return (
     <label
       onDragOver={(e) => e.preventDefault()}
@@ -64,8 +66,8 @@ function FileDrop({ onFile, hint, fileName }: { onFile: (file: File) => void; hi
       <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#ece3ff] text-[#5b3df5] dark:bg-[#2b1f43] dark:text-[#cbbcff]">
         <Upload className="h-5 w-5" />
       </span>
-      <span className="text-sm font-medium text-[#4f31d7] dark:text-[#cbbcff]">{fileName || '点击或拖拽图片到此处'}</span>
-      <span className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{hint || '处理全部在浏览器本地完成'}</span>
+      <span className="text-sm font-medium text-[#4f31d7] dark:text-[#cbbcff]">{fileName || t('点击或拖拽图片到此处')}</span>
+      <span className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{hint || t('处理全部在浏览器本地完成')}</span>
     </label>
   );
 }
@@ -78,6 +80,7 @@ const FORMATS = [
 ] as const;
 
 export function ImageConvertTool() {
+  const { t } = useTranslation();
   const [state, setState] = useState<{ img: HTMLImageElement; size: number } | null>(null);
   const [fileName, setFileName] = useState('');
   const [format, setFormat] = useState<(typeof FORMATS)[number]['mime']>('image/webp');
@@ -87,7 +90,7 @@ export function ImageConvertTool() {
   async function onFile(file: File) {
     setFileName(file.name);
     setOut(null);
-    const { img, size } = await loadImage(file);
+    const { img, size } = await loadImage(file, t);
     setState({ img, size });
   }
 
@@ -111,7 +114,7 @@ export function ImageConvertTool() {
 
   return (
     <div className="space-y-3">
-      <FileDrop onFile={onFile} fileName={fileName} hint="PNG / JPG / WebP 任意互转" />
+      <FileDrop onFile={onFile} fileName={fileName} hint={t('PNG / JPG / WebP 任意互转')} />
       {state && (
         <>
           <div className="flex flex-wrap items-center gap-2">
@@ -132,7 +135,7 @@ export function ImageConvertTool() {
             ))}
             {format !== 'image/png' && (
               <label className="flex items-center gap-2 text-sm text-[#5c4a88] dark:text-[#d2c6f3]">
-                质量
+                {t('质量')}
                 <input
                   type="range"
                   min="0.1"
@@ -146,22 +149,22 @@ export function ImageConvertTool() {
               </label>
             )}
             <Button onClick={convert} className="bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
-              转换
+              {t('转换')}
             </Button>
           </div>
-          <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">原图大小：{formatBytes(state.size)}</div>
+          <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('原图大小：')}{formatBytes(state.size)}</div>
           {out && (
             <div className={`${outBox} flex flex-wrap items-center gap-3`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={out.url} alt="转换结果" className="h-20 w-20 rounded-lg object-contain" />
-              <div className="text-sm text-[#3a2c63] dark:text-[#e6def9]">输出大小：{formatBytes(out.size)}</div>
+              <img src={out.url} alt={t('转换结果')} className="h-20 w-20 rounded-lg object-contain" />
+              <div className="text-sm text-[#3a2c63] dark:text-[#e6def9]">{t('输出大小：')}{formatBytes(out.size)}</div>
               <a
                 href={out.url}
                 download={`converted.${ext}`}
                 className="ml-auto inline-flex items-center gap-1 rounded-full bg-[#5b3df5] px-3.5 py-1.5 text-xs font-medium text-white hover:bg-[#4f31d7]"
               >
                 <Download className="h-3.5 w-3.5" />
-                下载 {ext.toUpperCase()}
+                {t('下载')} {ext.toUpperCase()}
               </a>
             </div>
           )}
@@ -173,6 +176,7 @@ export function ImageConvertTool() {
 
 /* ===================== 图片裁剪 / 改尺寸 ===================== */
 export function ImageResizeTool() {
+  const { t } = useTranslation();
   const [state, setState] = useState<{ img: HTMLImageElement } | null>(null);
   const [fileName, setFileName] = useState('');
   const [width, setWidth] = useState('');
@@ -184,7 +188,7 @@ export function ImageResizeTool() {
   async function onFile(file: File) {
     setFileName(file.name);
     setOut('');
-    const { img } = await loadImage(file);
+    const { img } = await loadImage(file, t);
     setState({ img });
     setWidth(String(img.naturalWidth));
     setHeight(String(img.naturalHeight));
@@ -215,32 +219,32 @@ export function ImageResizeTool() {
 
   return (
     <div className="space-y-3">
-      <FileDrop onFile={onFile} fileName={fileName} hint="设置宽高后重新缩放导出 PNG" />
+      <FileDrop onFile={onFile} fileName={fileName} hint={t('设置宽高后重新缩放导出 PNG')} />
       {state && (
         <>
           <div className="flex flex-wrap items-center gap-2">
-            <Input className={`${inputClass} max-w-[120px]`} value={width} onChange={(e) => onWidth(e.target.value)} placeholder="宽" inputMode="numeric" />
+            <Input className={`${inputClass} max-w-[120px]`} value={width} onChange={(e) => onWidth(e.target.value)} placeholder={t('宽')} inputMode="numeric" />
             <span className="text-[#7b69a5] dark:text-[#af9fda]">×</span>
-            <Input className={`${inputClass} max-w-[120px]`} value={height} onChange={(e) => onHeight(e.target.value)} placeholder="高" inputMode="numeric" />
+            <Input className={`${inputClass} max-w-[120px]`} value={height} onChange={(e) => onHeight(e.target.value)} placeholder={t('高')} inputMode="numeric" />
             <label className="flex items-center gap-1.5 text-sm text-[#5c4a88] dark:text-[#d2c6f3]">
               <input type="checkbox" checked={lock} onChange={(e) => setLock(e.target.checked)} className="accent-[#5b3df5]" />
-              锁定比例
+              {t('锁定比例')}
             </label>
             <Button onClick={resize} className="bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
-              生成
+              {t('生成')}
             </Button>
           </div>
           {out && (
             <div className={`${outBox} flex flex-wrap items-center gap-3`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={out} alt="缩放结果" className="h-20 max-w-[120px] rounded-lg object-contain" />
+              <img src={out} alt={t('缩放结果')} className="h-20 max-w-[120px] rounded-lg object-contain" />
               <a
                 href={out}
                 download={`resized-${width}x${height}.png`}
                 className="ml-auto inline-flex items-center gap-1 rounded-full bg-[#5b3df5] px-3.5 py-1.5 text-xs font-medium text-white hover:bg-[#4f31d7]"
               >
                 <Download className="h-3.5 w-3.5" />
-                下载 PNG
+                {t('下载 PNG')}
               </a>
             </div>
           )}
@@ -264,6 +268,7 @@ const POSITIONS = [
 ] as const;
 
 export function ImageWatermarkTool() {
+  const { t } = useTranslation();
   const [state, setState] = useState<{ img: HTMLImageElement } | null>(null);
   const [fileName, setFileName] = useState('');
   const [text, setText] = useState('itianci.cn');
@@ -277,7 +282,7 @@ export function ImageWatermarkTool() {
   async function onFile(file: File) {
     setFileName(file.name);
     setOut('');
-    const { img } = await loadImage(file);
+    const { img } = await loadImage(file, t);
     setState({ img });
   }
 
@@ -329,26 +334,26 @@ export function ImageWatermarkTool() {
 
   return (
     <div className="space-y-3">
-      <FileDrop onFile={onFile} fileName={fileName} hint="添加文字水印，支持平铺" />
+      <FileDrop onFile={onFile} fileName={fileName} hint={t('添加文字水印，支持平铺')} />
       {state && (
         <>
-          <Input className={inputClass} value={text} onChange={(e) => setText(e.target.value)} placeholder="水印文字" />
+          <Input className={inputClass} value={text} onChange={(e) => setText(e.target.value)} placeholder={t('水印文字')} />
           <div className="flex flex-wrap items-center gap-3 text-sm text-[#5c4a88] dark:text-[#d2c6f3]">
             <label className="flex items-center gap-1.5">
-              字号
+              {t('字号')}
               <Input className={`${inputClass} max-w-[80px]`} value={size} onChange={(e) => setSize(e.target.value)} inputMode="numeric" />
             </label>
             <label className="flex items-center gap-1.5">
-              透明度
+              {t('透明度')}
               <input type="range" min="0.1" max="1" step="0.05" value={opacity} onChange={(e) => setOpacity(e.target.value)} className="accent-[#5b3df5]" />
             </label>
             <label className="flex items-center gap-1.5">
-              颜色
+              {t('颜色')}
               <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-8 w-9 cursor-pointer rounded border border-[#dfd3ff] dark:border-[#33274f]" />
             </label>
             <label className="flex items-center gap-1.5">
               <input type="checkbox" checked={tile} onChange={(e) => setTile(e.target.checked)} className="accent-[#5b3df5]" />
-              平铺
+              {t('平铺')}
             </label>
           </div>
           {!tile && (
@@ -365,25 +370,25 @@ export function ImageWatermarkTool() {
                       : 'bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]',
                   )}
                 >
-                  {p.label}
+                  {t(p.label)}
                 </button>
               ))}
             </div>
           )}
           <Button onClick={apply} className="bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
-            生成水印图
+            {t('生成水印图')}
           </Button>
           {out && (
             <div className={`${outBox} space-y-2`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={out} alt="水印结果" className="max-h-64 w-auto rounded-lg" />
+              <img src={out} alt={t('水印结果')} className="max-h-64 w-auto rounded-lg" />
               <a
                 href={out}
                 download="watermark.png"
                 className="inline-flex items-center gap-1 rounded-full bg-[#5b3df5] px-3.5 py-1.5 text-xs font-medium text-white hover:bg-[#4f31d7]"
               >
                 <Download className="h-3.5 w-3.5" />
-                下载 PNG
+                {t('下载 PNG')}
               </a>
             </div>
           )}
@@ -395,6 +400,7 @@ export function ImageWatermarkTool() {
 
 /* ===================== 图片主色调提取 ===================== */
 function ColorSwatch({ hex }: { hex: string }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   return (
     <button
@@ -403,10 +409,10 @@ function ColorSwatch({ hex }: { hex: string }) {
         try {
           await navigator.clipboard.writeText(hex);
           setCopied(true);
-          toast.success('已复制 ' + hex);
+          toast.success(t('已复制') + ' ' + hex);
           setTimeout(() => setCopied(false), 1500);
         } catch {
-          toast.error('复制失败');
+          toast.error(t('复制失败'));
         }
       }}
       className="flex items-center gap-2 rounded-2xl border border-[#ece3ff] bg-white/60 p-2 text-left transition hover:border-[#8b6bff] dark:border-[#2c2347] dark:bg-white/[0.03]"
@@ -419,13 +425,14 @@ function ColorSwatch({ hex }: { hex: string }) {
 }
 
 export function ColorExtractTool() {
+  const { t } = useTranslation();
   const [fileName, setFileName] = useState('');
   const [preview, setPreview] = useState('');
   const [colors, setColors] = useState<string[]>([]);
 
   async function onFile(file: File) {
     setFileName(file.name);
-    const { img, dataUrl } = await loadImage(file);
+    const { img, dataUrl } = await loadImage(file, t);
     setPreview(dataUrl);
     const w = 80;
     const h = Math.max(1, Math.round((img.naturalHeight / img.naturalWidth) * w));
@@ -465,11 +472,11 @@ export function ColorExtractTool() {
 
   return (
     <div className="space-y-3">
-      <FileDrop onFile={onFile} fileName={fileName} hint="提取图片中占比最高的主色调" />
+      <FileDrop onFile={onFile} fileName={fileName} hint={t('提取图片中占比最高的主色调')} />
       {preview && (
         <div className="flex flex-wrap items-start gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={preview} alt="预览" className="h-24 w-24 rounded-lg object-cover" />
+          <img src={preview} alt={t('预览')} className="h-24 w-24 rounded-lg object-cover" />
           <div className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-3">
             {colors.map((c) => (
               <ColorSwatch key={c} hex={c} />

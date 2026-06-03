@@ -6,6 +6,7 @@ import { type ChangeEvent, type ReactNode, useRef, useState } from 'react';
 import { SimpleDropdown, SimpleDropdownItem } from '@/components/ui/simple-dropdown';
 import { getPathLocale } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
+import { useTranslation } from './TranslationContext';
 
 export const inputClass =
   'w-full rounded-2xl border border-[#dfd3ff] bg-white/80 px-4 py-3 text-sm text-[#2f2154] placeholder:text-[#75689e] dark:placeholder:text-[#ae9fda] shadow-sm outline-none transition focus:border-[#8b6bff] focus:ring-2 focus:ring-[#8b6bff]/20 dark:border-[#33274f] dark:bg-[#140f22]/90 dark:text-[#f4efff]';
@@ -104,7 +105,7 @@ export function SectionCard({
   const localized = getPathLocale(pathname) === 'en' ? sectionCardEn[title] : undefined;
 
   return (
-    <article className={`${cardClass} ${className}`}>
+    <article data-i18n-noskip className={`${cardClass} ${className}`}>
       <div className="mb-4 flex items-start gap-3">
         <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]">
           <Icon className="h-5 w-5" />
@@ -250,6 +251,7 @@ export function ToolFileInput({
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   hint?: string;
 }) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState('');
   const [dragging, setDragging] = useState(false);
@@ -294,10 +296,10 @@ export function ToolFileInput({
         <Upload className="h-5 w-5" />
       </span>
       <span className="text-sm font-medium text-[#4f31d7] dark:text-[#cbbcff]">
-        {fileName || '点击或拖拽文件到此处'}
+        {fileName || t('点击或拖拽文件到此处')}
       </span>
       <span className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-        {hint || '支持点击选择或拖拽上传'}
+        {hint || t('支持点击选择或拖拽上传')}
       </span>
     </label>
   );
