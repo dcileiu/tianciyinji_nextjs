@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Footer from '@/components/Footer';
@@ -114,6 +115,18 @@ export function LayoutClient({ children, navItems, siteName = siteConfig.name }:
 
       {!isAuthPage && !isFullscreenPage && (
         <Sidebar isOpen={isSidebarOpen} navItems={navItems} onClose={handleCloseSidebar} />
+      )}
+
+      {!isAuthPage && !isFullscreenPage && (
+        <Image
+          src="/Dragon.gif"
+          alt=""
+          width={126}
+          height={205}
+          unoptimized
+          aria-hidden="true"
+          className="pointer-events-none fixed right-0 top-1/2 z-20 hidden w-[126px] -translate-y-1/2 select-none md:block"
+        />
       )}
 
       {isFullscreenPage ? (
