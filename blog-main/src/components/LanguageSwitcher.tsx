@@ -2,7 +2,7 @@
 
 import { Check, Languages } from 'lucide-react';
 import type { Route } from 'next';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { SimpleDropdown, SimpleDropdownItem } from '@/components/ui/simple-dropdown';
 import { localizePath, LOCALE_COOKIE, type Locale } from '@/lib/i18n';
@@ -16,13 +16,15 @@ interface LanguageSwitcherProps {
 export function LanguageSwitcher({ locale, label }: LanguageSwitcherProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleSelect = (nextLocale: Locale) => {
     if (nextLocale === locale) return;
     triggerHaptic(HapticFeedback.Light);
     document.cookie = `${LOCALE_COOKIE}=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
-    router.push(localizePath(pathname, nextLocale) as Route);
-    router.refresh();
+    const queryString = searchParams.toString();
+    const targetPath = localizePath(pathname, nextLocale);
+    router.push(`${targetPath}${queryString ? `?${queryString}` : ''}` as Route);
   };
 
   const trigger = (

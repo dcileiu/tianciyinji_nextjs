@@ -1,10 +1,8 @@
 'use client';
 
 import { Check, ChevronDown, Upload } from 'lucide-react';
-import { usePathname } from 'next/navigation';
 import { type ChangeEvent, type ReactNode, useRef, useState } from 'react';
 import { SimpleDropdown, SimpleDropdownItem } from '@/components/ui/simple-dropdown';
-import { getPathLocale } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { useTranslation } from './TranslationContext';
 
@@ -101,11 +99,11 @@ export function SectionCard({
   children: ReactNode;
   className?: string;
 }) {
-  const pathname = usePathname();
-  const localized = getPathLocale(pathname) === 'en' ? sectionCardEn[title] : undefined;
+  const { locale } = useTranslation();
+  const localized = locale === 'en' ? sectionCardEn[title] : undefined;
 
   return (
-    <article data-i18n-noskip className={`${cardClass} ${className}`}>
+    <article className={`${cardClass} ${className}`}>
       <div className="mb-4 flex items-start gap-3">
         <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]">
           <Icon className="h-5 w-5" />

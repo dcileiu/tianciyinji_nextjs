@@ -760,18 +760,21 @@ async function readRobotsFile(siteOrigin: string): Promise<RobotsDiscovery> {
   }
 }
 
-function parseSitemapDocument(xml: string, siteOrigin: string) {
+function parseSitemapDocument(
+  xml: string,
+  siteOrigin: string
+): { urls: string[]; sitemapUrls: string[]; languageVariants: LanguageVariant[] } {
   const $ = load(xml, { xmlMode: true });
 
   const urls = $('url > loc')
     .map((_, element) => normalizeSitePageUrl($(element).text(), siteOrigin))
     .get()
-    .filter(Boolean);
+    .filter((url): url is string => typeof url === 'string' && url.length > 0);
 
   const sitemapUrls = $('sitemap > loc')
     .map((_, element) => normalizeSameOriginUrl($(element).text(), siteOrigin))
     .get()
-    .filter(Boolean);
+    .filter((url): url is string => typeof url === 'string' && url.length > 0);
 
   const languageVariants = mergeLanguageVariants(
     $('url')

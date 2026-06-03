@@ -537,6 +537,23 @@ export default function ToolsClientPage({
 
   // 单模块页面（带 section）时，分区标题作为页面的 h1，便于 SEO
   const SectionHeading = section ? "h1" : "h2";
+  const footerNote =
+    locale === "en"
+      ? {
+          before:
+            "Most tools here run locally in your browser and do not upload your content; the few that require network access only read public information. For security reasons, network tools do not support querying",
+          after:
+            "and other intranet addresses. Feel free to bookmark this page to keep these utilities handy.",
+          resources: "Go to Resources",
+          about: "Go to About",
+        }
+      : {
+          before:
+            "这里的工具大多在你的浏览器本地完成，不会上传你的内容；少数需要联网的查询也只读取公开信息。出于安全考虑，网络类工具不支持查询",
+          after: "等内网地址。欢迎收藏本页，常用工具随取随用。",
+          resources: "去看资源页",
+          about: "查看关于页",
+        };
 
   const renderToolTabs = (sectionId: SectionId) => {
     const toolsInSection = catalog.filter((tool) => tool.sectionId === sectionId);
@@ -1303,18 +1320,18 @@ export default function ToolsClientPage({
 
       <div className="mt-14 rounded-[28px] border border-[#e6dbff] bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(246,240,255,0.92))] px-6 py-6 text-sm leading-7 text-[#66568f] shadow-[0_18px_60px_rgba(91,61,245,0.06)] dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.92),rgba(15,11,27,0.96))] dark:text-[#c4b6eb]">
         <p>
-          这里的工具大多在你的浏览器本地完成，不会上传你的内容；少数需要联网的查询也只读取公开信息。出于安全考虑，网络类工具不支持查询
+          {footerNote.before}
           <code className="mx-1 rounded bg-[#efe8ff] px-1.5 py-0.5 text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]">
             localhost
           </code>
-          等内网地址。欢迎收藏本页，常用工具随取随用。
+          {footerNote.after}
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
-          <Link href="/resources" className="text-[#5b3df5] hover:underline">
-            去看资源页
+          <Link href={localizedHref("/resources", locale) as Route} className="text-[#5b3df5] hover:underline">
+            {footerNote.resources}
           </Link>
-          <Link href="/about" className="text-[#5b3df5] hover:underline">
-            查看关于页
+          <Link href={localizedHref("/about", locale) as Route} className="text-[#5b3df5] hover:underline">
+            {footerNote.about}
           </Link>
         </div>
       </div>
