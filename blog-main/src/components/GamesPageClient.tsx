@@ -6,6 +6,7 @@ import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '@/components/I18nProvider';
+import type { Locale } from '@/lib/i18n';
 
 interface Game {
   title: string;

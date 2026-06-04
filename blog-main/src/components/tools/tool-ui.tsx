@@ -2,6 +2,7 @@
 
 import { Check, ChevronDown, Upload } from 'lucide-react';
 import { type ChangeEvent, type ReactNode, useRef, useState } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 import { SimpleDropdown, SimpleDropdownItem } from '@/components/ui/simple-dropdown';
 import { cn } from '@/lib/utils';
 import { useTranslation } from './TranslationContext';
@@ -18,89 +19,24 @@ export const outputClass =
 export const secondaryButtonClass =
   'rounded-full border-[#b9a3ff] bg-[#f7f1ff] text-[#4b2fd0] shadow-[0_12px_32px_rgba(91,61,245,0.12)] hover:border-[#8b6bff] hover:bg-[#eee3ff] hover:text-[#3c22c3] dark:border-[#5a4492] dark:bg-[#1d1533] dark:text-[#efe9ff] dark:hover:border-[#8b6bff] dark:hover:bg-[#291e45]';
 
-const sectionCardEn: Record<string, { title: string; description: string }> = {
-  字数统计: { title: 'Word Count', description: 'Count characters, words, punctuation, lines, and paragraphs in real time.' },
-  人民币金额大写: { title: 'RMB Uppercase', description: 'Convert numeric amounts into formal Chinese RMB uppercase text.' },
-  正则表达式测试: { title: 'Regex Tester', description: 'Test regular expressions with common flags and preview matches instantly.' },
-  '颜色工具 / 渐变': { title: 'Color Tool / Gradient', description: 'Convert HEX, RGB, and HSL, check contrast, and generate CSS gradients.' },
-  'JSON ↔ CSV 互转': { title: 'JSON <-> CSV', description: 'Convert JSON arrays and CSV tables for import, export, and data cleanup.' },
-  'JWT 解码': { title: 'JWT Decode', description: 'Decode JWT headers and payloads, with issued and expiry times shown clearly.' },
-  'Cron 表达式解析': { title: 'Cron Parser', description: 'Parse standard five-field cron expressions and preview upcoming runs.' },
-  'SHA 哈希': { title: 'SHA Hash', description: 'Compute SHA-1, SHA-256, SHA-384, and SHA-512 locally with Web Crypto.' },
-  进制转换: { title: 'Base Conversion', description: 'Convert binary, octal, decimal, hex, and bases from 2 to 36 using BigInt.' },
-  '文本 Diff 对比': { title: 'Text Diff', description: 'Compare two text blocks line by line and highlight added or removed lines.' },
-  '命名 / 大小写转换': { title: 'Case Conversion', description: 'Convert between camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE, and Title Case.' },
-  'AES 加解密': { title: 'AES Encrypt / Decrypt', description: 'Encrypt and decrypt with AES-GCM locally in the browser.' },
-  'Base64 编解码': { title: 'Base64 Encode / Decode', description: 'Safely encode and decode Unicode text for API and parameter testing.' },
-  'MD5 计算与校验': { title: 'MD5 Calculate / Verify', description: 'Calculate MD5 and compare it with an expected hash.' },
-  '随机数 / 随机字符串': { title: 'Random Number / String', description: 'Generate random test values with configurable character sets.' },
-  时间戳转换: { title: 'Timestamp Converter', description: 'Convert seconds, milliseconds, and date strings to local time and ISO output.' },
-  'JSON 美化 / 压缩': { title: 'JSON Format / Minify', description: 'Format JSON for reading or minify it into one line for configs and requests.' },
-  '代码混淆 / 压缩': { title: 'Code Obfuscate / Minify', description: 'Minify JavaScript, CSS, or HTML, and obfuscate JavaScript when needed.' },
-  参数分析: { title: 'Parameter Analyzer', description: 'Parse URL query strings, form-like parameters, or JSON key-value data.' },
-  敏感词快速检测: { title: 'Sensitive Word Check', description: 'Run a quick first-pass scan with a lightweight built-in word list.' },
-  'Favicon 生成器': { title: 'Favicon Generator', description: 'Generate common PNG favicon sizes and matching head markup from one image.' },
-  图片格式转换: { title: 'Image Format Converter', description: 'Convert PNG, JPG, and WebP locally with adjustable output quality.' },
-  '图片裁剪 / 改尺寸': { title: 'Crop / Resize', description: 'Resize images to exact dimensions, optionally locking the aspect ratio.' },
-  图片加水印: { title: 'Image Watermark', description: 'Add text watermarks with size, color, opacity, position, or tiled layout.' },
-  图片主色调提取: { title: 'Dominant Color Extractor', description: 'Extract dominant colors from an image and copy palette values.' },
-  二维码生成: { title: 'QR Code Generator', description: 'Generate a PNG QR code locally from any text.' },
-  图片与Base64互转: { title: 'Image / Base64', description: 'Convert images to Data URLs, or paste Base64 to preview and validate.' },
-  '图片与 Base64 互转': { title: 'Image / Base64', description: 'Convert images to Data URLs, or paste Base64 to preview and validate.' },
-  'SVG 转图片': { title: 'SVG to Image', description: 'Paste SVG source and export a local PNG preview.' },
-  图片压缩: { title: 'Image Compression', description: 'Compress images locally with Canvas and export JPEG or WebP.' },
-  '摸头 GIF（图片上传版）': { title: 'Pet GIF', description: 'Upload an avatar and generate a lightweight transparent petting GIF locally.' },
-  'llms.txt 生成器': { title: 'llms.txt Generator', description: 'Create a clean llms.txt file so AI models can better read and cite your site.' },
-  网站流量分析: { title: 'Site Traffic Analysis', description: 'Estimate monthly visits, visit duration, bounce rate, traffic sources, and regions.' },
-  'Meta 标签 / TDK 生成': { title: 'Meta Tags / TDK', description: 'Generate SEO, Open Graph, and Twitter card tags for the page head.' },
-  'robots.txt 生成器': { title: 'robots.txt Generator', description: 'Generate robots.txt rules for search engines and AI crawlers.' },
-  '结构化数据 JSON-LD': { title: 'Structured Data JSON-LD', description: 'Generate schema.org JSON-LD for articles, websites, and organizations.' },
-  关键词密度分析: { title: 'Keyword Density', description: 'Analyze word frequency and target keyword density in pasted content.' },
-  '客户端 IP': { title: 'Client IP', description: 'Read public request source information to check proxies and visitor addresses.' },
-  'DNS 查询': { title: 'DNS Lookup', description: 'Query A, AAAA, MX, NS, TXT, and other common DNS records.' },
-  'Ping（TCP 连通性）': { title: 'Ping (TCP Connectivity)', description: 'Measure TCP connection latency to check whether a host and port are reachable.' },
-  端口扫描: { title: 'Port Scan', description: 'Scan a small list or range of ports with safety limits.' },
-  'URL 状态检测': { title: 'URL Status', description: 'Check final URL, status code, redirects, and basic response headers.' },
-  网页元数据提取: { title: 'Web Metadata', description: 'Extract title, description, canonical, favicon, and common social metadata.' },
-  网页图片提取: { title: 'Web Images', description: 'List common image assets from a page.' },
-  '网页转 Markdown': { title: 'Web to Markdown', description: 'Fetch page content and convert the main body to Markdown.' },
-  'Minecraft 玩家信息': { title: 'Minecraft Player', description: 'Look up a Minecraft player UUID, avatar, and skin by username.' },
-  'Minecraft 服务器信息': { title: 'Minecraft Server', description: 'Check Java or Bedrock server status with a public API.' },
-  'GitHub 仓库信息': { title: 'GitHub Repository', description: 'Parse owner/repo and show stars, forks, topics, and language distribution.' },
-  Gravatar: { title: 'Gravatar', description: 'Generate Gravatar avatar and profile URLs from an email hash.' },
-  '基础 IP 归属': { title: 'Basic IP Location', description: 'Look up an input IP or the current request source with a local GeoIP library.' },
-  手机号归属地: { title: 'Mobile Number Area', description: 'Query province, city, and carrier for mainland China mobile numbers locally.' },
-  'Bing 每日壁纸': { title: 'Bing Daily Wallpaper', description: 'Fetch the current Bing daily wallpaper for backgrounds or collections.' },
-  '答案之书 / 诗词 / 历史今天': { title: 'Book of Answers / Poetry / Today in History', description: 'Get a small piece of inspiration, poetry, or historical trivia.' },
-  房贷计算器: { title: 'Mortgage Calculator', description: 'Calculate monthly payments, total interest, and total repayment.' },
-  个税计算器: { title: 'Income Tax Calculator', description: 'Estimate monthly income tax and after-tax salary.' },
-  'BMI 计算器': { title: 'BMI Calculator', description: 'Calculate BMI and classify the result using common Chinese ranges.' },
-  日期间隔计算: { title: 'Date Difference', description: 'Calculate days, weeks, months, and years between two dates.' },
-  单位换算: { title: 'Unit Converter', description: 'Convert common length, weight, area, storage, and temperature units.' },
-  简繁体转换: { title: 'Simplified / Traditional', description: 'Convert between Simplified and Traditional Chinese with OpenCC.' },
-  汉字转拼音: { title: 'Chinese to Pinyin', description: 'Convert Chinese text to pinyin with tones, numeric tones, or initials.' },
-  中文假数据生成: { title: 'Chinese Fake Data', description: 'Generate fictional Chinese names, phone numbers, emails, and addresses.' },
-  'CSS 渐变生成': { title: 'CSS Gradient', description: 'Create linear or radial gradients and copy the CSS.' },
-  'box-shadow 生成': { title: 'box-shadow Generator', description: 'Tune offset, blur, spread, color, and opacity with a live preview.' },
-  圆角生成: { title: 'Border Radius', description: 'Adjust each corner and copy border-radius CSS.' },
-  调色板生成: { title: 'Palette Generator', description: 'Generate a light-to-dark color scale from a base color.' },
-};
-
 export function SectionCard({
   icon: Icon,
+  i18nKey,
   title,
   description,
   children,
   className = '',
 }: {
   icon: any;
+  i18nKey?: string;
   title: string;
   description: string;
   children: ReactNode;
   className?: string;
 }) {
-  const { locale } = useTranslation();
-  const localized = locale === 'en' ? sectionCardEn[title] : undefined;
+  const { dictionary } = useI18n();
+  const cards = dictionary.toolsPage.cards as Record<string, { title: string; description: string }>;
+  const localized = i18nKey ? cards[i18nKey] : undefined;
 
   return (
     <article className={`${cardClass} ${className}`}>

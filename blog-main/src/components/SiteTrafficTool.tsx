@@ -4,6 +4,8 @@ import { ExternalLink, Link2, Loader2, Search } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from '@/components/tools/TranslationContext';
+import type { Locale } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
 interface TrafficData {
@@ -72,14 +74,13 @@ const SOURCE_COLORS: Record<string, string> = {
   'Paid Referrals': '#f59e42',
 };
 
-const regionNames =
-  typeof Intl !== 'undefined' && 'DisplayNames' in Intl
-    ? new Intl.DisplayNames(['zh-CN'], { type: 'region' })
-    : null;
-
-function countryName(code?: string) {
-  if (!code) return '未知';
+function countryName(code: string | undefined, locale: Locale) {
+  if (!code) return locale === 'en' ? 'Unknown' : '未知';
   try {
+    const regionNames =
+      typeof Intl !== 'undefined' && 'DisplayNames' in Intl
+        ? new Intl.DisplayNames([locale === 'en' ? 'en' : 'zh-CN'], { type: 'region' })
+        : null;
     return regionNames?.of(code.toUpperCase()) || code;
   } catch {
     return code;
@@ -104,6 +105,7 @@ function formatDuration(seconds: number) {
 }
 
 function TrendChart({ data }: { data: Record<string, number> }) {
+  const { t } = useTranslation();
   const points = Object.entries(data)
     .map(([date, value]) => ({ date, value: Number(value) || 0 }))
     .sort((a, b) => a.date.localeCompare(b.date));
@@ -135,7 +137,7 @@ function TrendChart({ data }: { data: Record<string, number> }) {
   };
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label="访问趋势">
+    <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label={t('访问趋势')}>
       <defs>
         <linearGradient id="traffic-area" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#8b6bff" stopOpacity="0.35" />
@@ -184,6 +186,7 @@ function TrendChart({ data }: { data: Record<string, number> }) {
 }
 
 function SourcesDonut({ sources }: { sources: Record<string, number> }) {
+  const { t } = useTranslation();
   const entries = Object.entries(sources)
     .map(([key, value]) => ({ key, value: Number(value) || 0 }))
     .filter((item) => item.value > 0)
@@ -191,7 +194,7 @@ function SourcesDonut({ sources }: { sources: Record<string, number> }) {
 
   const total = entries.reduce((sum, item) => sum + item.value, 0);
   if (total <= 0) {
-    return <p className="text-sm text-[#7b69a5] dark:text-[#af9fda]">暂无流量来源数据。</p>;
+    return <p className="text-sm text-[#7b69a5] dark:text-[#af9fda]">{t('暂无流量来源数据。')}</p>;
   }
 
   const size = 172;
@@ -237,8 +240,8 @@ function SourcesDonut({ sources }: { sources: Record<string, number> }) {
               className="h-3 w-3 shrink-0 rounded-full"
               style={{ backgroundColor: SOURCE_COLORS[item.key] || '#a78bfa' }}
             />
-            <span className="min-w-0 truncate text-[#3a2c63] dark:text-[#e6def9]" title={SOURCE_LABELS[item.key] || item.key}>
-              {SOURCE_LABELS[item.key] || item.key}
+            <span className="min-w-0 truncate text-[#3a2c63] dark:text-[#e6def9]" title={t(SOURCE_LABELS[item.key] || item.key)}>
+              {t(SOURCE_LABELS[item.key] || item.key)}
             </span>
             <span className="shrink-0 font-medium text-[#5b3df5] dark:text-[#cbbcff]">
               {((item.value / total) * 100).toFixed(1)}%
@@ -251,6 +254,7 @@ function SourcesDonut({ sources }: { sources: Record<string, number> }) {
 }
 
 export default function SiteTrafficTool() {
+  const { locale, t } = useTranslation();
   const [domain, setDomain] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -265,7 +269,9 @@ export default function SiteTrafficTool() {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`/api/site-traffic?domain=${encodeURIComponent(value)}`);
+      const response = await fetch(`/api/site-traffic?domain=${encodeURIComponent(value)}`, {
+        headers: { 'x-locale': locale },
+      });
       const json = await response.json();
       if (!response.ok) {
         throw new Error(json?.error || `查询失败（HTTP ${response.status}）`);
@@ -282,11 +288,11 @@ export default function SiteTrafficTool() {
   const engagements = data?.Engagments;
   const stats = engagements
     ? [
-        { label: '月访问量', value: formatCount(Number(engagements.Visits)) },
-        { label: '平均访问时长', value: formatDuration(Number(engagements.TimeOnSite)) },
-        { label: '每次访问页数', value: (Number(engagements.PagePerVisit) || 0).toFixed(2) },
+        { label: t('月访问量'), value: formatCount(Number(engagements.Visits)) },
+        { label: t('平均访问时长'), value: formatDuration(Number(engagements.TimeOnSite)) },
+        { label: t('每次访问页数'), value: (Number(engagements.PagePerVisit) || 0).toFixed(2) },
         {
-          label: '跳出率',
+          label: t('跳出率'),
           value: `${((Number(engagements.BounceRate) || 0) * 100).toFixed(2)}%`,
         },
       ]
@@ -313,7 +319,7 @@ export default function SiteTrafficTool() {
           onKeyDown={(event) => {
             if (event.key === 'Enter') handleAnalyze();
           }}
-          placeholder="输入域名，例如 example.com"
+          placeholder={t('输入域名，例如 example.com')}
         />
         <Button
           onClick={handleAnalyze}
@@ -321,17 +327,17 @@ export default function SiteTrafficTool() {
           className="shrink-0 gap-1.5 rounded-2xl bg-[#5b3df5] text-white hover:bg-[#4f31d7]"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-          {loading ? '分析中...' : '流量分析'}
+          {loading ? t('分析中...') : t('流量分析')}
         </Button>
       </div>
 
       <p className="text-xs leading-6 text-[#7b69a5] dark:text-[#af9fda]">
-        数据来自 SimilarWeb 公开估算，仅供参考；小流量或未收录的站点可能查不到。
+        {t('数据来自 SimilarWeb 公开估算，仅供参考；小流量或未收录的站点可能查不到。')}
       </p>
 
       {error && (
         <div className="rounded-2xl border border-[#ffd4dc] bg-[#fff1f3] px-4 py-3 text-sm text-[#c4304a] dark:border-[#5a2433] dark:bg-[#2a141b] dark:text-[#ff9aab]">
-          {error}
+          {t(error)}
         </div>
       )}
 
@@ -350,7 +356,7 @@ export default function SiteTrafficTool() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[#8b6bff] transition hover:text-[#5b3df5]"
-                    aria-label="打开网站"
+                    aria-label={t('打开网站')}
                   >
                     <ExternalLink className="h-4 w-4" />
                   </a>
@@ -363,7 +369,7 @@ export default function SiteTrafficTool() {
               </div>
               {data.GlobalRank?.Rank ? (
                 <div className="shrink-0 text-right">
-                  <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">全球排名</div>
+                  <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('全球排名')}</div>
                   <div className="text-xl font-semibold text-[#5b3df5] dark:text-[#cbbcff]">
                     {data.GlobalRank.Rank.toLocaleString()}
                   </div>
@@ -390,7 +396,7 @@ export default function SiteTrafficTool() {
           {data.EstimatedMonthlyVisits && Object.keys(data.EstimatedMonthlyVisits).length > 0 && (
             <div className={cn(panelClass, 'text-[#5b3df5] dark:text-[#cbbcff]')}>
               <div className="mb-2 text-sm font-semibold text-[#312355] dark:text-[#f4efff]">
-                访问趋势
+                {t('访问趋势')}
               </div>
               <TrendChart data={data.EstimatedMonthlyVisits} />
             </div>
@@ -401,7 +407,7 @@ export default function SiteTrafficTool() {
             {data.TrafficSources && (
               <div className={panelClass}>
                 <div className="mb-3 text-sm font-semibold text-[#312355] dark:text-[#f4efff]">
-                  流量来源
+                  {t('流量来源')}
                 </div>
                 <SourcesDonut sources={data.TrafficSources} />
               </div>
@@ -411,7 +417,7 @@ export default function SiteTrafficTool() {
             {countries.length > 0 && (
               <div className={panelClass}>
                 <div className="mb-3 text-sm font-semibold text-[#312355] dark:text-[#f4efff]">
-                  主要地区
+                  {t('主要地区')}
                 </div>
                 <div className="space-y-2.5">
                   {countries.map((country) => {
@@ -420,7 +426,7 @@ export default function SiteTrafficTool() {
                       <div key={country.CountryCode || country.Country}>
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-[#3a2c63] dark:text-[#e6def9]">
-                            {countryName(country.CountryCode)}
+                            {countryName(country.CountryCode, locale)}
                           </span>
                           <span className="font-medium text-[#5b3df5] dark:text-[#cbbcff]">
                             {pct.toFixed(2)}%
@@ -444,19 +450,19 @@ export default function SiteTrafficTool() {
           <div className={panelClass}>
             <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#312355] dark:text-[#f4efff]">
               <Search className="h-4 w-4 text-[#8b6bff]" />
-              热门关键词
+              {t('热门关键词')}
             </div>
             {keywords.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[520px] border-collapse text-sm">
                   <thead>
                     <tr className="text-left text-xs text-[#7b69a5] dark:text-[#af9fda]">
-                      <th className="py-2 pr-3 font-medium">关键词</th>
-                      <th className="py-2 pr-3 font-medium">排名</th>
-                      <th className="py-2 pr-3 font-medium">流量占比</th>
-                      <th className="py-2 pr-3 font-medium">搜索量</th>
+                      <th className="py-2 pr-3 font-medium">{t('关键词')}</th>
+                      <th className="py-2 pr-3 font-medium">{t('排名')}</th>
+                      <th className="py-2 pr-3 font-medium">{t('流量占比')}</th>
+                      <th className="py-2 pr-3 font-medium">{t('搜索量')}</th>
                       <th className="py-2 pr-3 font-medium">CPC</th>
-                      <th className="py-2 font-medium">难度</th>
+                      <th className="py-2 font-medium">{t('难度')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -487,13 +493,13 @@ export default function SiteTrafficTool() {
           <div className={panelClass}>
             <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#312355] dark:text-[#f4efff]">
               <Link2 className="h-4 w-4 text-[#8b6bff]" />
-              反向链接
+              {t('反向链接')}
             </div>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { label: '域名权威', value: backlinks?.domainAuthority },
-                { label: '反向链接', value: backlinks?.backlinks },
-                { label: '参考域名', value: backlinks?.referringDomains },
+                { label: t('域名权威'), value: backlinks?.domainAuthority },
+                { label: t('反向链接'), value: backlinks?.backlinks },
+                { label: t('参考域名'), value: backlinks?.referringDomains },
               ].map((item) => (
                 <div
                   key={item.label}
@@ -519,12 +525,14 @@ export default function SiteTrafficTool() {
 }
 
 function DataSourceNote({ text }: { text: string }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-[#d9ccff] bg-white/40 px-4 py-8 text-center dark:border-[#3a2f58] dark:bg-white/[0.02]">
       <span className="rounded-full bg-[#efe6ff] px-2.5 py-0.5 text-[11px] font-medium text-[#5b3df5] dark:bg-[#2b1f43] dark:text-[#cbbcff]">
-        需配置数据源
+        {t('需配置数据源')}
       </span>
-      <p className="max-w-md text-xs leading-6 text-[#7b69a5] dark:text-[#af9fda]">{text}</p>
+      <p className="max-w-md text-xs leading-6 text-[#7b69a5] dark:text-[#af9fda]">{t(text)}</p>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 import { BookOpen, Box, Cat, Clapperboard, Fan, Gamepad2, LayoutGrid, Music, Wrench } from 'lucide-react';
+import type { Locale } from '@/lib/i18n';
+import { getDictionary } from '@/lib/i18n';
 
 export type ResourceCategoryId =
   | 'all'
@@ -14,27 +16,29 @@ export type ResourceCategoryId =
 
 export interface ResourceCategory {
   id: ResourceCategoryId;
-  label: string;
   icon: LucideIcon;
   aliases: string[];
 }
 
 export const RESOURCE_CATEGORIES: ResourceCategory[] = [
-  { id: 'all', label: '全部', icon: LayoutGrid, aliases: [] },
-  { id: 'film', label: '影视', icon: Clapperboard, aliases: ['film', 'movie', 'tv', 'video', '影视'] },
-  { id: 'acgn', label: '二次元', icon: Cat, aliases: ['acgn', 'anime', 'manga', '二次元'] },
-  { id: 'music', label: '音乐', icon: Music, aliases: ['music', 'audio', '音乐'] },
-  { id: 'reading', label: '阅读', icon: BookOpen, aliases: ['reading', 'book', 'read', '阅读'] },
-  { id: 'game', label: '游戏', icon: Gamepad2, aliases: ['game', 'games', 'gaming', '游戏'] },
+  { id: 'all', icon: LayoutGrid, aliases: [] },
+  { id: 'film', icon: Clapperboard, aliases: ['film', 'movie', 'tv', 'video', '影视'] },
+  { id: 'acgn', icon: Cat, aliases: ['acgn', 'anime', 'manga', '二次元'] },
+  { id: 'music', icon: Music, aliases: ['music', 'audio', '音乐'] },
+  { id: 'reading', icon: BookOpen, aliases: ['reading', 'book', 'read', '阅读'] },
+  { id: 'game', icon: Gamepad2, aliases: ['game', 'games', 'gaming', '游戏'] },
   {
     id: 'entertainment',
-    label: '娱乐',
     icon: Fan,
     aliases: ['entertainment', 'fun', '娱乐'],
   },
-  { id: 'toolbox', label: '工具箱', icon: Wrench, aliases: ['toolbox', 'tools', '工具箱', '工具'] },
-  { id: 'software', label: '软件', icon: Box, aliases: ['software', 'app', 'apps', '软件'] },
+  { id: 'toolbox', icon: Wrench, aliases: ['toolbox', 'tools', '工具箱', '工具'] },
+  { id: 'software', icon: Box, aliases: ['software', 'app', 'apps', '软件'] },
 ];
+
+export function getResourceCategoryLabel(categoryId: ResourceCategoryId, locale: Locale) {
+  return getDictionary(locale).resourceCategories[categoryId];
+}
 
 export function matchResourceCategory(resourceCategory: string | undefined, categoryId: ResourceCategoryId): boolean {
   if (categoryId === 'all') {
@@ -51,5 +55,5 @@ export function matchResourceCategory(resourceCategory: string | undefined, cate
     return false;
   }
 
-  return category.aliases.some((alias) => alias.toLowerCase() === normalized) || category.label === resourceCategory;
+  return category.aliases.some((alias) => alias.toLowerCase() === normalized);
 }

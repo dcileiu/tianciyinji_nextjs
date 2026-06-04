@@ -22,6 +22,7 @@ const LINE_STYLES = [
 
 export default function HomeTitleTyper({ className, lines }: HomeTitleTyperProps) {
   const safeLines = useMemo(() => lines.filter((line) => line.trim().length > 0), [lines]);
+  const linesKey = safeLines.join('\u001f');
   const [activeLine, setActiveLine] = useState(0);
   const [visibleChars, setVisibleChars] = useState(0);
   const [phase, setPhase] = useState<Phase>('typing');
@@ -31,6 +32,12 @@ export default function HomeTitleTyper({ className, lines }: HomeTitleTyperProps
     const timer = window.setInterval(() => setCursorVisible((visible) => !visible), 520);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    setActiveLine(0);
+    setVisibleChars(0);
+    setPhase('typing');
+  }, [linesKey]);
 
   useEffect(() => {
     if (safeLines.length === 0) return;

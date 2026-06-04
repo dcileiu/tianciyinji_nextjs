@@ -1,0 +1,1108 @@
+{
+  "language": "zh-CN",
+  "locale": "zh_CN",
+  "site": {
+    "description": "记录博客、作品、资源与一些长期主义的尝试",
+    "tagline": "写作、项目与一些正在发生的事。",
+    "role": "全栈开发 / 小程序",
+    "location": "广东深圳"
+  },
+  "nav": [
+    {
+      "label": "首页",
+      "href": "/",
+      "enabled": true
+    },
+    {
+      "label": "归档",
+      "href": "/archive",
+      "enabled": true
+    },
+    {
+      "label": "作品",
+      "href": "/works",
+      "enabled": true
+    },
+    {
+      "label": "工具",
+      "href": "/tools",
+      "enabled": true,
+      "children": [
+        {
+          "label": "去水印",
+          "href": "/tools/dewatermark",
+          "enabled": true
+        },
+        {
+          "label": "SEO | GEO 工具",
+          "href": "/tools/seo",
+          "enabled": true
+        },
+        {
+          "label": "纯本地工具",
+          "href": "/tools/local",
+          "enabled": true
+        },
+        {
+          "label": "图片处理",
+          "href": "/tools/image",
+          "enabled": true
+        },
+        {
+          "label": "计算换算",
+          "href": "/tools/calc",
+          "enabled": true
+        },
+        {
+          "label": "中文工具",
+          "href": "/tools/chinese",
+          "enabled": true
+        },
+        {
+          "label": "前端 / CSS",
+          "href": "/tools/css",
+          "enabled": true
+        },
+        {
+          "label": "网络基础",
+          "href": "/tools/network",
+          "enabled": true
+        },
+        {
+          "label": "公开数据",
+          "href": "/tools/data",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "label": "资源",
+      "href": "/resources",
+      "enabled": true
+    },
+    {
+      "label": "关于",
+      "href": "/about",
+      "enabled": true
+    }
+  ],
+  "header": {
+    "ariaLabel": "全局顶部导航",
+    "openSidebar": "打开侧边栏",
+    "closeSidebar": "关闭侧边栏",
+    "search": "搜索",
+    "language": "Switch to English"
+  },
+  "sidebar": {
+    "ariaLabel": "侧边导航",
+    "closeMenu": "关闭菜单",
+    "collapseSubmenu": "收起{label}子菜单",
+    "expandSubmenu": "展开{label}子菜单"
+  },
+  "home": {
+    "eyebrow": "Liu Dci's Blog",
+    "titleLines": [
+      "全栈开发一枚",
+      "记录博客、作品、资源与一些长期主义的尝试"
+    ],
+    "intro": "这里是我的个人站点，用来发布文章、整理作品、沉淀资源、小工具，也公开一些正在进行中的想法与实验。",
+    "actions": {
+      "about": "了解我",
+      "works": "查看作品",
+      "resources": "浏览资源",
+      "tools": "实用工具"
+    },
+    "latestTitle": "最近更新",
+    "latestDescription": "最新发布的文章会出现在这里。",
+    "readArticle": "阅读文章",
+    "blogFallback": "博客",
+    "viewAll": "查看全部 ->"
+  },
+  "about": {
+    "metadataTitle": "关于",
+    "metadataKeywords": [
+      "关于我",
+      "个人介绍",
+      "技术栈",
+      "联系方式"
+    ],
+    "intro": "我希望把这里做成一个长期更新的公开工作台。博客负责沉淀思考，作品页负责展示项目，资源页负责整理那些值得反复使用的内容。",
+    "focusTitle": "这个站点会放什么",
+    "focus": [
+      "技术文章与工作笔记",
+      "个人项目与产品实验",
+      "设计截图、灵感与过程记录",
+      "可以复用的模板、清单和资源"
+    ],
+    "techTitle": "常用技术",
+    "contactTitle": "联系我",
+    "contactText": "如果你想聊合作、交流技术，或者只是打个招呼，都可以通过邮箱或 GitHub 找到我。",
+    "emailAction": "发邮件",
+    "forks": "项目 Forks",
+    "contributions": "近一年贡献",
+    "breadcrumbs": {
+      "home": "首页",
+      "about": "关于"
+    }
+  },
+  "works": {
+    "metadataTitle": "作品",
+    "metadataDescription": "我做过的项目、案例与长期维护中的作品集，含项目截图、技术栈与相关链接。",
+    "metadataKeywords": [
+      "作品集",
+      "项目展示",
+      "案例",
+      "截图"
+    ],
+    "title": "作品",
+    "intro": "这里收录我做过的项目、产品与实验，点开可以查看简介、截图、用到的技术和相关链接。",
+    "linkFallback": "查看作品"
+  },
+  "archive": {
+    "metadataTitle": "归档",
+    "metadataDescription": "按时间整理的博客文章与更新记录。",
+    "metadataKeywords": [
+      "文章归档",
+      "博客归档",
+      "时间线"
+    ],
+    "title": "归档",
+    "stats": "今年我写了 {count} 篇文章，一共 {words} 字",
+    "empty": "该分类下暂无文章",
+    "all": "全部"
+  },
+  "resources": {
+    "metadataTitle": "资源",
+    "metadataDescription": "集中整理模板、清单和可以重复使用的内容。",
+    "metadataKeywords": [
+      "资源库",
+      "模板",
+      "清单",
+      "下载"
+    ],
+    "title": "资源",
+    "description": "整理的实用资源和数据集，全部免费开放使用。",
+    "tabs": {
+      "resources": "资源",
+      "commands": "命令",
+      "design": "设计"
+    },
+    "emptyResources": "暂无资源",
+    "emptyResourcesDescription": "资源正在持续整理中，欢迎稍后再来看看。",
+    "emptyCategory": "{category} 下暂无资源",
+    "emptyCategoryDescription": "换个分类看看，或稍后再来。",
+    "fileSize": "文件大小",
+    "updatedAt": "更新时间",
+    "viewDetails": "查看详情",
+    "download": "下载资源",
+    "emptyCommands": "暂无收藏的命令",
+    "copied": "已复制",
+    "copy": "复制",
+    "emptyDesign": "暂无设计组件",
+    "noPreview": "无预览",
+    "copyCode": "复制代码",
+    "all": "全部"
+  },
+  "toolsHub": {
+    "metadataTitle": "在线工具箱：llms.txt 生成器、代码混淆压缩、AES、Base64、MD5、JSON、二维码",
+    "metadataDescription": "免费在线工具聚合页，提供 llms.txt 生成器、代码混淆与压缩、AES 加解密、Base64 编解码、MD5 计算与校验、随机数与随机字符串、时间戳转换、JSON 美化与压缩、参数分析、敏感词快速检测、二维码生成、图片与 Base64 互转、SVG 转图片、图片压缩、摸头 GIF、客户端 IP、DNS 查询、Ping、端口扫描、URL 状态检测、网页元数据提取、网页图片提取、网页转 Markdown、Minecraft 玩家与服务器信息、GitHub 仓库信息、Gravatar、基础 IP 归属、手机号归属地、Bing 每日壁纸、答案之书、诗词与历史今天等工具。",
+    "metadataKeywords": [
+      "在线工具箱",
+      "llms.txt 生成器",
+      "AES 加解密",
+      "Base64 编解码",
+      "MD5 计算",
+      "JSON 美化",
+      "二维码生成"
+    ],
+    "eyebrow": "Tools Menu",
+    "title": "工具菜单",
+    "description": "免费在线工具箱，涵盖文本与编码、图片处理、SEO / GEO、网络查询、计算换算、中文工具与去水印等。多数工具在浏览器本地完成，安全不上传，点选下方分类即可使用。",
+    "featuredTitle": "去水印",
+    "recommended": "推荐",
+    "featuredDescription": "公众号 / 抖音 / 小红书分享链接一键解析，返回无水印图片与视频资源。",
+    "countLabel": "{count} 个工具",
+    "enterModule": "进入模块"
+  },
+  "privacy": {
+    "metadataTitle": "隐私政策",
+    "metadataDescription": "关于站点如何处理访问数据和联系信息的简要说明。",
+    "metadataKeywords": [
+      "隐私政策",
+      "数据处理",
+      "Cookie"
+    ],
+    "title": "隐私政策",
+    "updated": "最后更新：2026-05-06",
+    "sections": [
+      [
+        "基础说明",
+        "这是一个个人站点，主要用于发布博客、展示作品和整理资源。站点不会主动收集与你身份直接相关的敏感信息，也不会把你的数据出售给第三方。"
+      ],
+      [
+        "访问数据",
+        "和大多数网站一样，服务器可能会记录基础访问数据，例如访问时间、请求路径、浏览器类型和 IP 地址。这些信息仅用于排查问题、了解访问情况和优化站点体验。"
+      ],
+      [
+        "本地存储与偏好",
+        "为了记住主题、布局、语言和侧边栏等界面偏好，站点会在你的浏览器本地存储少量配置。这些内容仅保存在你的设备中，用于改善浏览体验。"
+      ],
+      [
+        "第三方服务",
+        "某些页面可能会使用第三方资源，例如图片、字体、代码仓库数据或外部链接预览。当你访问这些内容时，相关服务提供方可能会按照它们自己的隐私政策处理请求数据。"
+      ]
+    ],
+    "contactTitle": "联系我",
+    "contactText": "如果你通过邮件联系我，我只会将这些信息用于回复你的问题或继续沟通，不会用于营销或向第三方披露。",
+    "email": "邮箱"
+  },
+  "pricing": {
+    "metadataTitle": "合作咨询",
+    "metadataDescription": "如果你想聊项目合作、网站搭建或内容定制，可以从这里联系我。",
+    "metadataKeywords": [
+      "合作咨询",
+      "项目合作",
+      "网站搭建",
+      "内容定制"
+    ],
+    "title": "合作咨询",
+    "description": "如果你想聊网站搭建、项目开发、设计支持或内容合作，欢迎通过下面的方式联系我，我会尽快回复并一起确认需求与方案。",
+    "sectionTitle": "合作方式",
+    "sectionText": "目前以邮件沟通为主：说明你的项目背景、想实现的目标和大致时间，我会结合需求给出可行方案与报价建议。",
+    "emailAction": "发邮件联系",
+    "githubAction": "查看 GitHub"
+  },
+  "search": {
+    "metadataTitle": "搜索",
+    "metadataDescription": "站内文章搜索页。",
+    "metadataKeywords": [
+      "站内搜索"
+    ]
+  },
+  "friends": {
+    "metadataTitle": "友链",
+    "metadataDescription": "朋友站点、创作者主页与我常逛的实用网站，例如刘明野的工具箱（tools.liumingye.cn）。",
+    "metadataKeywords": [
+      "友链",
+      "友情链接",
+      "创作者推荐",
+      "刘明野",
+      "刘明野的工具箱",
+      "tools.liumingye.cn"
+    ],
+    "title": "友链",
+    "items": [
+      {
+        "name": "刘明野的工具箱",
+        "description": "好用、易用的在线工具与站点导航，内容持续扩充。"
+      }
+    ]
+  },
+  "media": {
+    "music": {
+      "metadataTitle": "音乐",
+      "metadataDescription": "我正在听的歌单与音乐收藏。",
+      "metadataKeywords": [
+        "音乐",
+        "歌单",
+        "音乐收藏"
+      ],
+      "title": "音乐",
+      "description": "听歌吗？每日更新。"
+    },
+    "games": {
+      "metadataTitle": "游戏",
+      "metadataDescription": "我喜欢的游戏、体验片段与推荐理由。",
+      "metadataKeywords": [
+        "游戏推荐",
+        "游戏收藏",
+        "Steam 游戏"
+      ]
+    },
+    "designs": {
+      "metadataTitle": "设计",
+      "metadataDescription": "设计截图、灵感图集与视觉收藏。",
+      "metadataKeywords": [
+        "设计灵感",
+        "视觉设计",
+        "设计截图"
+      ]
+    }
+  },
+  "resourceCategories": {
+    "all": "全部",
+    "film": "影视",
+    "acgn": "二次元",
+    "music": "音乐",
+    "reading": "阅读",
+    "game": "游戏",
+    "entertainment": "娱乐",
+    "toolbox": "工具箱",
+    "software": "软件"
+  },
+  "toolsPage": {
+    "all": "全部",
+    "backToToolsMenu": "返回工具菜单",
+    "sections": {
+      "local-tools": {
+        "title": "纯本地工具",
+        "description": "常用的本地小工具：字数统计、金额大写、正则测试、JSON、Base64、MD5、时间戳、颜色与编码转换，全部在浏览器本地完成，安全不上传。"
+      },
+      "image-tools": {
+        "title": "图片处理",
+        "description": "在线图片工具：二维码生成、格式转换、压缩、裁剪、加水印、Favicon 与主色提取，图片在本地处理无需上传。"
+      },
+      "network-tools": {
+        "title": "网络基础",
+        "description": "在线网络工具：DNS 查询、Ping 连通性、端口扫描、URL 状态检测、网页元数据与图片提取、网页转 Markdown。"
+      },
+      "public-data-tools": {
+        "title": "公开数据",
+        "description": "实用信息查询：Minecraft、GitHub 仓库、Gravatar、IP 与手机号归属、Bing 每日壁纸等公开数据，一键查询。"
+      },
+      "seo-geo-tools": {
+        "title": "SEO | GEO 工具",
+        "description": "面向搜索引擎（SEO）与生成式 AI（GEO）的优化工具：llms.txt、Meta 标签 / TDK、robots.txt、结构化数据 JSON-LD 与关键词密度分析。"
+      },
+      "calc-tools": {
+        "title": "计算换算",
+        "description": "贴近生活与工作的计算器：房贷、个税、BMI、日期间隔与常用单位换算，输入即算，结果仅供参考。"
+      },
+      "cn-tools": {
+        "title": "中文工具",
+        "description": "面向中文场景的实用工具：简繁体转换、汉字转拼音与中文测试假数据生成。"
+      },
+      "css-tools": {
+        "title": "前端 / CSS",
+        "description": "面向前端与设计的可视化生成器：CSS 渐变、box-shadow 阴影、圆角与调色板，所见即所得并一键复制代码。"
+      }
+    },
+    "toolTitles": {
+      "word-count": "字数统计",
+      "rmb-capital": "人民币金额大写",
+      "regex-tester": "正则表达式测试",
+      "color-tool": "颜色工具 / 渐变",
+      "data-convert": "JSON <-> CSV 互转",
+      "jwt-decode": "JWT 解码",
+      "cron": "Cron 表达式解析",
+      "sha-hash": "SHA 哈希",
+      "base-convert": "进制转换",
+      "text-diff": "文本 Diff 对比",
+      "case-convert": "命名 / 大小写转换",
+      "aes": "AES 加解密",
+      "base64": "Base64 编解码",
+      "md5": "MD5 计算与校验",
+      "random": "随机数 / 随机字符串",
+      "timestamp": "时间戳转换",
+      "json": "JSON 美化 / 压缩",
+      "code-obfuscate": "代码混淆 / 压缩",
+      "params": "参数分析",
+      "sensitive": "敏感词快速检测",
+      "favicon": "Favicon 生成器",
+      "image-convert": "图片格式转换",
+      "image-resize": "图片裁剪 / 改尺寸",
+      "image-watermark": "图片加水印",
+      "color-extract": "图片主色调提取",
+      "qrcode": "二维码生成",
+      "image-base64": "图片与 Base64 互转",
+      "svg-image": "SVG 转图片",
+      "image-compress": "图片压缩",
+      "pet-gif": "摸头 GIF",
+      "llms-txt": "llms.txt 生成器",
+      "site-traffic": "网站流量分析",
+      "meta-tags": "Meta 标签 / TDK 生成",
+      "robots-txt": "robots.txt 生成器",
+      "json-ld": "结构化数据 JSON-LD",
+      "keyword-density": "关键词密度分析",
+      "client-ip": "客户端 IP",
+      "dns-lookup": "DNS 查询",
+      "ping": "Ping（TCP 连通性）",
+      "port-scan": "端口扫描",
+      "url-status": "URL 状态检测",
+      "web-metadata": "网页元数据提取",
+      "web-images": "网页图片提取",
+      "web-markdown": "网页转 Markdown",
+      "minecraft-player": "Minecraft 玩家信息",
+      "minecraft-server": "Minecraft 服务器信息",
+      "github-repo": "GitHub 仓库信息",
+      "gravatar": "Gravatar",
+      "ip-geo": "基础 IP 归属",
+      "mobile-area": "手机号归属地",
+      "bing-wallpaper": "Bing 每日壁纸",
+      "content-tools": "答案之书 / 诗词 / 历史今天",
+      "loan": "房贷计算器",
+      "income-tax": "个税计算器",
+      "bmi": "BMI 计算器",
+      "date-diff": "日期间隔计算",
+      "unit-convert": "单位换算",
+      "hanzi-convert": "简繁体转换",
+      "pinyin": "汉字转拼音",
+      "chinese-faker": "中文假数据生成",
+      "css-gradient": "CSS 渐变生成",
+      "box-shadow": "box-shadow 生成",
+      "border-radius": "圆角生成",
+      "palette": "调色板生成"
+    },
+    "footerNote": {
+      "before": "这里的工具大多在你的浏览器本地完成，不会上传你的内容；少数需要联网的查询也只读取公开信息。出于安全考虑，网络类工具不支持查询",
+      "after": "等内网地址。欢迎收藏本页，常用工具随取随用。",
+      "resources": "去看资源页",
+      "about": "查看关于页"
+    },
+    "cards": {
+      "word-count": {
+        "title": "字数统计",
+        "description": "实时统计总字符数、不含空格字符、中文字数、英文单词、标点、行数与段落，写文章和投稿凑字数都方便。"
+      },
+      "rmb-capital": {
+        "title": "人民币金额大写",
+        "description": "输入阿拉伯数字金额，自动转换成规范的人民币中文大写（含角分），开发票、合同、财务记账都用得上。"
+      },
+      "regex-tester": {
+        "title": "正则表达式测试",
+        "description": "在线测试正则表达式，支持 g/i/m/s/u 标志，实时显示匹配结果，调试与学习正则的常用工具。"
+      },
+      "color-tool": {
+        "title": "颜色工具 / 渐变",
+        "description": "HEX / RGB / HSL 互转、取色器、WCAG 对比度检测与 CSS 渐变生成，前端与设计常用。"
+      },
+      "data-convert": {
+        "title": "JSON ↔ CSV 互转",
+        "description": "JSON 数组与 CSV 表格互相转换，导入导出表格数据、清洗数据时很方便。"
+      },
+      "jwt-decode": {
+        "title": "JWT 解码",
+        "description": "在线解析 JWT Token，解码 Header 与 Payload，并直观显示签发 / 过期时间，方便调试登录态。"
+      },
+      "cron": {
+        "title": "Cron 表达式解析",
+        "description": "解析标准 5 段 cron 表达式，计算接下来的执行时间，写定时任务时不再靠猜。"
+      },
+      "sha-hash": {
+        "title": "SHA 哈希",
+        "description": "基于浏览器 Web Crypto 计算 SHA-1 / SHA-256 / SHA-384 / SHA-512，本地完成，不上传内容。"
+      },
+      "base-convert": {
+        "title": "进制转换",
+        "description": "二进制 / 八进制 / 十进制 / 十六进制（支持 2-36 进制）互转，基于 BigInt 大数也不丢精度。"
+      },
+      "text-diff": {
+        "title": "文本 Diff 对比",
+        "description": "逐行对比两段文本，高亮新增与删除行，核对版本、改动与配置差异很方便。"
+      },
+      "case-convert": {
+        "title": "命名 / 大小写转换",
+        "description": "一键在 camelCase、PascalCase、snake_case、kebab-case、CONSTANT_CASE、Title Case 之间转换。"
+      },
+      "aes": {
+        "title": "AES 加解密",
+        "description": "使用浏览器内建的 Web Crypto 实现 AES-GCM，本地完成，不上传明文。"
+      },
+      "base64": {
+        "title": "Base64 编解码",
+        "description": "支持 Unicode 文本安全编码，也可直接拿来测试接口参数。"
+      },
+      "md5": {
+        "title": "MD5 计算与校验",
+        "description": "计算文本的 MD5 值，并可与目标哈希快速比对、校验文件或内容是否一致。"
+      },
+      "random": {
+        "title": "随机数 / 随机字符串",
+        "description": "快速生成测试用随机串，可自由切换字符集。"
+      },
+      "timestamp": {
+        "title": "时间戳转换",
+        "description": "支持秒、毫秒时间戳和可解析日期串，快速换算本地时间与 ISO。"
+      },
+      "json": {
+        "title": "JSON 美化 / 压缩",
+        "description": "把 JSON 变得更好读，或者压成一行方便塞进配置与请求里。"
+      },
+      "code-obfuscate": {
+        "title": "代码混淆 / 压缩",
+        "description": "对 JavaScript 进行混淆与压缩，并支持 CSS / HTML 压缩，适合代码上线前减小体积、提高阅读门槛。"
+      },
+      "params": {
+        "title": "参数分析",
+        "description": "识别 URL 查询串、表单参数或 JSON 键值，方便快速排查请求结构。"
+      },
+      "sensitive": {
+        "title": "敏感词快速检测",
+        "description": "使用内置轻量词表做快速扫描，适合草稿或提交前的第一轮自查。"
+      },
+      "favicon": {
+        "title": "Favicon 生成器",
+        "description": "上传一张图片，本地生成 16 / 32 / 48 / 64 / 180 / 512 多种尺寸的 PNG 网站图标，并附带 <head> 引用代码。"
+      },
+      "image-convert": {
+        "title": "图片格式转换",
+        "description": "PNG / JPG / WebP 之间互相转换，可调输出质量，转换在浏览器本地完成不上传。"
+      },
+      "image-resize": {
+        "title": "图片裁剪 / 改尺寸",
+        "description": "按指定宽高重新缩放图片，支持锁定宽高比，导出 PNG。"
+      },
+      "image-watermark": {
+        "title": "图片加水印",
+        "description": "给图片添加文字水印，可设字号、颜色、透明度、九宫格位置或整图平铺。"
+      },
+      "color-extract": {
+        "title": "图片主色调提取",
+        "description": "从图片中提取占比最高的主色调，生成可一键复制的配色板。"
+      },
+      "qrcode": {
+        "title": "二维码生成",
+        "description": "输入任意文本、本地直接生成 PNG Data URL，适合链接、备注和联系方式。"
+      },
+      "image-base64": {
+        "title": "图片与 Base64 互转",
+        "description": "上传图片可转 Data URL，粘贴 Base64 也能直接预览和验证。"
+      },
+      "svg-image": {
+        "title": "SVG 转图片",
+        "description": "直接粘贴 SVG 源码，本地转成 PNG 预览与下载。"
+      },
+      "image-compress": {
+        "title": "图片压缩",
+        "description": "基于 Canvas 做本地压缩，可选 JPEG / WebP，适合发图前快速瘦身。"
+      },
+      "pet-gif": {
+        "title": "摸头 GIF（图片上传版）",
+        "description": "上传头像后本地生成一个轻量简版摸头 GIF，适合做个性签名或评论区头像。"
+      },
+      "llms-txt": {
+        "title": "llms.txt 生成器",
+        "description": "一款免费的 llms.txt 生成工具，可以把网站里的核心内容整理成统一的纯文本格式，让 ChatGPT、Claude、Gemini 这类模型更容易读懂、检索和引用你的信息。"
+      },
+      "site-traffic": {
+        "title": "网站流量分析",
+        "description": "输入域名，基于 SimilarWeb 公开估算数据查看月访问量、平均时长、跳出率、全球排名、访问趋势、流量来源与主要地区分布。"
+      },
+      "meta-tags": {
+        "title": "Meta 标签 / TDK 生成",
+        "description": "填好标题、描述、关键词与社交分享信息，一键生成可直接粘贴到 <head> 的 SEO 与 Open Graph / Twitter 卡片标签。"
+      },
+      "robots-txt": {
+        "title": "robots.txt 生成器",
+        "description": "按 User-agent、Allow / Disallow 规则与 Sitemap 地址生成标准 robots.txt，控制搜索引擎与 AI 爬虫的抓取范围。"
+      },
+      "json-ld": {
+        "title": "结构化数据 JSON-LD",
+        "description": "生成 schema.org 结构化数据，帮助搜索引擎与 AI 更准确地理解页面，支持文章、网站与组织三种常见类型。"
+      },
+      "keyword-density": {
+        "title": "关键词密度分析",
+        "description": "粘贴正文，统计字数与高频词，并可针对目标关键词计算出现次数与密度，辅助判断内容是否堆砌或覆盖不足。"
+      },
+      "client-ip": {
+        "title": "客户端 IP",
+        "description": "读取当前请求头里的公网来源信息，适合快速确认反代和访客地址。"
+      },
+      "dns-lookup": {
+        "title": "DNS 查询",
+        "description": "一次拉出 A、AAAA、MX、NS、TXT 等常见记录，方便排查域名解析问题。"
+      },
+      "ping": {
+        "title": "Ping（TCP 连通性）",
+        "description": "出于运行环境限制，这里做的是 TCP connect 延迟测试，更适合排查端口可达性。"
+      },
+      "port-scan": {
+        "title": "端口扫描",
+        "description": "支持逗号和短范围写法，如 80,443,3000-3005；为了安全，限制了端口数量和内网目标。"
+      },
+      "url-status": {
+        "title": "URL 状态检测",
+        "description": "检测最终跳转地址、状态码和响应头部中的基本信息。"
+      },
+      "web-metadata": {
+        "title": "网页元数据提取",
+        "description": "提取标题、描述、canonical、favicon 以及常见 OG / Twitter 元信息。"
+      },
+      "web-images": {
+        "title": "网页图片提取",
+        "description": "列出页面中的常见图片资源，适合快速收集素材或检查首图。"
+      },
+      "web-markdown": {
+        "title": "网页转 Markdown",
+        "description": "抓取页面主体内容并转成 Markdown，适合先做初稿摘录或归档。"
+      },
+      "minecraft-player": {
+        "title": "Minecraft 玩家信息",
+        "description": "输入用户名即可查询 Minecraft 玩家的 UUID、头像与皮肤，方便查看与展示。"
+      },
+      "minecraft-server": {
+        "title": "Minecraft 服务器信息",
+        "description": "基于 mcstatus.io 免费接口查询 Java 或 Bedrock 服务器状态。"
+      },
+      "github-repo": {
+        "title": "GitHub 仓库信息",
+        "description": "解析 owner/repo 或完整仓库地址，返回 stars、forks、topics 和语言分布。"
+      },
+      "gravatar": {
+        "title": "Gravatar",
+        "description": "输入邮箱即可本地算出 MD5，并拼出 Gravatar 头像与资料页地址。"
+      },
+      "ip-geo": {
+        "title": "基础 IP 归属",
+        "description": "优先查输入的 IP，没有的话就查你当前请求来源，基于本地 GeoIP 库完成。"
+      },
+      "mobile-area": {
+        "title": "手机号归属地",
+        "description": "使用本地号段库查询中国大陆手机号的省市和运营商，不走在线接口。"
+      },
+      "bing-wallpaper": {
+        "title": "Bing 每日壁纸",
+        "description": "直接拉取 Bing 当天壁纸，适合拿来做背景图、封面图或桌面收藏。"
+      },
+      "content-tools": {
+        "title": "答案之书 / 诗词 / 历史今天",
+        "description": "答案之书、随机诗词与历史上的今天，随手获取一点灵感与有趣内容。"
+      },
+      "loan": {
+        "title": "房贷计算器",
+        "description": "按等额本息或等额本金计算每月月供、总利息与总还款，买房贷款前先算一笔账。"
+      },
+      "income-tax": {
+        "title": "个税计算器",
+        "description": "输入税前月薪、五险一金与专项附加扣除，估算应缴个税与税后到手收入。"
+      },
+      "bmi": {
+        "title": "BMI 计算器",
+        "description": "输入身高体重计算身体质量指数 BMI，并按中国标准给出偏瘦 / 正常 / 超重 / 肥胖判断。"
+      },
+      "date-diff": {
+        "title": "日期间隔计算",
+        "description": "计算两个日期之间相差的天数、周数与年月，也可用来算年龄或纪念日。"
+      },
+      "unit-convert": {
+        "title": "单位换算",
+        "description": "长度、重量、面积、存储与温度的常用单位互相换算。"
+      },
+      "hanzi-convert": {
+        "title": "简繁体转换",
+        "description": "简体中文与繁体中文互相转换，基于 OpenCC 词库，转换更准确自然。"
+      },
+      "pinyin": {
+        "title": "汉字转拼音",
+        "description": "把中文转换为拼音，支持带声调、不带声调、数字声调与首字母四种模式。"
+      },
+      "chinese-faker": {
+        "title": "中文假数据生成",
+        "description": "批量生成虚构的中文姓名、手机号、邮箱与地址，适合做测试与演示数据。"
+      },
+      "css-gradient": {
+        "title": "CSS 渐变生成",
+        "description": "可视化生成线性 / 径向渐变，调整角度与颜色，实时预览并复制 CSS。"
+      },
+      "box-shadow": {
+        "title": "box-shadow 生成",
+        "description": "拖动滑块调整偏移、模糊、扩散与颜色透明度，实时预览阴影并复制 CSS。"
+      },
+      "border-radius": {
+        "title": "圆角生成",
+        "description": "分别调节四个角的圆角大小，实时预览并复制 border-radius。"
+      },
+      "palette": {
+        "title": "调色板生成",
+        "description": "从一个主色出发，生成由浅到深的一整套色阶，点击即可复制色值。"
+      }
+    }
+  },
+  "toolTranslations": {
+    "exact": {
+      "clickOrDragAFileHere": "点击或拖拽文件到此处",
+      "clickToChooseOrDragToUpload": "支持点击选择或拖拽上传",
+      "getClientInfo": "获取客户端信息",
+      "startLookup": "开始查询",
+      "lookup": "查询",
+      "lookupPlayer": "查询玩家",
+      "lookupServer": "查询服务器",
+      "lookupRepository": "查询仓库",
+      "lookupLocation": "查询归属",
+      "lookupArea": "查询归属地",
+      "startPing": "开始 Ping",
+      "scanPorts": "扫描端口",
+      "checkStatus": "检测状态",
+      "extractMetadata": "提取元数据",
+      "extractImages": "提取图片",
+      "convertToMarkdown": "转换为 Markdown",
+      "generateLlmsTxt": "生成 llms.txt",
+      "downloadLlmsTxt": "下载 llms.txt",
+      "copy": "复制",
+      "copied": "已复制",
+      "copyFailed": "复制失败",
+      "copyFailedPleaseSelectAndCopyManually": "复制失败，请手动选中文本复制。",
+      "totalCharacters": "总字符数",
+      "charactersNoSpaces": "字符数(不含空格)",
+      "chineseCharacters": "中文字数",
+      "englishWords": "英文单词",
+      "punctuationSymbols": "标点/符号",
+      "lines": "行数",
+      "paragraphs": "段落",
+      "invalidInputPleaseEnterNumbers": "输入有误，请填写数字。",
+      "amountTooLargePleaseKeepItUnder1Trillion": "金额过大，请控制在万亿以内。",
+      "matched": "共匹配",
+      "occurrenceS": "处",
+      "invalidRegex": "正则无效",
+      "startColor": "起始色",
+      "endColor": "结束色",
+      "copyResult": "复制结果",
+      "copyText": "复制文本",
+      "copyTags": "复制标签",
+      "copyJsonLd": "复制 JSON-LD",
+      "downloadFile": "下载文件",
+      "download": "下载",
+      "downloadRobotsTxt": "下载 robots.txt",
+      "parseAndPreview": "解析并预览",
+      "format": "美化",
+      "minify": "压缩",
+      "calculate": "计算",
+      "calculateMd5": "计算 MD5",
+      "startObfuscation": "开始混淆",
+      "startMinifying": "开始压缩",
+      "processing": "处理中…",
+      "loading": "加载中...",
+      "generateQrCode": "生成二维码",
+      "downloadPng": "下载 PNG",
+      "convertToPng": "转成 PNG",
+      "downloadCompressedImage": "下载压缩图",
+      "downloadGif": "下载 GIF",
+      "generatingGifPleaseWait": "正在生成 GIF，请稍等…",
+      "parseParameters": "解析参数",
+      "noMatchesInTheBuiltInList": "当前没有命中内置词表。",
+      "noMatches": "无匹配",
+      "allTimedOut": "全部超时",
+      "notFound": "未发现",
+      "open": "开放",
+      "search": "搜索",
+      "random": "随机",
+      "all": "全部",
+      "back": "返回",
+      "goBack": "返回上页",
+      "backHome": "返回首页",
+      "close": "关闭",
+      "previousImage": "上一张",
+      "nextImage": "下一张",
+      "previousWork": "上一个作品",
+      "nextWork": "下一个作品",
+      "previousGame": "上一个游戏",
+      "nextGame": "下一个游戏",
+      "previousPost": "上一篇文章",
+      "nextPost": "下一篇文章",
+      "screenshotComingSoon": "截图待补充",
+      "failedToLoadWeather": "加载天气信息失败",
+      "dataFromQweather": "数据来源于和风天气",
+      "playlist": "播放列表",
+      "comingUp": "即将播放",
+      "loadMore": "加载更多",
+      "noLyricsYet": "暂无歌词",
+      "waitingForLyrics": "等待歌词...",
+      "noMoreSongs": "暂无更多歌曲",
+      "noPostsYet": "暂无文章...",
+      "allPosts": "全部文章",
+      "noMatchingPostsFound": "没有找到匹配的文章",
+      "loadFailedPleaseRetry": "加载失败，请重试",
+      "continueReading": "继续阅读",
+      "retry": "重试",
+      "youHaveReachedTheEnd": "已经到底啦 (｡･ω･｡)",
+      "articleArchive": "文章归档",
+      "aboutMe": "关于我",
+      "musicPlayer": "音乐播放器",
+      "works": "作品展示",
+      "pageNotFound": "页面不存在",
+      "sorryThePageYouVisitedIsMissing": "抱歉，你访问的页面走丢了",
+      "youMightBeLookingFor": "你可能在寻找：",
+      "switchToLightTheme": "切换亮色主题",
+      "switchToDarkTheme": "切换暗色主题",
+      "useSystemTheme": "跟随系统主题",
+      "openMenu": "打开菜单",
+      "closeMenu": "关闭菜单",
+      "openSidebar": "打开侧边栏",
+      "closeSidebar": "关闭侧边栏",
+      "admin": "管理员",
+      "adminDashboard": "管理后台",
+      "signOut": "退出登录",
+      "unableToLoadPreview": "无法加载预览",
+      "viewDemo": "查看演示",
+      "blogStats": "博客统计",
+      "posts": "文章数",
+      "uptime": "运行时间",
+      "lastUpdated": "最后更新",
+      "code": "代码",
+      "openWebsite": "打开网站",
+      "noTrafficSourceDataYet": "暂无流量来源数据。",
+      "pleaseEnterADomainToQuery": "请输入要查询的域名。",
+      "globalRank": "全球排名",
+      "keyword": "关键词",
+      "rank": "排名",
+      "trafficShare": "流量占比",
+      "searchVolume": "搜索量",
+      "difficulty": "难度",
+      "colorConversion": "颜色转换",
+      "contrastCheckWcag": "对比度检测 (WCAG)",
+      "cssGradientGenerator": "CSS 渐变生成",
+      "generateMultiSizePngIconsLocally": "本地生成多尺寸 PNG 图标",
+      "color": "颜色",
+      "monthlyPayment": "每月月供",
+      "firstLastMonth": "首月 / 末月",
+      "totalInterest": "总利息",
+      "totalRepayment": "总还款",
+      "taxableIncome": "应纳税所得额",
+      "incomeTax": "应缴个税",
+      "afterTaxIncome": "税后到手",
+      "dayDifference": "相差天数",
+      "about": "约",
+      "yearMonth": "年/月",
+      "quantity": "生成数量",
+      "name": "姓名",
+      "phone": "手机号",
+      "email": "邮箱",
+      "address": "地址",
+      "idNumberFictional": "证件号(虚构)",
+      "localTime": "本地时间",
+      "seconds": "秒",
+      "milliseconds": "毫秒",
+      "matchesTheExpectedHash": "与预期哈希一致。",
+      "doesNotMatchTheExpectedHash": "与预期哈希不一致。",
+      "bookOfAnswers": "答案之书",
+      "randomPoetry": "随机诗词",
+      "todayInHistory": "历史今天",
+      "skin": "皮肤",
+      "cape": "披风",
+      "players": "玩家",
+      "onlineStatus": "在线状态",
+      "online": "在线",
+      "offline": "离线",
+      "version": "版本",
+      "city": "城市",
+      "timezone": "时区",
+      "number": "号码",
+      "countryRegion": "国家 / 地区",
+      "province": "省份",
+      "carrier": "运营商",
+      "originalSize": "原图大小",
+      "outputSize": "输出大小",
+      "forExampleOpenaiCom": "例如 openai.com",
+      "forExampleNotch": "例如 Notch",
+      "forExampleMcHypixelNet": "例如 mc.hypixel.net",
+      "forExampleVercelNextJs": "例如 vercel/next.js",
+      "forExample13800138000": "例如 13800138000",
+      "searchPosts": "搜索文章...",
+      "targetHost": "目标主机",
+      "portForExample443": "端口，例如 443",
+      "forExample8044330003005": "例如 80,443,3000-3005",
+      "forExampleUrl": "例如 https://openai.com",
+      "enterWebpageUrl": "输入网页 URL",
+      "enterQrCodeContent": "输入二维码内容",
+      "enterTextToCalculate": "输入待计算文本",
+      "optionalEnterExpectedMd5ToCompare": "可选：输入预期 MD5 做比对",
+      "pasteJavascriptCssOrHtmlCode": "粘贴 JavaScript、CSS 或 HTML 代码",
+      "pasteAFullUrlA1B2OrJson": "粘贴完整 URL、a=1&b=2 或 JSON",
+      "pasteTextToCheck": "把要检测的文本贴进来",
+      "quality01": "质量 0~1",
+      "maxWidth": "最大宽度",
+      "typeToSearch": "输入即可搜索...",
+      "searchTypeStyleTag": "搜索类型、风格、标签...",
+      "enterKeywordsToSearchDesigns": "输入关键词搜索设计",
+      "enterADomainForExampleExampleCom": "输入域名，例如 example.com",
+      "enterOrPasteTextHereToCountInRealTime": "在这里输入或粘贴文本，实时统计字数",
+      "enterAnAmountForExample1008655": "输入金额，例如 10086.55",
+      "enterARegularExpression": "输入正则表达式",
+      "enterTestTextToMatch": "输入要匹配的测试文本",
+      "foregroundColor": "前景色",
+      "backgroundColor": "背景色",
+      "angle": "角度",
+      "pleaseEnterQrCodeContent": "请输入二维码内容。",
+      "pleaseEnterBase64Content": "请输入 Base64 内容。",
+      "pleaseEnterCompleteSvgCode": "请输入完整的 SVG 代码。",
+      "unableToInitializeCanvas": "无法初始化画布。",
+      "pleaseEnterAPassword": "请输入密码。",
+      "pasteJwtTokenEyj": "粘贴 JWT Token（eyJ...）",
+      "failedToParseFields": "字段解析失败",
+      "minuteHourDayMonthWeekdayForExample0915": "分 时 日 月 周，例如 0 9 * * 1-5",
+      "noMatchingRunTimeWithinOneYear": "一年内没有匹配的执行时间",
+      "enterTextToHash": "输入要计算哈希的文本",
+      "baseMustBeBetween2And36": "进制需在 2-36 之间",
+      "enterValue": "输入数值",
+      "sourceBase236": "源进制(2-36)",
+      "originalText": "原始文本",
+      "comparisonText": "对比文本",
+      "enterAnyNameSuchAsHelloWorldHelloworldHelloWorld": "输入任意命名，如 hello world / helloWorld / hello_world",
+      "enterChineseTextToConvertToPinyin": "输入中文，转换为拼音",
+      "enterPassword": "输入密码",
+      "enterTextOrBase64Content": "输入文本或 Base64 内容",
+      "imageBase64WillAppearHereOrYouCanPasteExistingBase64": "这里会显示图片 Base64，也可以直接粘贴现成的 Base64",
+      "lengthForExample16": "长度，例如 16",
+      "forExample1715664000000Or20260514120000": "例如 1715664000000 或 2026-05-14 12:00:00",
+      "enterAQuestion": "输入问题",
+      "month": "月",
+      "day": "日",
+      "emailAddress": "邮箱地址",
+      "generateAvatarUrl": "生成头像地址",
+      "openGravatarProfile": "打开 Gravatar 资料页",
+      "leaveEmptyToQueryTheCurrentRequestIp": "可留空，默认查询当前访问 IP",
+      "selectBingRegion": "选择 Bing 区域",
+      "mainlandChinaZhCn": "中国大陆（zh-CN）",
+      "unitedStatesEnUs": "美国（en-US）",
+      "japanJaJp": "日本（ja-JP）",
+      "getWallpaper": "获取壁纸",
+      "openOriginalImage": "打开原图",
+      "turnAPage": "翻一页",
+      "giveMeAPoem": "来一首",
+      "clickOrDragAnImageHere": "点击或拖拽图片到此处",
+      "processingRunsLocallyInYourBrowser": "处理全部在浏览器本地完成",
+      "width": "宽",
+      "height": "高",
+      "watermarkText": "水印文字",
+      "codeLanguage": "代码语言",
+      "processingMode": "处理模式",
+      "obfuscationStrength": "混淆强度",
+      "chooseCompressionFormat": "选择压缩格式",
+      "chooseStructuredDataType": "选择结构化数据类型",
+      "article": "文章 Article",
+      "website": "网站 WebSite",
+      "organization": "组织 Organization",
+      "pageTitle": "页面标题 Title",
+      "pageDescription": "页面描述 Description",
+      "keywordsCommaSeparatedOptional": "关键词，逗号分隔（可选）",
+      "canonicalUrl": "规范链接 URL",
+      "siteNameOptional": "站点名称（可选）",
+      "socialImageUrlOptional": "社交分享图 URL（可选）",
+      "userAgentDefault": "User-agent（默认 *）",
+      "sitemapUrlOnePerLineOptional": "Sitemap 地址，每行一个（可选）",
+      "articleHeadline": "文章标题 headline",
+      "name2": "名称 name",
+      "descriptionOptional": "描述 description（可选）",
+      "authorOptional": "作者 author（可选）",
+      "publishDate": "发布日期",
+      "logoImageUrlOptional": "Logo 图片 URL（可选）",
+      "imageUrlOptional": "图片 URL（可选）",
+      "pasteContentToAnalyze": "粘贴要分析的正文内容",
+      "targetKeywordOptional": "目标关键词（可选）",
+      "siteTitle": "站点标题",
+      "primaryLanguage": "主语言",
+      "siteUrl": "站点地址",
+      "languageVersions": "语言版本",
+      "primarySections": "主要栏目数",
+      "charactersExcludingWhitespace": "总字数（去空白）",
+      "tokens": "分词数",
+      "forExampleUrl2": "例如 https://example.com",
+      "allowPathsOnePerLineForExample": "Allow 路径，每行一个 例如 /",
+      "disallowPathsOnePerLineForExampleAdmin": "Disallow 路径，每行一个 例如 /admin",
+      "mostToolsHereRunLocallyInYourBrowserAndDoNotUpload": "这里的工具大多在你的浏览器本地完成，不会上传你的内容；少数需要联网的查询也只读取公开信息。出于安全考虑，网络类工具不支持查询",
+      "andOtherIntranetAddressesFeelFreeToBookmarkThisPageToKeep": "等内网地址。欢迎收藏本页，常用工具随取随用。",
+      "goToResources": "去看资源页",
+      "goToAbout": "查看关于页",
+      "dataIsEstimatedFromSimilarwebPublicSourcesAndIsForReferenceOnly": "数据来自 SimilarWeb 公开估算，仅供参考；小流量或未收录的站点可能查不到。",
+      "requiresDataSourceConfiguration": "需配置数据源",
+      "keywordRankVolumeCpcAndDifficultyRequireAPaidSeoDataSource": "关键词排名、搜索量、CPC 与难度需要付费 SEO 数据源（如 DataForSEO），配置后将在此展示。",
+      "backlinkAndReferringDomainHistoricalTrendsRequireAPaidSeoDataSource": "反向链接与参考域名的历史趋势需要付费 SEO 数据源（如 DataForSEO），配置后将在此展示折线图。",
+      "analyzing": "分析中...",
+      "trafficAnalysis": "流量分析",
+      "monthlyVisits": "月访问量",
+      "avgVisitDuration": "平均访问时长",
+      "pagesPerVisit": "每次访问页数",
+      "bounceRate": "跳出率",
+      "trafficTrend": "访问趋势",
+      "trafficSources": "流量来源",
+      "topRegions": "主要地区",
+      "topKeywords": "热门关键词",
+      "backlinks": "反向链接",
+      "domainAuthority": "域名权威",
+      "referringDomains": "参考域名",
+      "unknown": "未知",
+      "organicSearch": "自然搜索",
+      "paidSearch": "付费搜索",
+      "direct": "直接访问",
+      "referrals": "外链引荐",
+      "socialMedia": "社交媒体",
+      "organicSocial": "社交自然",
+      "email2": "邮件",
+      "paidReferrals": "付费引荐",
+      "encrypt": "加密",
+      "decrypt": "解密",
+      "enterTextToEncrypt": "输入要加密的文本",
+      "pasteCiphertextInAesgcmSaltIvCipherFormat": "粘贴 aesgcm.salt.iv.cipher 格式密文",
+      "processNow": "立即处理",
+      "pleaseEnterContentToEncrypt": "请输入要加密的内容。",
+      "pleaseEnterCiphertextToDecrypt": "请输入要解密的密文。",
+      "aesProcessingFailed": "AES 处理失败。",
+      "encode": "编码",
+      "decode": "解码",
+      "base64EncodingFailed": "Base64 编码失败。",
+      "base64DecodingFailedPleaseCheckInput": "Base64 解码失败，请检查输入。",
+      "pleaseCheckAtLeastOneCharacterSet": "请至少勾选一种字符集。",
+      "lengthMustBeBetween1And256": "长度需在 1 到 256 之间。",
+      "uppercaseLetters": "大写字母",
+      "lowercaseLetters": "小写字母",
+      "numbers": "数字",
+      "symbols": "符号",
+      "generateRandomString": "生成随机串",
+      "convert": "转换",
+      "useCurrentTime": "使用当前时间",
+      "conversionFailed": "转换失败。",
+      "jsonParsingFailed": "JSON 解析失败。",
+      "minifyOnly": "仅压缩",
+      "obfuscateMinify": "混淆 + 压缩",
+      "obfuscateMinifyJsOnly": "混淆 + 压缩（仅 JS）",
+      "normalObfuscation": "标准混淆",
+      "strongObfuscation": "高强度混淆",
+      "strengthCanBeAdjustedAfterSelectingObfuscateMinify": "选择「混淆 + 压缩」后可调节强度。",
+      "cssHtmlCurrentlyOnlySupportMinification": "CSS / HTML 当前仅支持压缩。",
+      "parameterAnalysisFailed": "参数分析失败。",
+      "aaText": "AA 正文",
+      "aaLargeText": "AA 大字",
+      "aaaText": "AAA 正文",
+      "selectColor": "选择颜色",
+      "exampleTextAa": "示例文本 Aa",
+      "contrast": "对比度",
+      "conversionFailedPleaseCheckInputFormat": "转换失败，请检查输入格式。",
+      "pasteJsonArray": "粘贴 JSON 数组",
+      "pasteCsvText": "粘贴 CSV 文本",
+      "copyAll": "复制全部",
+      "allOfTheseAreRandomlyGeneratedFictionalTestDataUnrelatedToReal": "全部为随机生成的虚构测试数据，与真实个人信息无关，请勿用于非法用途。",
+      "withTones": "带声调",
+      "withoutTones": "不带声调",
+      "numericTones": "数字声调",
+      "initials": "首字母",
+      "simplTrad": "简 → 繁",
+      "tradSimpl": "繁 → 简",
+      "enterSimplifiedChinese": "输入简体中文",
+      "enterTraditionalChinese": "输入繁体中文",
+      "generate": "生成",
+      "equalPayment": "等额本息",
+      "equalPrincipal": "等额本金",
+      "underweight": "偏瘦",
+      "normal": "正常",
+      "overweight": "超重",
+      "obese": "肥胖",
+      "length": "长度",
+      "weight": "重量",
+      "area": "面积",
+      "storage": "存储",
+      "temperature": "温度",
+      "millimeters": "毫米",
+      "centimeters": "厘米",
+      "meters": "米",
+      "kilometers": "千米",
+      "inches": "英寸",
+      "feet": "英尺",
+      "miles": "英里",
+      "milligrams": "毫克",
+      "grams": "克",
+      "kilograms": "千克",
+      "tons": "吨",
+      "pounds": "磅",
+      "ounces": "盎司",
+      "squareMeters": "平方米",
+      "squareKilometers": "平方千米",
+      "hectares": "公顷",
+      "mu": "亩",
+      "squareFeet": "平方英尺",
+      "celsius": "摄氏度",
+      "fahrenheit": "华氏度",
+      "kelvin": "开尔文",
+      "trafficSources2": "????"
+    }
+  }
+}

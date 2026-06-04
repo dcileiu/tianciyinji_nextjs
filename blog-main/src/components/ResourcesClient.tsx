@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
   RESOURCE_CATEGORIES,
+  getResourceCategoryLabel,
   type ResourceCategoryId,
   matchResourceCategory,
 } from '@/lib/resource-categories';
@@ -219,7 +220,7 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                     )}
                     <Icon className={`relative h-5 w-5 ${isActive ? 'text-[#5b3df5] dark:text-[#d8cdff]' : ''}`} />
                     <span className="relative text-xs font-medium whitespace-nowrap">
-                      {locale === 'en' && category.id === 'all' ? text.all : category.label}
+                      {getResourceCategoryLabel(category.id, locale)}
                     </span>
                   </button>
                 );
@@ -245,7 +246,10 @@ export default function ResourcesClient({ resources }: ResourcesClientProps) {
                 <p className="text-black/60 dark:text-white/60 mb-2">
                   {text.emptyCategory.replace(
                     '{category}',
-                    RESOURCE_CATEGORIES.find((item) => item.id === activeCategory)?.label ?? text.all,
+                    getResourceCategoryLabel(
+                      RESOURCE_CATEGORIES.find((item) => item.id === activeCategory)?.id ?? 'all',
+                      locale,
+                    ) ?? text.all,
                   )}
                 </p>
                 <p className="text-sm text-black/40 dark:text-white/40">

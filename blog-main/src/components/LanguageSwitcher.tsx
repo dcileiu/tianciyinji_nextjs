@@ -3,6 +3,7 @@
 import { Check, Languages } from 'lucide-react';
 import type { Route } from 'next';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useTransition } from 'react';
 import { useI18n } from '@/components/I18nProvider';
 import { Button } from '@/components/ui/button';
 import { SimpleDropdown, SimpleDropdownItem } from '@/components/ui/simple-dropdown';
@@ -18,6 +19,7 @@ export function LanguageSwitcher({ label }: LanguageSwitcherProps) {
   const pathname = usePathname() || '/';
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
   const ariaLabel = label ?? dictionary.header.language;
 
   const handleSelect = (nextLocale: Locale) => {
@@ -26,7 +28,11 @@ export function LanguageSwitcher({ label }: LanguageSwitcherProps) {
     document.cookie = `${LOCALE_COOKIE}=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
     const queryString = searchParams.toString();
     const targetPath = localizePath(pathname, nextLocale);
-    router.push(`${targetPath}${queryString ? `?${queryString}` : ''}` as Route);
+    const targetHref = `${targetPath}${queryString ? `?${queryString}` : ''}` as Route;
+    startTransition(() => {
+      router.push(targetHref);
+      router.refresh();
+    });
   };
 
   const trigger = (
@@ -34,6 +40,7 @@ export function LanguageSwitcher({ label }: LanguageSwitcherProps) {
       type="button"
       variant="ghost"
       aria-label={ariaLabel}
+      disabled={isPending}
       title={ariaLabel}
       className="rounded-full text-[#75689e] dark:text-[#ae9fda] hover:bg-[#ece5ff] dark:hover:bg-[#231c38] hover:text-[#4f31d7] dark:hover:text-[#f3efff] h-8 px-2 md:h-8 flex items-center gap-1.5"
     >
