@@ -3,11 +3,11 @@
 import { Check, Languages } from 'lucide-react';
 import type { Route } from 'next';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useI18n } from '@/components/I18nProvider';
 import { Button } from '@/components/ui/button';
 import { SimpleDropdown, SimpleDropdownItem } from '@/components/ui/simple-dropdown';
-import { localizePath, LOCALE_COOKIE, type Locale } from '@/lib/i18n';
+import { getPathLocale, localizePath, LOCALE_COOKIE, type Locale } from '@/lib/i18n';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
 interface LanguageSwitcherProps {
@@ -20,18 +20,33 @@ export function LanguageSwitcher({ label }: LanguageSwitcherProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const [pendingLocale, setPendingLocale] = useState<Locale | null>(null);
   const ariaLabel = label ?? dictionary.header.language;
 
+  useEffect(() => {
+    if (!pendingLocale) return;
+    if (getPathLocale(pathname) !== pendingLocale) return;
+
+    router.refresh();
+    setPendingLocale(null);
+  }, [pendingLocale, pathname, router]);
+
   const handleSelect = (nextLocale: Locale) => {
-    if (nextLocale === locale) return;
     triggerHaptic(HapticFeedback.Light);
     document.cookie = `${LOCALE_COOKIE}=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
+    setPendingLocale(nextLocale);
+
+    if (nextLocale === locale) {
+      router.refresh();
+      setPendingLocale(null);
+      return;
+    }
+
     const queryString = searchParams.toString();
     const targetPath = localizePath(pathname, nextLocale);
     const targetHref = `${targetPath}${queryString ? `?${queryString}` : ''}` as Route;
     startTransition(() => {
       router.push(targetHref);
-      router.refresh();
     });
   };
 
