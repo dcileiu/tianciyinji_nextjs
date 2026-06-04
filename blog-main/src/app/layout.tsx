@@ -1,6 +1,5 @@
 import './style/global.css';
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Noto_Sans_SC } from 'next/font/google';
 import JsonLd from '@/components/JsonLd';
 import { ThemeProvider } from 'next-themes';
 import { ChristmasEffect } from '@/components/ChristmasEffect';
@@ -11,28 +10,6 @@ import { getDictionary, getLocalizedSiteConfig } from '@/lib/i18n';
 import { getLocale } from '@/lib/i18n-server';
 import { absoluteUrl, siteConfig, siteKeywords } from '@/lib/site-config';
 import { buildPageMetadata, buildPersonJsonLd, buildWebSiteJsonLd } from '@/lib/seo';
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-  display: 'swap',
-  preload: true,
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-  display: 'swap',
-  preload: true,
-});
-
-const notoSansSC = Noto_Sans_SC({
-  variable: '--font-noto-sans-sc',
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  display: 'swap',
-  preload: true,
-});
 
 const baseMetadata = buildPageMetadata({
   title: siteConfig.name,
@@ -133,7 +110,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} ${notoSansSC.variable} font-sans antialiased`}
+        className="font-sans antialiased"
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <JsonLd data={[buildWebSiteJsonLd(), buildPersonJsonLd()]} />

@@ -6,9 +6,6 @@
 
 :root {
   --transition-duration: 200ms;
-  --font-geist-sans: "";
-  --font-geist-mono: "";
-  --font-noto-sans-sc: "";
 }
 
 @keyframes fadeIn {
