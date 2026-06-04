@@ -233,13 +233,13 @@ export function RobotsTxtTool() {
           className={`${inputClass} min-h-[96px] resize-y font-mono text-xs`}
           value={robotsAllow}
           onChange={(e) => setRobotsAllow(e.target.value)}
-          placeholder={t('Allow 路径，每行一个\n例如 /')}
+          placeholder={t('allowPathsOnePerLineForExample')}
         />
         <textarea
           className={`${inputClass} min-h-[96px] resize-y font-mono text-xs`}
           value={robotsDisallow}
           onChange={(e) => setRobotsDisallow(e.target.value)}
-          placeholder={t('Disallow 路径，每行一个\n例如 /admin')}
+          placeholder={t('disallowPathsOnePerLineForExampleAdmin')}
         />
       </div>
       <textarea

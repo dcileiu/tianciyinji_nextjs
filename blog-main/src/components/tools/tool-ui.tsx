@@ -230,10 +230,10 @@ export function ToolFileInput({
         <Upload className="h-5 w-5" />
       </span>
       <span className="text-sm font-medium text-[#4f31d7] dark:text-[#cbbcff]">
-        {fileName || t('点击或拖拽文件到此处')}
+        {fileName || t('clickOrDragAFileHere')}
       </span>
       <span className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-        {hint || t('支持点击选择或拖拽上传')}
+        {hint || t('clickToChooseOrDragToUpload')}
       </span>
     </label>
   );

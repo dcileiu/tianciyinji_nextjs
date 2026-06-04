@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ExternalLink, Globe } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 
 interface LinkMetadata {
   page_url: string;
@@ -56,6 +57,8 @@ function isExternalLink(url: string): boolean {
 }
 
 export function LinkPreviewProvider({ children }: LinkPreviewProviderProps) {
+  const { dictionary } = useI18n();
+  const text = dictionary.linkPreview;
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredLink, setHoveredLink] = useState<{ url: string; rect: DOMRect } | null>(null);
   const [metadata, setMetadata] = useState<LinkMetadata | null>(null);
@@ -312,10 +315,10 @@ export function LinkPreviewProvider({ children }: LinkPreviewProviderProps) {
                     <Globe className="w-5 h-5 text-black/40 dark:text-white/40 flex-shrink-0 mt-0.5" />
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-medium text-black/60 dark:text-white/60 leading-snug mb-1">
-                        无法加载预览
+                        {text.unableToLoad}
                       </h3>
                       <p className="text-xs text-black/40 dark:text-white/40 leading-relaxed">
-                        可能是网络问题或该网站不支持预览
+                        {text.unsupportedOrNetworkIssue}
                       </p>
                     </div>
                   </div>

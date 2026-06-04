@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 
 interface ImageCarouselProps {
   images: (string | React.ReactNode)[];
@@ -10,6 +11,8 @@ interface ImageCarouselProps {
 }
 
 export function ImageCarousel({ images, alt, priority = false }: ImageCarouselProps) {
+  const { dictionary } = useI18n();
+  const text = dictionary.imageCarousel;
   const [currentIndex, setCurrentIndex] = useState(0);
 
   if (!images || images.length === 0) return null;
@@ -130,7 +133,7 @@ export function ImageCarousel({ images, alt, priority = false }: ImageCarouselPr
                 className={`h-2 rounded-full transition-all duration-300 ${
                   index === currentIndex ? 'bg-white w-8 shadow-lg' : 'bg-white/50 w-6 hover:bg-white/70'
                 }`}
-                aria-label={`切换到第 ${index + 1} 张`}
+                aria-label={text.goToImage.replace('{index}', String(index + 1))}
               />
             ))}
           </div>

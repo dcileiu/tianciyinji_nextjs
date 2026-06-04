@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Route } from 'next';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 import type { Post } from '@/types/post';
 
 interface TimelineProps {
@@ -13,6 +14,8 @@ interface TimelineProps {
 }
 
 export default function InfiniteTimeline({ initialPosts, total, onLoadMore }: TimelineProps) {
+  const { dictionary, localizedHref } = useI18n();
+  const text = dictionary.timeline;
   const [posts, setPosts] = useState(initialPosts);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,12 +51,12 @@ export default function InfiniteTimeline({ initialPosts, total, onLoadMore }: Ti
         setReachedEnd(true);
       }
     } catch (err) {
-      setError('加载失败，请重试');
+      setError(text.loadFailedRetry);
       console.error('加载更多文章失败:', err);
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, hasMore, page, posts.length, total, onLoadMore]);
+  }, [isLoading, hasMore, page, posts.length, total, onLoadMore, text.loadFailedRetry]);
 
   // 设置Intersection Observer
   useEffect(() => {
@@ -87,7 +90,7 @@ export default function InfiniteTimeline({ initialPosts, total, onLoadMore }: Ti
   if (posts.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-lg text-black/60 dark:text-white/60">暂无文章...</p>
+        <p className="text-lg text-black/60 dark:text-white/60">{text.noPostsYet}</p>
       </div>
     );
   }
@@ -113,7 +116,7 @@ export default function InfiniteTimeline({ initialPosts, total, onLoadMore }: Ti
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5, delay: Math.min(index * 0.1, 0.3) }}
             >
-              <Link href={`/post/${post.slug}` as Route} className="block group relative">
+              <Link href={localizedHref(`/post/${post.slug}`) as Route} className="block group relative">
                 {/* 时间点 */}
                 <div className="absolute left-0 top-2 flex items-center justify-center w-5 h-5 md:w-6 md:h-6">
                   <div className="absolute w-5 h-5 md:w-6 md:h-6 bg-black/[0.03] dark:bg-white/[0.08] rounded-full transform origin-center transition-all duration-500 ease-out group-hover:scale-[2.5] group-hover:opacity-40 dark:group-hover:opacity-60" />
@@ -150,7 +153,7 @@ export default function InfiniteTimeline({ initialPosts, total, onLoadMore }: Ti
 
                     {/* 阅读更多 */}
                     <div className="mt-4 md:mt-6 flex items-center text-sm md:text-[15px] text-black/40 dark:text-white/40">
-                      <span className="font-medium">继续阅读</span>
+                      <span className="font-medium">{text.readMore}</span>
                       <svg
                         className="w-4 h-4 md:w-5 md:h-5 ml-2 transform transition-transform group-hover:translate-x-1"
                         viewBox="0 0 24 24"
@@ -206,7 +209,7 @@ export default function InfiniteTimeline({ initialPosts, total, onLoadMore }: Ti
               onClick={() => loadMore()}
               className="text-xs md:text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
             >
-              重试
+              {text.retry}
             </button>
           </motion.div>
         )}
@@ -218,7 +221,7 @@ export default function InfiniteTimeline({ initialPosts, total, onLoadMore }: Ti
             transition={{ duration: 0.5 }}
           >
             <div className="inline-flex items-center justify-center px-3 md:px-4 py-1.5 md:py-2 space-x-2 rounded-full">
-              <span className="text-xs md:text-sm text-black/40 dark:text-white/40">已经到底啦 (｡･ω･｡)</span>
+              <span className="text-xs md:text-sm text-black/40 dark:text-white/40">{text.reachedEnd}</span>
             </div>
           </motion.div>
         )}

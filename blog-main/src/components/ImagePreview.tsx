@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 
 interface ImageInfo {
   src: string;
@@ -11,6 +12,8 @@ interface ImageInfo {
 }
 
 export function ImagePreview() {
+  const { dictionary } = useI18n();
+  const text = dictionary.imagePreview;
   const [isOpen, setIsOpen] = useState(false);
   const [images, setImages] = useState<ImageInfo[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -29,7 +32,7 @@ export function ImagePreview() {
 
         const imageList: ImageInfo[] = allImages.map((img, idx) => ({
           src: img.src,
-          alt: img.alt || `图片 ${idx + 1}`,
+          alt: img.alt || text.imageAlt.replace('{index}', String(idx + 1)),
           index: idx,
         }));
 
@@ -45,7 +48,7 @@ export function ImagePreview() {
 
     document.addEventListener('click', handleImageClick);
     return () => document.removeEventListener('click', handleImageClick);
-  }, []);
+  }, [text.imageAlt]);
 
   const close = useCallback(() => {
     setIsOpen(false);
@@ -209,7 +212,7 @@ export function ImagePreview() {
           <button
             onClick={close}
             className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-all"
-            aria-label="关闭"
+            aria-label={text.close}
           >
             <X className="w-6 h-6" />
           </button>
@@ -222,7 +225,7 @@ export function ImagePreview() {
                   goToPrevious();
                 }}
                 className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-all"
-                aria-label="上一张"
+                aria-label={text.previous}
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
@@ -233,7 +236,7 @@ export function ImagePreview() {
                   goToNext();
                 }}
                 className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-all"
-                aria-label="下一张"
+                aria-label={text.next}
               >
                 <ChevronRight className="w-6 h-6" />
               </button>

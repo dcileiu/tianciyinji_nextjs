@@ -17,7 +17,7 @@ const statBox =
 const outBox =
   'rounded-2xl border border-[#ece3ff] bg-white/60 p-3 text-sm dark:border-[#2c2347] dark:bg-white/[0.03]';
 
-function CopyButton({ text, label = '复制' }: { text: string; label?: string }) {
+function CopyButton({ text, label = 'copy' }: { text: string; label?: string }) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   return (
@@ -30,10 +30,10 @@ function CopyButton({ text, label = '复制' }: { text: string; label?: string }
         try {
           await navigator.clipboard.writeText(text);
           setCopied(true);
-          toast.success(t('已复制'));
+          toast.success(t('copied'));
           setTimeout(() => setCopied(false), 1500);
         } catch {
-          toast.error(t('复制失败'));
+          toast.error(t('copyFailed'));
         }
       }}
     >
@@ -599,9 +599,9 @@ export function FaviconTool() {
           <Upload className="h-5 w-5" />
         </span>
         <span className="text-sm font-medium text-[#4f31d7] dark:text-[#cbbcff]">
-          {fileName || t('点击或拖拽图片（建议正方形）')}
+          {fileName || t('clickOrDragSquareImage')}
         </span>
-        <span className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('本地生成多尺寸 PNG 图标')}</span>
+        <span className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('generateMultiSizePngIconsLocally')}</span>
       </label>
 
       {results.length > 0 && (

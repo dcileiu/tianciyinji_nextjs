@@ -80,7 +80,7 @@ export function PingTool() {
       {error && <OutputBox>{error}</OutputBox>}
       {result && (
         <OutputBox className="space-y-2">
-          <div>{t('平均延迟')}：{result.averageLatency !== null ? `${result.averageLatency} ms` : t('全部超时')}</div>
+          <div>{t('averageLatency')}: {result.averageLatency !== null ? `${result.averageLatency} ms` : t('allTimedOut')}</div>
           <div className="space-y-1">
             {result.attempts.map(
               (
@@ -88,7 +88,7 @@ export function PingTool() {
                 index: number,
               ) => (
                 <div key={`${item.port}-${index}`}>
-                  #{index + 1}：{item.open ? `${item.latency} ms` : `${t('失败')} (${item.error || 'closed'})`}
+                  #{index + 1}: {item.open ? `${item.latency} ms` : `${t('failed')} (${item.error || 'closed'})`}
                 </div>
               ),
             )}
@@ -115,7 +115,7 @@ export function PortScanTool() {
       {error && <OutputBox>{error}</OutputBox>}
       {result && (
         <OutputBox className="space-y-2">
-          <div>{t('开放端口')}：{result.openPorts.join(', ') || t('未发现')}</div>
+          <div>{t('openPorts')}: {result.openPorts.join(', ') || t('notFound')}</div>
           <div className="grid gap-2 sm:grid-cols-2">
             {result.results.map((item: { port: number; open: boolean; latency: number | null }) => (
               <div key={item.port} className="rounded-xl bg-white/60 px-3 py-2 dark:bg-white/[0.03]">
@@ -143,10 +143,10 @@ export function UrlStatusTool() {
       {error && <OutputBox>{error}</OutputBox>}
       {result && (
         <OutputBox className="space-y-2">
-          <div>{t('状态')}：{result.status} {result.statusText}</div>
-          <div className="break-all">{t('最终地址')}：{result.finalUrl}</div>
-          <div>{t('类型')}：{result.contentType || '-'}</div>
-          <div>{t('长度')}：{result.contentLength || '-'}</div>
+          <div>{t('status')}: {result.status} {result.statusText}</div>
+          <div className="break-all">{t('finalUrl')}: {result.finalUrl}</div>
+          <div>{t('type')}: {result.contentType || '-'}</div>
+          <div>{t('length')}: {result.contentLength || '-'}</div>
           <div>Server：{result.server || '-'}</div>
         </OutputBox>
       )}
@@ -168,8 +168,8 @@ export function WebMetadataTool() {
       {error && <OutputBox>{error}</OutputBox>}
       {result && (
         <OutputBox className="space-y-2">
-          <div>{t('标题')}：{result.title}</div>
-          <div>{t('描述')}：{result.description || '-'}</div>
+          <div>{t('title')}: {result.title}</div>
+          <div>{t('description')}: {result.description || '-'}</div>
           <div className="break-all">Canonical：{result.canonical || '-'}</div>
           <div className="break-all">Favicon：{result.favicon || '-'}</div>
           <div className="break-all">OG Image：{result.openGraph?.image || '-'}</div>

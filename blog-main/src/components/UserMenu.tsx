@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useI18n } from '@/components/I18nProvider';
 
 interface UserMenuProps {
   user: {
@@ -18,6 +19,8 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ user }: UserMenuProps) {
+  const { dictionary } = useI18n();
+  const text = dictionary.userMenu;
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -29,7 +32,7 @@ export function UserMenu({ user }: UserMenuProps) {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <button className="rounded-full focus:outline-none" aria-label="用户菜单">
+        <button className="rounded-full focus:outline-none" aria-label={text.ariaLabel}>
           <img src={user.avatar} alt={user.username} className="w-5 h-5 rounded-full" />
         </button>
       </DropdownMenuTrigger>
@@ -44,7 +47,7 @@ export function UserMenu({ user }: UserMenuProps) {
             <img src={user.avatar} alt={user.username} className="w-10 h-10 rounded-full" />
             <div className="flex-1 min-w-0">
               <div className="text-sm font-medium text-black dark:text-white truncate">{user.username}</div>
-              <div className="text-xs text-black/50 dark:text-white/50">管理员</div>
+              <div className="text-xs text-black/50 dark:text-white/50">{text.admin}</div>
             </div>
           </div>
         </div>
@@ -57,7 +60,7 @@ export function UserMenu({ user }: UserMenuProps) {
             className="gap-3 cursor-pointer px-3 py-2 rounded-lg text-sm text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
           >
             <Settings className="w-4 h-4 text-black/60 dark:text-white/60" />
-            <span>管理后台</span>
+            <span>{text.adminDashboard}</span>
           </DropdownMenuItem>
         </div>
 
@@ -69,7 +72,7 @@ export function UserMenu({ user }: UserMenuProps) {
             className="gap-3 cursor-pointer px-3 py-2 rounded-lg text-sm text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
           >
             <LogOut className="w-4 h-4 text-black/60 dark:text-white/60" />
-            <span>退出登录</span>
+            <span>{text.logout}</span>
           </DropdownMenuItem>
         </div>
       </DropdownMenuContent>

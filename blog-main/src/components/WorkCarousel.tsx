@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight, ImageOff } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 import { cn } from '@/lib/utils';
 
 interface WorkCarouselProps {
@@ -13,6 +14,8 @@ interface WorkCarouselProps {
 }
 
 export function WorkCarousel({ images, alt, interval = 4500 }: WorkCarouselProps) {
+  const { dictionary } = useI18n();
+  const text = dictionary.workCarousel;
   const list = (images ?? []).filter(Boolean);
   const count = list.length;
   const [index, setIndex] = useState(0);
@@ -36,7 +39,7 @@ export function WorkCarousel({ images, alt, interval = 4500 }: WorkCarouselProps
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_28%,rgba(126,92,255,0.18),transparent_42%)]" />
         <div className="relative flex flex-col items-center gap-2 text-[#8b7bbf] dark:text-[#7c6ca6]">
           <ImageOff className="h-7 w-7" />
-          <span className="text-xs">截图待补充</span>
+          <span className="text-xs">{text.screenshotComingSoon}</span>
         </div>
       </div>
     );
@@ -68,7 +71,7 @@ export function WorkCarousel({ images, alt, interval = 4500 }: WorkCarouselProps
         >
           <Image
             src={src}
-            alt={count > 1 ? `${alt} 截图 ${i + 1}` : alt}
+            alt={count > 1 ? text.screenshotAlt.replace('{title}', alt).replace('{index}', String(i + 1)) : alt}
             fill
             sizes="(max-width: 768px) 100vw, 720px"
             className={cn('object-cover', i === index && 'kenburns-active')}
@@ -84,7 +87,7 @@ export function WorkCarousel({ images, alt, interval = 4500 }: WorkCarouselProps
           <button
             type="button"
             onClick={() => go(index - 1)}
-            aria-label="上一张"
+            aria-label={text.previous}
             className="absolute left-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-white opacity-0 backdrop-blur-sm transition hover:bg-black/55 group-hover:opacity-100 focus-visible:opacity-100"
           >
             <ChevronLeft className="h-5 w-5" />
@@ -92,7 +95,7 @@ export function WorkCarousel({ images, alt, interval = 4500 }: WorkCarouselProps
           <button
             type="button"
             onClick={() => go(index + 1)}
-            aria-label="下一张"
+            aria-label={text.next}
             className="absolute right-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-white opacity-0 backdrop-blur-sm transition hover:bg-black/55 group-hover:opacity-100 focus-visible:opacity-100"
           >
             <ChevronRight className="h-5 w-5" />
@@ -104,7 +107,7 @@ export function WorkCarousel({ images, alt, interval = 4500 }: WorkCarouselProps
                 key={i}
                 type="button"
                 onClick={() => go(i)}
-                aria-label={`第 ${i + 1} 张`}
+                aria-label={text.goToImage.replace('{index}', String(i + 1))}
                 className={cn(
                   'h-1.5 rounded-full transition-all',
                   i === index ? 'w-5 bg-white' : 'w-1.5 bg-white/55 hover:bg-white/80',

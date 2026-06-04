@@ -32,7 +32,7 @@ export function QrcodeTool() {
   async function handleQrGenerate() {
     setQrError('');
     try {
-      if (!qrText.trim()) throw new Error(t('请输入二维码内容。'));
+      if (!qrText.trim()) throw new Error(t('pleaseEnterQrCodeContent'));
       const url = await QRCode.toDataURL(qrText, {
         width: 360,
         margin: 1,
@@ -40,7 +40,7 @@ export function QrcodeTool() {
       });
       setQrDataUrl(url);
     } catch (error) {
-      setQrError(error instanceof Error ? t(error.message) : t('二维码生成失败。'));
+      setQrError(error instanceof Error ? t(error.message) : t('qrCodeGenerationFailed'));
     }
   }
 
@@ -50,17 +50,17 @@ export function QrcodeTool() {
         className={`${inputClass} min-h-[120px] resize-y`}
         value={qrText}
         onChange={(event) => setQrText(event.target.value)}
-        placeholder={t('输入二维码内容')}
+        placeholder={t('enterQrCodeContent')}
       />
       <Button onClick={handleQrGenerate} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
-        {t('生成二维码')}
+        {t('generateQrCode')}
       </Button>
       {qrError && <OutputBox>{qrError}</OutputBox>}
       {qrDataUrl && (
         <OutputBox className="space-y-3 text-center">
           <img src={qrDataUrl} alt="QR code" className="mx-auto h-44 w-44 rounded-2xl border border-[#e3d7ff] bg-white p-3" />
           <a href={qrDataUrl} download="dci-qrcode.png" className="text-sm text-[#5b3df5] hover:underline">
-            {t('下载 PNG')}
+            {t('downloadPng')}
           </a>
         </OutputBox>
       )}
@@ -86,14 +86,14 @@ export function ImageBase64Tool() {
       setImageBase64Preview(dataUrl);
       setImageBase64Info({ name: file.name, size: file.size });
     } catch (error) {
-      setImageBase64Error(error instanceof Error ? t(error.message) : t('图片读取失败。'));
+      setImageBase64Error(error instanceof Error ? t(error.message) : t('imageReadFailed'));
     }
   }
 
   function handleBase64ToImagePreview() {
     setImageBase64Error('');
     try {
-      if (!imageBase64Value.trim()) throw new Error(t('请输入 Base64 内容。'));
+      if (!imageBase64Value.trim()) throw new Error(t('pleaseEnterBase64Content'));
       const normalized = imageBase64Value.startsWith('data:')
         ? imageBase64Value
         : `data:image/png;base64,${imageBase64Value.replace(/\s+/g, '')}`;
@@ -101,7 +101,7 @@ export function ImageBase64Tool() {
       setImageBase64Preview(normalized);
       setImageBase64Info({ size: dataUrlByteSize(normalized) });
     } catch (error) {
-      setImageBase64Error(error instanceof Error ? t(error.message) : t('Base64 图片内容无效。'));
+      setImageBase64Error(error instanceof Error ? t(error.message) : t('base64ImageContentInvalid'));
     }
   }
 
@@ -110,17 +110,17 @@ export function ImageBase64Tool() {
       <ToolFileInput
         accept="image/*"
         onChange={handleImageFileToBase64}
-        hint={t('支持 PNG / JPG / WebP 等图片，转换完全在本地完成')}
+        hint={t('imageBase64ConvertHint')}
       />
       <textarea
         className={`${inputClass} min-h-[150px] resize-y font-mono`}
         value={imageBase64Value}
         onChange={(event) => setImageBase64Value(event.target.value)}
-        placeholder={t('这里会显示图片 Base64，也可以直接粘贴现成的 Base64')}
+        placeholder={t('imageBase64WillAppearHereOrYouCanPasteExistingBase64')}
       />
       <div className="flex gap-3">
         <Button onClick={handleBase64ToImagePreview} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
-          {t('解析并预览')}
+          {t('parseAndPreview')}
         </Button>
       </div>
       {imageBase64Error && <OutputBox>{imageBase64Error}</OutputBox>}
@@ -155,7 +155,7 @@ export function SvgToImageTool() {
   async function handleSvgConvert() {
     setSvgError('');
     try {
-      if (!svgInput.includes('<svg')) throw new Error(t('请输入完整的 SVG 代码。'));
+      if (!svgInput.includes('<svg')) throw new Error(t('pleaseEnterCompleteSvgCode'));
       const svgBlob = new Blob([svgInput], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(svgBlob);
       const image = await loadImageElement(url);
@@ -163,12 +163,12 @@ export function SvgToImageTool() {
       canvas.width = image.naturalWidth || 512;
       canvas.height = image.naturalHeight || 512;
       const ctx = canvas.getContext('2d');
-      if (!ctx) throw new Error(t('无法初始化画布。'));
+      if (!ctx) throw new Error(t('unableToInitializeCanvas'));
       ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
       setSvgPngUrl(canvas.toDataURL('image/png'));
       URL.revokeObjectURL(url);
     } catch (error) {
-      setSvgError(error instanceof Error ? t(error.message) : t('SVG 转图片失败。'));
+      setSvgError(error instanceof Error ? t(error.message) : t('svgToImageFailed'));
     }
   }
 
@@ -180,14 +180,14 @@ export function SvgToImageTool() {
         onChange={(event) => setSvgInput(event.target.value)}
       />
       <Button onClick={handleSvgConvert} className="rounded-full bg-[#5b3df5] text-white hover:bg-[#4f31d7]">
-        {t('转成 PNG')}
+        {t('convertToPng')}
       </Button>
       {svgError && <OutputBox>{svgError}</OutputBox>}
       {svgPngUrl && (
         <OutputBox className="space-y-3 text-center">
           <img src={svgPngUrl} alt="SVG to PNG result" className="mx-auto max-h-64 rounded-2xl border border-[#e3d7ff] bg-white p-3" />
           <a href={svgPngUrl} download="converted-from-svg.png" className="text-sm text-[#5b3df5] hover:underline">
-            {t('下载 PNG')}
+            {t('downloadPng')}
           </a>
         </OutputBox>
       )}
@@ -219,26 +219,26 @@ export function ImageCompressTool() {
       canvas.width = Math.round(image.width * scale);
       canvas.height = Math.round(image.height * scale);
       const ctx = canvas.getContext('2d');
-      if (!ctx) throw new Error(t('无法初始化画布。'));
+      if (!ctx) throw new Error(t('unableToInitializeCanvas'));
       ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
       const compressed = canvas.toDataURL(compressType, quality);
       setCompressDataUrl(compressed);
       setCompressInfo({ before: file.size, after: dataUrlByteSize(compressed), type: compressType });
     } catch (error) {
-      setCompressError(error instanceof Error ? t(error.message) : t('图片压缩失败。'));
+      setCompressError(error instanceof Error ? t(error.message) : t('imageCompressionFailed'));
     }
   }
 
   return (
     <div className="space-y-3">
-      <ToolFileInput accept="image/*" onChange={handleCompressImage} hint={t('选择要压缩的图片，可调整质量、最大宽度与导出格式')} />
+      <ToolFileInput accept="image/*" onChange={handleCompressImage} hint={t('imageCompressHint')} />
       <div className="grid gap-3 sm:grid-cols-3">
-        <Input className={inputClass} value={compressQuality} onChange={(event) => setCompressQuality(event.target.value)} placeholder={t('质量 0~1')} />
-        <Input className={inputClass} value={compressMaxWidth} onChange={(event) => setCompressMaxWidth(event.target.value)} placeholder={t('最大宽度')} />
+        <Input className={inputClass} value={compressQuality} onChange={(event) => setCompressQuality(event.target.value)} placeholder={t('quality01')} />
+        <Input className={inputClass} value={compressMaxWidth} onChange={(event) => setCompressMaxWidth(event.target.value)} placeholder={t('maxWidth')} />
         <FancySelect
           value={compressType}
           onChange={setCompressType}
-          ariaLabel={t('选择压缩格式')}
+          ariaLabel={t('chooseCompressionFormat')}
           options={[
             { value: 'image/webp', label: 'WebP' },
             { value: 'image/jpeg', label: 'JPEG' },
@@ -249,7 +249,7 @@ export function ImageCompressTool() {
       {compressDataUrl && compressInfo && (
         <OutputBox className="space-y-3">
           <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-            {t(`压缩前 ${formatBytes(compressInfo.before)} · 压缩后 ${formatBytes(compressInfo.after)} · 输出 ${compressInfo.type}`)}
+            {t('beforeCompression')} {formatBytes(compressInfo.before)} · {t('afterCompression')} {formatBytes(compressInfo.after)} · {t('output')} {compressInfo.type}
           </div>
           <img src={compressDataUrl} alt="Compressed result" className="max-h-72 rounded-2xl border border-[#e3d7ff] bg-white object-contain p-2" />
           <a
@@ -257,7 +257,7 @@ export function ImageCompressTool() {
             download={`compressed.${compressType === 'image/webp' ? 'webp' : 'jpg'}`}
             className="text-sm text-[#5b3df5] hover:underline"
           >
-            {t('下载压缩图')}
+            {t('downloadCompressedImage')}
           </a>
         </OutputBox>
       )}
@@ -294,7 +294,7 @@ export function PetGifTool() {
       petGifObjectUrlRef.current = objectUrl;
       setPetGifUrl(objectUrl);
     } catch (error) {
-      setPetGifError(error instanceof Error ? t(error.message) : t('摸头 GIF 生成失败。'));
+      setPetGifError(error instanceof Error ? t(error.message) : t('petGifGenerationFailed'));
     } finally {
       setPetGifBusy(false);
     }
@@ -302,16 +302,16 @@ export function PetGifTool() {
 
   return (
     <div className="space-y-3">
-      <ToolFileInput accept="image/*" onChange={handleGeneratePetGif} hint={t('上传一张头像/图片，生成透明背景的摸头 GIF')} />
+      <ToolFileInput accept="image/*" onChange={handleGeneratePetGif} hint={t('petGifUploadHint')} />
       <div className="text-xs leading-6 text-[#7b69a5] dark:text-[#af9fda]">
-        {t('这版是站内自制的极简摸头动效，不依赖外部服务，会生成透明背景 GIF。')}
+        {t('petGifLocalMinimalNote')}
       </div>
       {petGifError && <OutputBox>{petGifError}</OutputBox>}
       {petGifBusy && (
         <OutputBox>
           <div className="flex items-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" />
-            {t('正在生成 GIF，请稍等…')}
+            {t('generatingGifPleaseWait')}
           </div>
         </OutputBox>
       )}
@@ -323,7 +323,7 @@ export function PetGifTool() {
             className="mx-auto max-h-56 rounded-2xl border border-[#e3d7ff] bg-[radial-gradient(circle_at_center,#f7f2ff,#efe7ff)] p-3"
           />
           <a href={petGifUrl} download="pet-pat.gif" className="text-sm text-[#5b3df5] hover:underline">
-            {t('下载 GIF')}
+            {t('downloadGif')}
           </a>
         </OutputBox>
       )}

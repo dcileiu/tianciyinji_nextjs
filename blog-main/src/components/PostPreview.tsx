@@ -1,6 +1,9 @@
+'use client';
+
 import { Route } from 'next';
 import Link from 'next/link';
 import { useMemo } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 import type { Post } from '@/types/post';
 import Tag, { TagType } from './Tag';
 
@@ -9,6 +12,9 @@ interface PostPreviewProps {
 }
 
 export default function PostPreview({ post }: PostPreviewProps) {
+  const { dictionary, localizedHref } = useI18n();
+  const archiveText = dictionary.archive;
+  const timelineText = dictionary.timeline;
   // console.log('🎨 [预览组件]', {
   //   slug: post.slug,
   //   hasExcerpt: !!post.excerpt,
@@ -34,7 +40,7 @@ export default function PostPreview({ post }: PostPreviewProps) {
       md:shadow-[0_8px_30px_rgb(0,0,0,0.04)] md:dark:shadow-[0_8px_30px_rgb(255,255,255,0.04)]
       md:hover:shadow-[0_16px_45px_rgb(0,0,0,0.1)] md:dark:hover:shadow-[0_16px_45px_rgb(255,255,255,0.1)]"
     >
-      <Link href={`/post/${post.slug}` as Route} className="block" prefetch={true}>
+      <Link href={localizedHref(`/post/${post.slug}`) as Route} className="block" prefetch={true}>
         <div className="flex flex-col space-y-4">
           {/* 标题和摘要 */}
           <div>
@@ -50,13 +56,15 @@ export default function PostPreview({ post }: PostPreviewProps) {
             <div className="flex flex-wrap items-center gap-4 text-sm">
               <time className="text-black/50 dark:text-white/50">{post.date}</time>
               <Tag type={normalizedTag} />
-              <span className="text-black/40 dark:text-white/40">{post.content.length} 字</span>
+              <span className="text-black/40 dark:text-white/40">
+                {archiveText.wordCount.replace('{count}', String(post.content.length))}
+              </span>
             </div>
 
             {/* 右侧继续阅读 */}
             <div className="flex items-center text-sm text-black/40 dark:text-white/40">
               <span className="font-medium group-hover:text-black/60 dark:group-hover:text-white/60 transition-colors">
-                继续阅读
+                {timelineText.readMore}
               </span>
               <svg
                 className="w-5 h-5 ml-2 transform transition-transform group-hover:translate-x-1"

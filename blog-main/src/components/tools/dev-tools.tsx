@@ -62,27 +62,27 @@ function base64UrlDecode(input: string): string {
 }
 
 export function JwtDecodeTool() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [token, setToken] = useState('');
   const result = useMemo(() => {
     if (!token.trim()) return null;
     const parts = token.trim().split('.');
-    if (parts.length < 2) return { error: t('JWT 格式不正确（应为 header.payload.signature）。') };
+    if (parts.length < 2) return { error: t('jwtFormatInvalid') };
     try {
       const header = JSON.parse(base64UrlDecode(parts[0]));
       const payload = JSON.parse(base64UrlDecode(parts[1]));
       return { header, payload };
     } catch {
-      return { error: t('解析失败，请检查 Token 是否完整有效。') };
+      return { error: t('jwtParseFailed') };
     }
-  }, [token]);
+  }, [token, t]);
 
   const renderDates = (payload: Record<string, any>) => {
     const keys = ['iat', 'exp', 'nbf'];
-    const labels: Record<string, string> = { iat: t('签发时间'), exp: t('过期时间'), nbf: t('生效时间') };
+    const labels: Record<string, string> = { iat: t('issuedAt'), exp: t('expiresAt'), nbf: t('validFrom') };
     const rows = keys.filter((k) => payload[k]).map((k) => ({
       label: labels[k],
-      value: new Date(payload[k] * 1000).toLocaleString('zh-CN'),
+      value: new Date(payload[k] * 1000).toLocaleString(locale === 'en' ? 'en-US' : 'zh-CN', { hour12: false }),
       expired: k === 'exp' && payload[k] * 1000 < Date.now(),
     }));
     if (rows.length === 0) return null;
@@ -98,8 +98,8 @@ export function JwtDecodeTool() {
                 : 'border-[#dacdff] bg-[#f7f1ff] text-[#543c8f] dark:border-[#392d56] dark:bg-[#211834] dark:text-[#d8ccff]',
             )}
           >
-            {r.label}：{r.value}
-            {r.expired ? t('（已过期）') : ''}
+            {r.label}: {r.value}
+            {r.expired ? ` ${t('expired')}` : ''}
           </span>
         ))}
       </div>
@@ -264,7 +264,7 @@ export function ShaHashTool() {
             .map((b) => b.toString(16).padStart(2, '0'))
             .join('');
         } catch {
-          next[label] = t('不支持');
+          next[label] = t('unsupported');
         }
       }
       if (!cancelled) setHashes(next);

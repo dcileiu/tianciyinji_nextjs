@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useState } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 import PostPreview from '@/components/PostPreview';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import type { Post } from '@/types/post';
@@ -10,6 +11,8 @@ interface ArchiveContentProps {
 }
 
 export default function ArchiveContent({ initialPosts }: ArchiveContentProps) {
+  const { dictionary } = useI18n();
+  const text = dictionary.archive;
   const [filteredPosts, setFilteredPosts] = useState(initialPosts);
 
   return (
@@ -21,10 +24,10 @@ export default function ArchiveContent({ initialPosts }: ArchiveContentProps) {
         md:shadow-[0_8px_30px_rgb(0,0,0,0.04)] md:dark:shadow-[0_8px_30px_rgb(255,255,255,0.04)]"
       >
         <h1 className="text-3xl md:text-4xl font-medium mb-4 bg-gradient-to-r from-black to-black/60 dark:from-white dark:to-white/60 bg-clip-text text-transparent">
-          归档
+          {text.title}
         </h1>
         <p className="text-base md:text-lg text-black/60 dark:text-white/60 leading-relaxed">
-          这里收录了我所有的博客文章，按时间倒序排列。
+          {text.description}
         </p>
       </div>
 
@@ -35,7 +38,7 @@ export default function ArchiveContent({ initialPosts }: ArchiveContentProps) {
         md:shadow-[0_8px_30px_rgb(0,0,0,0.04)] md:dark:shadow-[0_8px_30px_rgb(255,255,255,0.04)]"
       >
         <div className="p-4 md:p-8 pb-4 md:pb-6 border-b border-black/5 dark:border-white/5">
-          <h2 className="text-lg md:text-xl font-medium text-black/80 dark:text-white/80 mb-4 md:mb-6">全部文章</h2>
+          <h2 className="text-lg md:text-xl font-medium text-black/80 dark:text-white/80 mb-4 md:mb-6">{text.allPosts}</h2>
           <SearchAndFilter posts={initialPosts} onFilter={setFilteredPosts} />
         </div>
         <div className="p-4 md:p-8">
@@ -45,7 +48,7 @@ export default function ArchiveContent({ initialPosts }: ArchiveContentProps) {
                 filteredPosts.map((post) => <PostPreview key={post.slug} post={post} />)
               ) : (
                 <div className="text-center py-8 md:py-12">
-                  <p className="text-base md:text-lg text-black/60 dark:text-white/60">没有找到匹配的文章</p>
+                  <p className="text-base md:text-lg text-black/60 dark:text-white/60">{text.noMatchingPosts}</p>
                 </div>
               )}
             </div>

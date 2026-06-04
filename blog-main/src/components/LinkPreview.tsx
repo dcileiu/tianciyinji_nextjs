@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ExternalLink, Globe } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 
 interface LinkMetadata {
   page_url: string;
@@ -49,6 +50,8 @@ async function fetchMetadata(url: string): Promise<LinkMetadata | null> {
 }
 
 export function LinkPreview({ url, children }: LinkPreviewProps) {
+  const { dictionary } = useI18n();
+  const text = dictionary.linkPreview;
   const [isHovered, setIsHovered] = useState(false);
   const [metadata, setMetadata] = useState<LinkMetadata | null>(null);
   const [loading, setLoading] = useState(false);
@@ -192,7 +195,7 @@ export function LinkPreview({ url, children }: LinkPreviewProps) {
               ) : (
                 <div className="p-4 text-center">
                   <Globe className="w-8 h-8 text-black/20 dark:text-white/20 mx-auto mb-2" />
-                  <p className="text-xs text-black/40 dark:text-white/40">无法加载预览</p>
+                  <p className="text-xs text-black/40 dark:text-white/40">{text.unableToLoad}</p>
                 </div>
               )}
             </div>

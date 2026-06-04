@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 
 interface GamesNavigatorProps {
   gameCount: number;
@@ -8,6 +9,8 @@ interface GamesNavigatorProps {
 }
 
 export default function GamesNavigator({ gameCount, gameTitles = [] }: GamesNavigatorProps) {
+  const { dictionary } = useI18n();
+  const text = dictionary.gamesNavigator;
   const [activeIndex, setActiveIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -80,7 +83,7 @@ export default function GamesNavigator({ gameCount, gameTitles = [] }: GamesNavi
           onClick={scrollPrev}
           disabled={activeIndex === 0}
           className="inline-flex items-center justify-center w-8 h-8 rounded-full text-black/40 dark:text-white/40 hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-          aria-label="上一个游戏"
+          aria-label={text.previous}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M18 15L12 9L6 15" strokeLinecap="square" />
@@ -119,7 +122,7 @@ export default function GamesNavigator({ gameCount, gameTitles = [] }: GamesNavi
                   hoverTimeoutRef.current = setTimeout(() => setShowTooltip(true), 200);
                 }}
                 className="relative flex items-center justify-center w-8 h-4 hover:bg-black/5 dark:hover:bg-white/5 rounded transition-colors"
-                aria-label={gameTitles[index] || `前往游戏 ${index + 1}`}
+                aria-label={gameTitles[index] || text.goToGame.replace('{index}', String(index + 1))}
               >
                 <div className={`rounded-full transition-all duration-200 ${dotClass}`} />
               </button>
@@ -131,7 +134,7 @@ export default function GamesNavigator({ gameCount, gameTitles = [] }: GamesNavi
           onClick={scrollNext}
           disabled={activeIndex === gameCount - 1}
           className="inline-flex items-center justify-center w-8 h-8 rounded-full text-black/40 dark:text-white/40 hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-          aria-label="下一个游戏"
+          aria-label={text.next}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M6 9L12 15L18 9" strokeLinecap="square" />
