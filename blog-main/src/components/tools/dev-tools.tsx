@@ -163,11 +163,11 @@ function parseCronField(field: string, min: number, max: number): number[] {
 }
 
 export function CronTool() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [expr, setExpr] = useState('0 9 * * 1-5');
   const result = useMemo(() => {
     const fields = expr.trim().split(/\s+/);
-    if (fields.length !== 5) return { error: t('请输入标准 5 段 cron：分 时 日 月 周') };
+    if (fields.length !== 5) return { error: t('pleaseEnterStandardFivePartCron') };
     try {
       const minute = parseCronField(fields[0], 0, 59);
       const hour = parseCronField(fields[1], 0, 23);
@@ -194,16 +194,16 @@ export function CronTool() {
           month.includes(cursor.getMonth() + 1) &&
           dayOk
         ) {
-          runs.push(cursor.toLocaleString('zh-CN'));
+          runs.push(cursor.toLocaleString(locale === 'en' ? 'en-US' : 'zh-CN', { hour12: false }));
         }
         cursor.setMinutes(cursor.getMinutes() + 1);
         i++;
       }
       return { runs };
     } catch {
-      return { error: t('cron 表达式解析失败，请检查格式。') };
+      return { error: t('cronExpressionParseFailed') };
     }
-  }, [expr]);
+  }, [expr, locale, t]);
 
   return (
     <div className="space-y-3">
@@ -211,23 +211,23 @@ export function CronTool() {
         className={`${inputClass} font-mono`}
         value={expr}
         onChange={(e) => setExpr(e.target.value)}
-        placeholder={t('分 时 日 月 周，例如 0 9 * * 1-5')}
+        placeholder={t('minuteHourDayMonthWeekdayForExample0915')}
       />
       <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-        {t('字段顺序：分钟(0-59) 小时(0-23) 日(1-31) 月(1-12) 星期(0-6，0=周日)')}
+        {t('cronFieldOrderHint')}
       </div>
       {result.error ? (
         <div className={errBox}>{result.error}</div>
       ) : (
         <div className={outBox}>
           <div className="mb-2 text-xs font-medium text-[#7b69a5] dark:text-[#af9fda]">
-            {t('接下来 5 次执行时间')}
+            {t('nextFiveRunTimes')}
           </div>
           <ul className="space-y-1 text-sm text-[#3a2c63] dark:text-[#e6def9]">
             {result.runs?.length ? (
               result.runs.map((r, i) => <li key={i}>· {r}</li>)
             ) : (
-              <li className="text-[#7b69a5] dark:text-[#af9fda]">{t('一年内没有匹配的执行时间')}</li>
+              <li className="text-[#7b69a5] dark:text-[#af9fda]">{t('noMatchingRunTimeWithinOneYear')}</li>
             )}
           </ul>
         </div>
@@ -302,13 +302,13 @@ export function ShaHashTool() {
 
 /* ============================ 进制转换 ============================ */
 const DIGITS = '0123456789abcdefghijklmnopqrstuvwxyz';
-function convertBase(value: string, from: number, to: number): string {
+function convertBase(value: string, from: number, to: number, invalidDigitMessage: (char: string, base: number) => string): string {
   const clean = value.trim().toLowerCase();
   if (!clean) return '';
   let n = BigInt(0);
   for (const ch of clean) {
     const d = DIGITS.indexOf(ch);
-    if (d < 0 || d >= from) throw new Error(`字符 "${ch}" 不属于 ${from} 进制`);
+    if (d < 0 || d >= from) throw new Error(invalidDigitMessage(ch, from));
     n = n * BigInt(from) + BigInt(d);
   }
   if (n === BigInt(0)) return '0';
@@ -326,22 +326,24 @@ export function BaseConvertTool() {
   const [value, setValue] = useState('255');
   const [from, setFrom] = useState('10');
   const presets = [
-    { base: 2, label: '二进制' },
-    { base: 8, label: '八进制' },
-    { base: 10, label: '十进制' },
-    { base: 16, label: '十六进制' },
+    { base: 2, label: 'binary' },
+    { base: 8, label: 'octal' },
+    { base: 10, label: 'decimal' },
+    { base: 16, label: 'hexadecimal' },
   ];
   const { results, error } = useMemo(() => {
     try {
       const fromBase = parseInt(from, 10);
-      if (fromBase < 2 || fromBase > 36) throw new Error(t('进制需在 2-36 之间'));
+      if (fromBase < 2 || fromBase > 36) throw new Error(t('baseMustBeBetween2And36'));
       const res = presets.map((p) => ({
         ...p,
-        value: convertBase(value, fromBase, p.base).toUpperCase(),
+        value: convertBase(value, fromBase, p.base, (char, base) =>
+          t('invalidDigitForBase').replace('{char}', char).replace('{base}', String(base)),
+        ).toUpperCase(),
       }));
       return { results: res, error: '' };
     } catch (e) {
-      return { results: [], error: e instanceof Error ? t(e.message) : t('转换失败') };
+      return { results: [], error: e instanceof Error ? t(e.message) : t('conversionFailed') };
     }
   }, [value, from, t]);
 
@@ -370,7 +372,7 @@ export function BaseConvertTool() {
             <div key={r.base} className={`${outBox} flex items-center justify-between gap-2`}>
               <div className="min-w-0">
                 <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-                  {t(r.label)}（{r.base}）
+                  {t(r.label)} ({r.base})
                 </div>
                 <div className="break-all font-mono text-sm text-[#3a2c63] dark:text-[#e6def9]">{r.value}</div>
               </div>

@@ -32,7 +32,7 @@ function CopyCss({ css }: { css: string }) {
           }
         }}
         className="shrink-0 text-[#9686c0] transition hover:text-[#5b3df5]"
-        aria-label={t('复制 CSS')}
+        aria-label={t('copyCss')}
       >
         {copied ? <Check className="h-4 w-4 text-[#5b3df5]" /> : <Copy className="h-4 w-4" />}
       </button>
@@ -73,13 +73,13 @@ export function CssGradientTool() {
             onClick={() => setType(tBtn)}
             className={cn('rounded-full px-4 py-2 text-sm transition', type === tBtn ? 'bg-[#5b3df5] text-white' : 'bg-[#efe8ff] text-[#5b3df5] dark:bg-[#221635] dark:text-[#d9ccff]')}
           >
-            {tBtn === 'linear' ? t('线性') : t('径向')}
+            {tBtn === 'linear' ? t('linear') : t('radial')}
           </button>
         ))}
         <input type="color" value={c1} onChange={(e) => setC1(e.target.value)} className="h-9 w-10 cursor-pointer rounded-lg border border-[#dfd3ff] dark:border-[#33274f]" />
         <input type="color" value={c2} onChange={(e) => setC2(e.target.value)} className="h-9 w-10 cursor-pointer rounded-lg border border-[#dfd3ff] dark:border-[#33274f]" />
       </div>
-      {type === 'linear' && <Slider label="角度" value={angle} onChange={setAngle} min={0} max={360} unit="°" />}
+      {type === 'linear' && <Slider label="angle" value={angle} onChange={setAngle} min={0} max={360} unit="°" />}
       <div className="h-24 w-full rounded-2xl border border-[#ece3ff] dark:border-[#2c2347]" style={{ background: css }} />
       <CopyCss css={`background: ${css};`} />
     </div>
@@ -109,17 +109,17 @@ export function BoxShadowTool() {
   return (
     <div className="space-y-3">
       <div className="grid gap-2 sm:grid-cols-2">
-        <Slider label="水平 X" value={x} onChange={setX} min={-50} max={50} />
-        <Slider label="垂直 Y" value={y} onChange={setY} min={-50} max={50} />
-        <Slider label="模糊" value={blur} onChange={setBlur} min={0} max={100} />
-        <Slider label="扩散" value={spread} onChange={setSpread} min={-50} max={50} />
-        <Slider label="透明度" value={opacity} onChange={setOpacity} min={0} max={1} step={0.05} unit="" />
+        <Slider label="horizontalX" value={x} onChange={setX} min={-50} max={50} />
+        <Slider label="verticalY" value={y} onChange={setY} min={-50} max={50} />
+        <Slider label="blur" value={blur} onChange={setBlur} min={0} max={100} />
+        <Slider label="spread" value={spread} onChange={setSpread} min={-50} max={50} />
+        <Slider label="opacity" value={opacity} onChange={setOpacity} min={0} max={1} step={0.05} unit="" />
         <label className="flex items-center gap-2 text-sm text-[#5c4a88] dark:text-[#d2c6f3]">
-          <span className="w-20 shrink-0">{t('颜色')}</span>
+          <span className="w-20 shrink-0">{t('color')}</span>
           <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-8 w-10 cursor-pointer rounded border border-[#dfd3ff] dark:border-[#33274f]" />
           <label className="ml-2 flex items-center gap-1.5">
             <input type="checkbox" checked={inset} onChange={(e) => setInset(e.target.checked)} className="accent-[#5b3df5]" />
-            {t('内阴影')}
+            {t('innerShadow')}
           </label>
         </label>
       </div>
@@ -142,10 +142,10 @@ export function BorderRadiusTool() {
   return (
     <div className="space-y-3">
       <div className="grid gap-2 sm:grid-cols-2">
-        <Slider label="左上" value={tl} onChange={setTl} min={0} max={150} />
-        <Slider label="右上" value={tr} onChange={setTr} min={0} max={150} />
-        <Slider label="右下" value={br} onChange={setBr} min={0} max={150} />
-        <Slider label="左下" value={bl} onChange={setBl} min={0} max={150} />
+        <Slider label="topLeft" value={tl} onChange={setTl} min={0} max={150} />
+        <Slider label="topRight" value={tr} onChange={setTr} min={0} max={150} />
+        <Slider label="bottomRight" value={br} onChange={setBr} min={0} max={150} />
+        <Slider label="bottomLeft" value={bl} onChange={setBl} min={0} max={150} />
       </div>
       <div className="flex items-center justify-center rounded-2xl border border-[#ece3ff] bg-[#faf7ff] py-10 dark:border-[#2c2347] dark:bg-[#181127]">
         <div className="h-28 w-40 border-2 border-[#5b3df5] bg-[#ece3ff] dark:bg-[#2b1f43]" style={{ borderRadius: css }} />

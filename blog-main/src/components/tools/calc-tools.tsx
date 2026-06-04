@@ -30,6 +30,24 @@ function money(v: number) {
   return v.toLocaleString('zh-CN', { maximumFractionDigits: 2 });
 }
 
+function pluralUnit(value: number, singular: string, plural: string) {
+  return Math.abs(value) === 1 ? singular : plural;
+}
+
+function formatDayCount(days: number, locale: string) {
+  return locale === 'en' ? `${days} ${pluralUnit(days, 'day', 'days')}` : `${days} 天`;
+}
+
+function formatWeekCount(weeks: string, locale: string) {
+  const value = Number(weeks);
+  return locale === 'en' ? `${weeks} ${pluralUnit(value, 'week', 'weeks')}` : `${weeks} 周`;
+}
+
+function formatYearMonth(years: number, months: number, locale: string) {
+  if (locale !== 'en') return `${years}年${months}个月`;
+  return `${years} ${pluralUnit(years, 'year', 'years')} ${months} ${pluralUnit(months, 'month', 'months')}`;
+}
+
 /* ===================== 房贷计算器 ===================== */
 export function LoanCalcTool() {
   const { t } = useTranslation();
@@ -59,21 +77,21 @@ export function LoanCalcTool() {
   return (
     <div className="space-y-3">
       <div className="grid gap-3 sm:grid-cols-3">
-        <Field label="贷款金额（万元）">
+        <Field label="loanAmountTenThousandYuan">
           <Input className={inputClass} value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" />
         </Field>
-        <Field label="年利率（%）">
+        <Field label="annualInterestRatePercent">
           <Input className={inputClass} value={rate} onChange={(e) => setRate(e.target.value)} inputMode="decimal" />
         </Field>
-        <Field label="贷款年限（年）">
+        <Field label="loanTermYears">
           <Input className={inputClass} value={years} onChange={(e) => setYears(e.target.value)} inputMode="numeric" />
         </Field>
       </div>
       <div className="flex gap-2">
         {(
           [
-            { id: 'equal-payment', label: '等额本息' },
-            { id: 'equal-principal', label: '等额本金' },
+            { id: 'equal-payment', label: 'equalPayment' },
+            { id: 'equal-principal', label: 'equalPrincipal' },
           ] as const
         ).map((m) => (
           <button
@@ -93,23 +111,23 @@ export function LoanCalcTool() {
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {mode === 'equal-payment' ? (
             <div className={statBox}>
-              <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('每月月供')}</div>
+              <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('monthlyPayment')}</div>
               <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">¥{money(result.monthly)}</div>
             </div>
           ) : (
             <div className={statBox}>
-              <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('首月 / 末月')}</div>
+              <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('firstLastMonth')}</div>
               <div className="mt-1 text-sm font-semibold text-[#3a2c63] dark:text-[#f1ebff]">
                 ¥{money(result.first)} / ¥{money(result.last)}
               </div>
             </div>
           )}
           <div className={statBox}>
-            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('总利息')}</div>
+            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('totalInterest')}</div>
             <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">¥{money(result.interest)}</div>
           </div>
           <div className={statBox}>
-            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('总还款')}</div>
+            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('totalRepayment')}</div>
             <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">¥{money(result.total)}</div>
           </div>
         </div>
@@ -146,32 +164,32 @@ export function IncomeTaxTool() {
   return (
     <div className="space-y-3">
       <div className="grid gap-3 sm:grid-cols-3">
-        <Field label="税前月薪（元）">
+        <Field label="grossMonthlySalaryYuan">
           <Input className={inputClass} value={salary} onChange={(e) => setSalary(e.target.value)} inputMode="decimal" />
         </Field>
-        <Field label="五险一金（元）">
+        <Field label="socialInsuranceHousingFundYuan">
           <Input className={inputClass} value={insurance} onChange={(e) => setInsurance(e.target.value)} inputMode="decimal" />
         </Field>
-        <Field label="专项附加扣除（元）">
+        <Field label="specialAdditionalDeductionYuan">
           <Input className={inputClass} value={special} onChange={(e) => setSpecial(e.target.value)} inputMode="decimal" />
         </Field>
       </div>
       <div className="grid grid-cols-3 gap-2">
         <div className={statBox}>
-          <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('应纳税所得额')}</div>
+          <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('taxableIncome')}</div>
           <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">¥{money(result.taxable)}</div>
         </div>
         <div className={statBox}>
-          <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('应缴个税')}</div>
+          <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('incomeTax')}</div>
           <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">¥{money(result.tax)}</div>
         </div>
         <div className={statBox}>
-          <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('税后到手')}</div>
+          <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('afterTaxIncome')}</div>
           <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">¥{money(result.after)}</div>
         </div>
       </div>
       <p className="text-xs leading-6 text-[#7b69a5] dark:text-[#af9fda]">
-        {t('按月度税率表简化计算（起征点 5000 元），实际个税以累计预扣法为准，结果仅供参考。')}
+        {t('monthlyTaxTableSimplifiedNote')}
       </p>
     </div>
   );
@@ -188,16 +206,16 @@ export function BmiTool() {
     const w = num(weight);
     if (h <= 0 || w <= 0) return null;
     const bmi = w / (h * h);
-    let level = '正常';
+    let level = 'normal';
     let color = 'text-[#0f8f4f] dark:text-[#7ee0a6]';
     if (bmi < 18.5) {
-      level = '偏瘦';
+      level = 'underweight';
       color = 'text-[#3b82f6]';
     } else if (bmi >= 28) {
-      level = '肥胖';
+      level = 'obese';
       color = 'text-[#c4304a] dark:text-[#ff9aab]';
     } else if (bmi >= 24) {
-      level = '超重';
+      level = 'overweight';
       color = 'text-[#d8763f]';
     }
     return { bmi, level, color };
@@ -206,10 +224,10 @@ export function BmiTool() {
   return (
     <div className="space-y-3">
       <div className="grid gap-3 sm:grid-cols-2">
-        <Field label="身高（cm）">
+        <Field label="heightCm">
           <Input className={inputClass} value={height} onChange={(e) => setHeight(e.target.value)} inputMode="decimal" />
         </Field>
-        <Field label="体重（kg）">
+        <Field label="bodyWeightKg">
           <Input className={inputClass} value={weight} onChange={(e) => setWeight(e.target.value)} inputMode="decimal" />
         </Field>
       </div>
@@ -220,7 +238,7 @@ export function BmiTool() {
         </div>
       )}
       <p className="text-xs text-[#7b69a5] dark:text-[#af9fda]">
-        {t('参考中国标准：偏瘦 <18.5，正常 18.5–24，超重 24–28，肥胖 ≥28。')}
+        {t('bmiChineseStandardNote')}
       </p>
     </div>
   );
@@ -228,7 +246,7 @@ export function BmiTool() {
 
 /* ===================== 日期间隔计算 ===================== */
 export function DateDiffTool() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const today = new Date().toISOString().slice(0, 10);
   const [start, setStart] = useState('2000-01-01');
   const [end, setEnd] = useState(today);
@@ -254,27 +272,31 @@ export function DateDiffTool() {
   return (
     <div className="space-y-3">
       <div className="grid gap-3 sm:grid-cols-2">
-        <Field label="开始日期">
+        <Field label="startDate">
           <Input className={inputClass} type="date" value={start} onChange={(e) => setStart(e.target.value)} />
         </Field>
-        <Field label="结束日期">
+        <Field label="endDate">
           <Input className={inputClass} type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
         </Field>
       </div>
       {result && (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           <div className={statBox}>
-            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('相差天数')}</div>
-            <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">{t(`${result.absDays} 天`)}</div>
-          </div>
-          <div className={statBox}>
-            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('约')}</div>
-            <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">{t(`${(result.absDays / 7).toFixed(1)} 周`)}</div>
-          </div>
-          <div className={statBox}>
-            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('年/月')}</div>
+            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('dayDifference')}</div>
             <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">
-              {t(`${result.years}年${result.months}个月`)}
+              {formatDayCount(result.absDays, locale)}
+            </div>
+          </div>
+          <div className={statBox}>
+            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('about')}</div>
+            <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">
+              {formatWeekCount((result.absDays / 7).toFixed(1), locale)}
+            </div>
+          </div>
+          <div className={statBox}>
+            <div className="text-xs text-[#7b69a5] dark:text-[#af9fda]">{t('yearMonth')}</div>
+            <div className="mt-1 text-base font-semibold text-[#3a2c63] dark:text-[#f1ebff]">
+              {formatYearMonth(result.years, result.months, locale)}
             </div>
           </div>
         </div>

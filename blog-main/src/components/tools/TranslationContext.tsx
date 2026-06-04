@@ -88,11 +88,14 @@ function translateExact(value: string, exactPairs: Record<string, string>) {
 }
 
 export function translateText(value: string, locale: Locale): string {
-  if (locale !== 'en') return value;
-
   const exactPairs = getDictionary(locale).toolTranslations.exact as Record<string, string>;
   const source = normalize(value);
   if (!source) return source;
+
+  const byKey = exactPairs[source];
+  if (byKey) return byKey;
+
+  if (locale !== 'en') return value;
 
   // Direct lookup
   const direct = translateExact(source, exactPairs);
