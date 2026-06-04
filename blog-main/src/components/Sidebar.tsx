@@ -3,7 +3,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, ChevronRight, X } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useI18n } from '@/components/I18nProvider';
 import type { NavItem } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -23,6 +24,7 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
   const { localizedHref } = useI18n();
+  const router = useRouter();
   const asideRef = useRef<HTMLElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [shouldRender, setShouldRender] = useState(isOpen);
@@ -78,7 +80,21 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
     }
   };
 
-  const visibleItems = navItems.filter((item) => item.enabled);
+  const visibleItems = useMemo(() => navItems.filter((item) => item.enabled), [navItems]);
+  const navHrefs = useMemo(
+    () =>
+      visibleItems.flatMap((item) => [
+        localizedHref(item.href),
+        ...(item.children?.filter((child) => child.enabled).map((child) => localizedHref(child.href)) ?? []),
+      ]),
+    [localizedHref, visibleItems],
+  );
+
+  useEffect(() => {
+    for (const href of navHrefs) {
+      router.prefetch(href as any);
+    }
+  }, [navHrefs, router]);
 
   return (
     <>
