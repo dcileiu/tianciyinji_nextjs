@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import JsonLd from '@/components/JsonLd';
 import { ThemeProvider } from 'next-themes';
 // import { ChristmasEffect } from '@/components/ChristmasEffect';
-import { FabricBackground } from '@/components/FabricBackground';
+import FabricBackgroundLazy from '@/components/FabricBackgroundLazy';
 import { MusicRuntime } from '@/components/music/music-runtime';
 import { defaultLocale, getLocalizedSiteConfig } from '@/lib/i18n';
 import { absoluteUrl, siteConfig, siteKeywords } from '@/lib/site-config';
@@ -127,7 +127,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <JsonLd data={[buildWebSiteJsonLd(), buildPersonJsonLd()]} />
           <MusicRuntime>
             {children}
-            <FabricBackground />
+            <FabricBackgroundLazy />
             {/* 下雪 + 地面积雪开场效果，已按需关闭 */}
             {/* <ChristmasEffect zIndex={0} showCursorHat={false} /> */}
           </MusicRuntime>

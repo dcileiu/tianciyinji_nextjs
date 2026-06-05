@@ -34,6 +34,8 @@ function LayoutShell({ children, footer }: { children: React.ReactNode; footer?:
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  // 装饰性右侧 Dragon.gif：首屏空闲后再渲染，避免与首屏内容争抢加载
+  const [showDecor, setShowDecor] = useState(false);
 
   // 某些页面可能不需要显示侧边栏
   const isAuthPage = cleanPathname === '/login' || cleanPathname === '/setup';
@@ -98,6 +100,22 @@ function LayoutShell({ children, footer }: { children: React.ReactNode; footer?:
     return () => window.removeEventListener('resize', checkMobile);
   }, [isInitialized, isMobile, isSidebarOpen]);
 
+  // 首屏空闲后再挂载装饰图
+  useEffect(() => {
+    const win = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+
+    if (typeof win.requestIdleCallback === 'function') {
+      const id = win.requestIdleCallback(() => setShowDecor(true), { timeout: 2000 });
+      return () => win.cancelIdleCallback?.(id);
+    }
+
+    const timer = window.setTimeout(() => setShowDecor(true), 800);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   const handleToggleSidebar = () => {
     const newState = !isSidebarOpen;
     setSidebarOpen(newState);
@@ -137,7 +155,7 @@ function LayoutShell({ children, footer }: { children: React.ReactNode; footer?:
         />
       )}
 
-      {!isAuthPage && !isFullscreenPage && (
+      {!isAuthPage && !isFullscreenPage && showDecor && (
         <Image
           src="/Dragon.gif"
           alt=""
