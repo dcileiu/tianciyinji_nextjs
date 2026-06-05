@@ -2,8 +2,8 @@ import type { NavItem } from './types';
 
 // Edit this file first when you want to customize the site's identity.
 export const siteConfig = {
-  name: 'Dci',
-  title: 'Dci',
+  name: '刘典赐的工具箱',
+  title: '刘典赐的工具箱',
   description: '记录博客、作品、资源与一些长期主义的尝试',
   url: process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://itianci.cn',
   language: 'zh-CN',
@@ -20,7 +20,7 @@ export const siteConfig = {
     rss: '/rss',
   },
   home: {
-    eyebrow: 'Liu Dci\'s Blog',
+    eyebrow: '刘典赐的工具箱',
     title: '记录博客、作品、资源与一些长期主义的尝试',
     intro:
       '这里是我的个人站点，用来发布文章、整理作品、沉淀资源、小工具，也公开一些正在进行中的想法与实验。',

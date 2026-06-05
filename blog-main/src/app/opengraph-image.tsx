@@ -9,7 +9,32 @@ export const size = {
 };
 export const contentType = 'image/png';
 
-export default function OpenGraphImage() {
+// 仅按需要渲染的文字向 Google Fonts 拉取中文字体子集（体积很小），
+// 让 OG 图能显示中文站名；失败时回退拉丁字样，保证图始终能生成。
+async function loadGoogleFont(family: string, text: string) {
+  const url = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(
+    family,
+  )}:wght@700&text=${encodeURIComponent(text)}`;
+  const css = await (await fetch(url)).text();
+  const resource = css.match(/src: url\((.+?)\) format\(/);
+  if (!resource) throw new Error('font url not found');
+  const res = await fetch(resource[1]);
+  if (!res.ok) throw new Error('font fetch failed');
+  return res.arrayBuffer();
+}
+
+export default async function OpenGraphImage() {
+  let titleText: string = siteConfig.name;
+  let fonts: { name: string; data: ArrayBuffer; style: 'normal'; weight: 700 }[] | undefined;
+
+  try {
+    const data = await loadGoogleFont('Noto Sans SC', siteConfig.name);
+    fonts = [{ name: 'Noto Sans SC', data, style: 'normal', weight: 700 }];
+  } catch {
+    titleText = 'Dci';
+    fonts = undefined;
+  }
+
   return new ImageResponse(
     (
       <div
@@ -47,7 +72,16 @@ export default function OpenGraphImage() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-          <div style={{ fontSize: 108, fontWeight: 700, lineHeight: 1, letterSpacing: -2 }}>Dci</div>
+          <div
+            style={{
+              fontSize: 108,
+              fontWeight: 700,
+              lineHeight: 1.1,
+              fontFamily: fonts ? 'Noto Sans SC' : undefined,
+            }}
+          >
+            {titleText}
+          </div>
           <div style={{ fontSize: 34, maxWidth: 920, color: '#d8cdff', lineHeight: 1.4 }}>
             Blog, works, curated resources and long-term projects.
           </div>
@@ -59,6 +93,6 @@ export default function OpenGraphImage() {
         </div>
       </div>
     ),
-    size
+    { ...size, fonts }
   );
 }

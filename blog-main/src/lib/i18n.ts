@@ -38,8 +38,8 @@ export function localizedHref(href: string, locale: Locale) {
 }
 
 const common = {
-  name: 'Dci',
-  title: 'Dci',
+  name: '刘典赐的工具箱',
+  title: '刘典赐的工具箱',
   url: process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://itianci.cn',
   avatar: '/avatar/avatar.webp',
   email: 'dcileiu@outlook.com',

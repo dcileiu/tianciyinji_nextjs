@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { useI18n } from "@/components/I18nProvider";
 import dynamic from "next/dynamic";
 import { SectionCard } from "@/components/tools/tool-ui";
@@ -213,12 +213,16 @@ type ToolId = (typeof toolCatalog)[number]["id"];
 type ToolFilter = "all" | ToolId;
 type SectionFilter = "all" | SectionId;
 
+const emptySubscribe = () => () => {};
+function getUrlTool(): string | null {
+  if (typeof window === "undefined") return null;
+  return new URLSearchParams(window.location.search).get("tool");
+}
+
 export default function ToolsClientPage({
   section,
-  initialTool,
 }: {
   section?: SectionId;
-  initialTool?: string;
 }) {
   const { dictionary, localizedHref } = useI18n();
   const toolsText = dictionary.toolsPage;
@@ -240,16 +244,21 @@ export default function ToolsClientPage({
       })),
     [catalog, toolsText.sections]
   );
-  const validInitialTool: ToolFilter =
-    initialTool &&
-    catalog.some(
-      (tool) =>
-        tool.id === initialTool && (!section || tool.sectionId === section),
+  // ?tool= 深链读取：用 useSyncExternalStore 让客户端首帧即拿到选中的工具。
+  // 从聚合页点击工具（客户端导航）时，不再出现“先展开全部、再收起到单个工具”的闪动；
+  // 页面本身仍是静态、可被路由预取。用户在 tab 间切换时用 toolOverride 接管。
+  const urlTool = useSyncExternalStore(emptySubscribe, getUrlTool, () => null);
+  const urlSelectedTool: ToolFilter =
+    urlTool &&
+    toolCatalog.some(
+      (item) => item.id === urlTool && (!section || item.sectionId === section),
     )
-      ? (initialTool as ToolFilter)
+      ? (urlTool as ToolFilter)
       : "all";
 
-  const [selectedTool, setSelectedTool] = useState<ToolFilter>(validInitialTool);
+  const [toolOverride, setToolOverride] = useState<ToolFilter | null>(null);
+  const selectedTool = toolOverride ?? urlSelectedTool;
+  const setSelectedTool = setToolOverride;
   const [selectedSection, setSelectedSection] = useState<SectionFilter>(
     section ?? "all",
   );

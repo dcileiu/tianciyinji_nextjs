@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
 import JsonLd from '@/components/JsonLd';
 import ToolsHub from '@/components/ToolsHub';
-import { getDictionary } from '@/lib/i18n';
-import { getLocale } from '@/lib/i18n-server';
+import { getDictionary, normalizeLocale } from '@/lib/i18n';
 import { pageTitle } from '@/lib/site-config';
 import { buildCollectionPageJsonLd, buildPageMetadata } from '@/lib/seo';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const locale = normalizeLocale((await params).locale);
   const text = getDictionary(locale).toolsHub;
   return buildPageMetadata({
     title: pageTitle(text.metadataTitle),
@@ -18,8 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function ToolsPage() {
-  const locale = await getLocale();
+export default async function ToolsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const locale = normalizeLocale((await params).locale);
   const text = getDictionary(locale).toolsHub;
   return (
     <>

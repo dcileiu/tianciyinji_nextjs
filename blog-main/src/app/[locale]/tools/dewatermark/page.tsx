@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import DewatermarkClient from '@/components/DewatermarkClient';
 import JsonLd from '@/components/JsonLd';
-import { getLocale } from '@/lib/i18n-server';
+import { normalizeLocale } from '@/lib/i18n';
 import { buildCollectionPageJsonLd, buildPageMetadata } from '@/lib/seo';
 import { pageTitle } from '@/lib/site-config';
 
@@ -20,14 +20,14 @@ const copy = {
   },
 } as const;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const locale = normalizeLocale((await params).locale);
   const text = copy[locale];
   return buildPageMetadata({ title: pageTitle(text.title), description: text.description, path: '/tools/dewatermark', keywords: [...text.keywords], locale });
 }
 
-export default async function DewatermarkPage() {
-  const locale = await getLocale();
+export default async function DewatermarkPage({ params }: { params: Promise<{ locale: string }> }) {
+  const locale = normalizeLocale((await params).locale);
   const text = copy[locale];
   return (
     <>

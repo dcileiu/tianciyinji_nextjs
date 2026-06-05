@@ -328,22 +328,22 @@ export default function ToolsHub({ locale }: { locale: Locale }) {
           return (
             <div
               key={module.href}
-              className="group flex flex-col rounded-[28px] border border-[#e4d8ff] bg-[linear-gradient(135deg,rgba(255,255,255,0.97),rgba(247,242,255,0.92))] p-5 shadow-[0_22px_70px_rgba(91,61,245,0.06)] transition hover:border-[#8b6bff] hover:shadow-[0_26px_80px_rgba(91,61,245,0.14)] dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.92),rgba(15,11,27,0.96))] sm:p-6"
+              className="group flex flex-col rounded-[28px] border border-[#e4d8ff] bg-[linear-gradient(135deg,rgba(124,92,255,0.12),rgba(244,237,255,0.6))] p-5 shadow-[0_22px_70px_rgba(91,61,245,0.06)] transition hover:border-[#8b6bff] hover:shadow-[0_26px_80px_rgba(91,61,245,0.14)] dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(60,42,120,0.5),rgba(18,13,31,0.92))] sm:p-6"
             >
-              <Link href={localizedHref(module.href, locale) as Route} className="flex items-start justify-between gap-3">
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ece3ff] text-[#5b3df5] transition group-hover:scale-105 dark:bg-[#2b1f43] dark:text-[#cbbcff]">
+              <Link href={localizedHref(module.href, locale) as Route} className="flex items-center gap-3">
+                <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#ece3ff] text-[#5b3df5] transition group-hover:scale-105 dark:bg-[#2b1f43] dark:text-[#cbbcff]">
                   <Icon className="h-6 w-6" />
                 </span>
-                <span className="rounded-full bg-[#efe6ff] px-2.5 py-1 text-xs font-semibold text-[#5b3df5] dark:bg-[#2b1f43] dark:text-[#efe9ff]">
+                <h2 className="min-w-0 flex-1 text-xl font-semibold tracking-tight text-[#2e2150] transition group-hover:text-[#4f31d7] dark:text-[#f4efff] dark:group-hover:text-[#cbbcff]">
+                  {module.title}
+                </h2>
+                <span className="flex-shrink-0 self-start rounded-full bg-[#efe6ff] px-2.5 py-1 text-xs font-semibold text-[#5b3df5] dark:bg-[#2b1f43] dark:text-[#efe9ff]">
                   {text.countLabel.replace('{count}', String(module.count))}
                 </span>
               </Link>
 
-              <Link href={localizedHref(module.href, locale) as Route} className="mt-4 block">
-                <h2 className="text-xl font-semibold tracking-tight text-[#2e2150] transition group-hover:text-[#4f31d7] dark:text-[#f4efff] dark:group-hover:text-[#cbbcff]">
-                  {module.title}
-                </h2>
-                <p className="mt-2 text-sm leading-7 text-[#66568f] dark:text-[#c4b6eb]">
+              <Link href={localizedHref(module.href, locale) as Route} className="mt-3 block">
+                <p className="text-sm leading-7 text-[#66568f] dark:text-[#c4b6eb]">
                   {module.description}
                 </p>
               </Link>

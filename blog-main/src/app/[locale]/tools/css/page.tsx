@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import JsonLd from '@/components/JsonLd';
 import ToolsClientPage from '@/components/ToolsClientPage';
-import { getLocale } from '@/lib/i18n-server';
+import { normalizeLocale } from '@/lib/i18n';
 import { buildCollectionPageJsonLd, buildPageMetadata } from '@/lib/seo';
 import { pageTitle } from '@/lib/site-config';
 
@@ -19,20 +19,19 @@ const copy = {
   },
 } as const;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const locale = normalizeLocale((await params).locale);
   const text = copy[locale];
   return buildPageMetadata({ title: pageTitle(text.title), description: text.description, path: '/tools/css', keywords: [...text.keywords], locale });
 }
 
-export default async function CssToolsPage({ searchParams }: { searchParams: Promise<{ tool?: string }> }) {
-  const { tool } = await searchParams;
-  const locale = await getLocale();
+export default async function CssToolsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const locale = normalizeLocale((await params).locale);
   const text = copy[locale];
   return (
     <>
       <JsonLd data={buildCollectionPageJsonLd({ title: pageTitle(text.title), description: text.description, path: '/tools/css', locale })} />
-      <ToolsClientPage section="css-tools" initialTool={tool} />
+      <ToolsClientPage section="css-tools" />
     </>
   );
 }
