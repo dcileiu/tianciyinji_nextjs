@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import HomePageClient from "@/components/HomePageClient";
-import HomeIntroOverlay from "@/components/HomeIntroOverlay";
+// import HomeIntroOverlay from "@/components/HomeIntroOverlay";
 // import HomeRepulsionField from '@/components/HomeRepulsionField';
 import { siteConfig } from "@/lib/site-config";
 import JsonLd from "@/components/JsonLd";
@@ -50,7 +50,8 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
           ),
         ]}
       />
-      <HomeIntroOverlay />
+      {/* 首屏开场加载动画，已按需关闭 */}
+      {/* <HomeIntroOverlay /> */}
       <HomePageClient posts={posts as Post[]} total={total} />
       {/* <HomeRepulsionField /> */}
     </>

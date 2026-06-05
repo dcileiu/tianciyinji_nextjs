@@ -2,7 +2,7 @@ import './style/global.css';
 import type { Metadata } from 'next';
 import JsonLd from '@/components/JsonLd';
 import { ThemeProvider } from 'next-themes';
-import { ChristmasEffect } from '@/components/ChristmasEffect';
+// import { ChristmasEffect } from '@/components/ChristmasEffect';
 import { FabricBackground } from '@/components/FabricBackground';
 import { MusicRuntime } from '@/components/music/music-runtime';
 import { defaultLocale, getLocalizedSiteConfig } from '@/lib/i18n';
@@ -128,7 +128,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <MusicRuntime>
             {children}
             <FabricBackground />
-            <ChristmasEffect zIndex={0} showCursorHat={false} />
+            {/* 下雪 + 地面积雪开场效果，已按需关闭 */}
+            {/* <ChristmasEffect zIndex={0} showCursorHat={false} /> */}
           </MusicRuntime>
         </ThemeProvider>
       </body>
