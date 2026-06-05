@@ -1,5 +1,3 @@
-'use client';
-
 import { Github, Mail, Rss } from 'lucide-react';
 import { siteConfig } from '@/lib/site-config';
 

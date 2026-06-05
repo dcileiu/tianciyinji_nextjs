@@ -31,7 +31,7 @@ export default async function ToolsPage() {
           locale,
         })}
       />
-      <ToolsHub />
+      <ToolsHub locale={locale} />
     </>
   );
 }

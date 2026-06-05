@@ -27,96 +27,88 @@ import Link from "next/link";
 import type { Route } from "next";
 import { useMemo, useState } from "react";
 import { useI18n } from "@/components/I18nProvider";
-import { Button } from "@/components/ui/button";
-import SiteTrafficTool from "@/components/SiteTrafficTool";
-import {
-  ColorTool,
-  DataConvertTool,
-  FaviconTool,
-  RegexTesterTool,
-  RmbCapitalTool,
-  WordCountTool,
-} from "@/components/tools/basic-tools";
-import {
-  BaseConvertTool,
-  CaseConvertTool,
-  CronTool,
-  JwtDecodeTool,
-  ShaHashTool,
-  TextDiffTool,
-} from "@/components/tools/dev-tools";
-import {
-  ColorExtractTool,
-  ImageConvertTool,
-  ImageResizeTool,
-  ImageWatermarkTool,
-} from "@/components/tools/image-tools";
-import {
-  BmiTool,
-  DateDiffTool,
-  IncomeTaxTool,
-  LoanCalcTool,
-  UnitConvertTool,
-} from "@/components/tools/calc-tools";
-import {
-  ChineseFakerTool,
-  HanziConvertTool,
-  PinyinTool,
-} from "@/components/tools/chinese-tools";
-import {
-  BorderRadiusTool,
-  BoxShadowTool,
-  CssGradientTool,
-  PaletteTool,
-} from "@/components/tools/css-tools";
+import dynamic from "next/dynamic";
 import { SectionCard } from "@/components/tools/tool-ui";
-import {
-  AesTool,
-  Base64Tool,
-  CodeObfuscateTool,
-  JsonTool,
-  Md5Tool,
-  ParamsTool,
-  RandomStringTool,
-  SensitiveTool,
-  TimestampTool,
-} from "@/components/tools/local-classic-tools";
-import {
-  ClientIpTool,
-  DnsLookupTool,
-  PingTool,
-  PortScanTool,
-  UrlStatusTool,
-  WebImagesTool,
-  WebMarkdownTool,
-  WebMetadataTool,
-} from "@/components/tools/network-tools";
-import {
-  ImageBase64Tool,
-  ImageCompressTool,
-  PetGifTool,
-  QrcodeTool,
-  SvgToImageTool,
-} from "@/components/tools/image-classic-tools";
-import {
-  JsonLdTool,
-  KeywordDensityTool,
-  LlmsTxtTool,
-  MetaTagsTool,
-  RobotsTxtTool,
-} from "@/components/tools/seo-tools";
-import {
-  BingWallpaperTool,
-  ContentTools,
-  GithubRepoTool,
-  GravatarTool,
-  IpGeoTool,
-  MinecraftPlayerTool,
-  MinecraftServerTool,
-  MobileAreaTool,
-} from "@/components/tools/data-tools";
 import { cn } from "@/lib/utils";
 import { TranslationProvider } from "./tools/TranslationContext";
+
+// 各工具模块按需懒加载：访问某个分区页时，只有该分区实际渲染的工具所在模块 chunk 才会下载，
+// 不再把所有工具（图像 canvas、网络、公开数据等）打进同一个包里。隐藏的分区不渲染 → 其 chunk 不加载。
+const SiteTrafficTool = dynamic(() => import("@/components/SiteTrafficTool"));
+
+const ColorTool = dynamic(() => import("@/components/tools/basic-tools").then((m) => m.ColorTool));
+const DataConvertTool = dynamic(() => import("@/components/tools/basic-tools").then((m) => m.DataConvertTool));
+const FaviconTool = dynamic(() => import("@/components/tools/basic-tools").then((m) => m.FaviconTool));
+const RegexTesterTool = dynamic(() => import("@/components/tools/basic-tools").then((m) => m.RegexTesterTool));
+const RmbCapitalTool = dynamic(() => import("@/components/tools/basic-tools").then((m) => m.RmbCapitalTool));
+const WordCountTool = dynamic(() => import("@/components/tools/basic-tools").then((m) => m.WordCountTool));
+
+const BaseConvertTool = dynamic(() => import("@/components/tools/dev-tools").then((m) => m.BaseConvertTool));
+const CaseConvertTool = dynamic(() => import("@/components/tools/dev-tools").then((m) => m.CaseConvertTool));
+const CronTool = dynamic(() => import("@/components/tools/dev-tools").then((m) => m.CronTool));
+const JwtDecodeTool = dynamic(() => import("@/components/tools/dev-tools").then((m) => m.JwtDecodeTool));
+const ShaHashTool = dynamic(() => import("@/components/tools/dev-tools").then((m) => m.ShaHashTool));
+const TextDiffTool = dynamic(() => import("@/components/tools/dev-tools").then((m) => m.TextDiffTool));
+
+const ColorExtractTool = dynamic(() => import("@/components/tools/image-tools").then((m) => m.ColorExtractTool));
+const ImageConvertTool = dynamic(() => import("@/components/tools/image-tools").then((m) => m.ImageConvertTool));
+const ImageResizeTool = dynamic(() => import("@/components/tools/image-tools").then((m) => m.ImageResizeTool));
+const ImageWatermarkTool = dynamic(() => import("@/components/tools/image-tools").then((m) => m.ImageWatermarkTool));
+
+const BmiTool = dynamic(() => import("@/components/tools/calc-tools").then((m) => m.BmiTool));
+const DateDiffTool = dynamic(() => import("@/components/tools/calc-tools").then((m) => m.DateDiffTool));
+const IncomeTaxTool = dynamic(() => import("@/components/tools/calc-tools").then((m) => m.IncomeTaxTool));
+const LoanCalcTool = dynamic(() => import("@/components/tools/calc-tools").then((m) => m.LoanCalcTool));
+const UnitConvertTool = dynamic(() => import("@/components/tools/calc-tools").then((m) => m.UnitConvertTool));
+
+const ChineseFakerTool = dynamic(() => import("@/components/tools/chinese-tools").then((m) => m.ChineseFakerTool));
+const HanziConvertTool = dynamic(() => import("@/components/tools/chinese-tools").then((m) => m.HanziConvertTool));
+const PinyinTool = dynamic(() => import("@/components/tools/chinese-tools").then((m) => m.PinyinTool));
+
+const BorderRadiusTool = dynamic(() => import("@/components/tools/css-tools").then((m) => m.BorderRadiusTool));
+const BoxShadowTool = dynamic(() => import("@/components/tools/css-tools").then((m) => m.BoxShadowTool));
+const CssGradientTool = dynamic(() => import("@/components/tools/css-tools").then((m) => m.CssGradientTool));
+const PaletteTool = dynamic(() => import("@/components/tools/css-tools").then((m) => m.PaletteTool));
+
+const AesTool = dynamic(() => import("@/components/tools/local-classic-tools").then((m) => m.AesTool));
+const Base64Tool = dynamic(() => import("@/components/tools/local-classic-tools").then((m) => m.Base64Tool));
+const CodeObfuscateTool = dynamic(() => import("@/components/tools/local-classic-tools").then((m) => m.CodeObfuscateTool));
+const JsonTool = dynamic(() => import("@/components/tools/local-classic-tools").then((m) => m.JsonTool));
+const Md5Tool = dynamic(() => import("@/components/tools/local-classic-tools").then((m) => m.Md5Tool));
+const ParamsTool = dynamic(() => import("@/components/tools/local-classic-tools").then((m) => m.ParamsTool));
+const RandomStringTool = dynamic(() => import("@/components/tools/local-classic-tools").then((m) => m.RandomStringTool));
+const SensitiveTool = dynamic(() => import("@/components/tools/local-classic-tools").then((m) => m.SensitiveTool));
+const TimestampTool = dynamic(() => import("@/components/tools/local-classic-tools").then((m) => m.TimestampTool));
+
+const ClientIpTool = dynamic(() => import("@/components/tools/network-tools").then((m) => m.ClientIpTool));
+const DnsLookupTool = dynamic(() => import("@/components/tools/network-tools").then((m) => m.DnsLookupTool));
+const PingTool = dynamic(() => import("@/components/tools/network-tools").then((m) => m.PingTool));
+const PortScanTool = dynamic(() => import("@/components/tools/network-tools").then((m) => m.PortScanTool));
+const UrlStatusTool = dynamic(() => import("@/components/tools/network-tools").then((m) => m.UrlStatusTool));
+const WebImagesTool = dynamic(() => import("@/components/tools/network-tools").then((m) => m.WebImagesTool));
+const WebMarkdownTool = dynamic(() => import("@/components/tools/network-tools").then((m) => m.WebMarkdownTool));
+const WebMetadataTool = dynamic(() => import("@/components/tools/network-tools").then((m) => m.WebMetadataTool));
+
+const ImageBase64Tool = dynamic(() => import("@/components/tools/image-classic-tools").then((m) => m.ImageBase64Tool));
+const ImageCompressTool = dynamic(() => import("@/components/tools/image-classic-tools").then((m) => m.ImageCompressTool));
+const PetGifTool = dynamic(() => import("@/components/tools/image-classic-tools").then((m) => m.PetGifTool));
+const QrcodeTool = dynamic(() => import("@/components/tools/image-classic-tools").then((m) => m.QrcodeTool));
+const SvgToImageTool = dynamic(() => import("@/components/tools/image-classic-tools").then((m) => m.SvgToImageTool));
+
+const JsonLdTool = dynamic(() => import("@/components/tools/seo-tools").then((m) => m.JsonLdTool));
+const KeywordDensityTool = dynamic(() => import("@/components/tools/seo-tools").then((m) => m.KeywordDensityTool));
+const LlmsTxtTool = dynamic(() => import("@/components/tools/seo-tools").then((m) => m.LlmsTxtTool));
+const MetaTagsTool = dynamic(() => import("@/components/tools/seo-tools").then((m) => m.MetaTagsTool));
+const RobotsTxtTool = dynamic(() => import("@/components/tools/seo-tools").then((m) => m.RobotsTxtTool));
+
+const BingWallpaperTool = dynamic(() => import("@/components/tools/data-tools").then((m) => m.BingWallpaperTool));
+const ContentTools = dynamic(() => import("@/components/tools/data-tools").then((m) => m.ContentTools));
+const GithubRepoTool = dynamic(() => import("@/components/tools/data-tools").then((m) => m.GithubRepoTool));
+const GravatarTool = dynamic(() => import("@/components/tools/data-tools").then((m) => m.GravatarTool));
+const IpGeoTool = dynamic(() => import("@/components/tools/data-tools").then((m) => m.IpGeoTool));
+const MinecraftPlayerTool = dynamic(() => import("@/components/tools/data-tools").then((m) => m.MinecraftPlayerTool));
+const MinecraftServerTool = dynamic(() => import("@/components/tools/data-tools").then((m) => m.MinecraftServerTool));
+const MobileAreaTool = dynamic(() => import("@/components/tools/data-tools").then((m) => m.MobileAreaTool));
 
 const sectionMeta = [
   { id: "local-tools" },
@@ -177,26 +169,26 @@ const toolCatalog = [
   { id: "web-images", sectionId: "network-tools" },
   { id: "web-markdown", sectionId: "network-tools" },
   {
-    id: "minecraft-player",
+    id: "minecraft-player",
     sectionId: "public-data-tools",
   },
   {
-    id: "minecraft-server",
+    id: "minecraft-server",
     sectionId: "public-data-tools",
   },
   {
-    id: "github-repo",
+    id: "github-repo",
     sectionId: "public-data-tools",
   },
   { id: "gravatar", sectionId: "public-data-tools" },
   { id: "ip-geo", sectionId: "public-data-tools" },
   { id: "mobile-area", sectionId: "public-data-tools" },
   {
-    id: "bing-wallpaper",
+    id: "bing-wallpaper",
     sectionId: "public-data-tools",
   },
   {
-    id: "content-tools",
+    id: "content-tools",
     sectionId: "public-data-tools",
   },
   { id: "loan", sectionId: "calc-tools" },
@@ -212,7 +204,7 @@ const toolCatalog = [
   { id: "border-radius", sectionId: "css-tools" },
   { id: "palette", sectionId: "css-tools" },
 ] as const satisfies ReadonlyArray<{
-  id: string;
+  id: string;
   sectionId: SectionId;
 }>;
 

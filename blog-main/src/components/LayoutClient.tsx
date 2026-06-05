@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import Footer from '@/components/Footer';
 import { I18nProvider, useI18n } from '@/components/I18nProvider';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/Sidebar';
@@ -13,21 +12,24 @@ interface LayoutClientProps {
   children: React.ReactNode;
   dictionary: ReturnType<typeof getDictionary>;
   locale: Locale;
+  // 由服务端布局传入的 Footer（服务端渲染，不计入客户端 bundle）
+  footer?: React.ReactNode;
 }
 
 export function LayoutClient({
   children,
   dictionary,
   locale,
+  footer,
 }: LayoutClientProps) {
   return (
     <I18nProvider initialDictionary={dictionary} initialLocale={locale}>
-      <LayoutShell>{children}</LayoutShell>
+      <LayoutShell footer={footer}>{children}</LayoutShell>
     </I18nProvider>
   );
 }
 
-function LayoutShell({ children }: { children: React.ReactNode }) {
+function LayoutShell({ children, footer }: { children: React.ReactNode; footer?: React.ReactNode }) {
   const { cleanPathname, dictionary, navItems, siteConfig } = useI18n();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -172,7 +174,7 @@ function LayoutShell({ children }: { children: React.ReactNode }) {
             paddingLeft: !isMobile && !isAuthPage ? 'var(--sidebar-padding)' : undefined,
           }}
         >
-          <Footer siteName={siteConfig.name} tagline={siteConfig.tagline} />
+          {footer}
         </footer>
       )}
     </div>
