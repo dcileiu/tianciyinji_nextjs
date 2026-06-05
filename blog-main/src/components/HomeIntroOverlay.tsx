@@ -129,7 +129,7 @@ export default function HomeIntroOverlay({ enabled = true }: HomeIntroOverlayPro
         filter: isLeaving ? 'blur(8px)' : 'blur(0px)',
       }}
       transition={{ duration: isLeaving ? 1.05 : 0.24, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed inset-0 left-0 top-0 z-[2147483647] h-screen w-screen overflow-hidden bg-black"
+      className="fullscreen-page fixed inset-0 left-0 top-0 z-[2147483647] h-screen w-screen overflow-hidden bg-black"
       aria-hidden="true"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_42%)]" />
