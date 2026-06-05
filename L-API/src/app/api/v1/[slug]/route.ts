@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
 import { hashApiKey } from "@/lib/api-key";
+import { captureError } from "@/lib/observability";
 import { prisma } from "@/lib/prisma";
 import { ApiInputError, runApi } from "@/server/api-runtime";
+import { recordUsage } from "@/server/logging/usage-recorder";
 import {
   getClientIp,
   isBanned,
   logSecurityEvent,
   rateHeaders,
   rateLimit,
+  rateLimitCustom,
   recordApiError,
 } from "@/server/security";
 
@@ -22,6 +25,10 @@ const CORS_HEADERS: Record<string, string> = {
 
 function respond(status: number, body: unknown, headers: Record<string, string> = {}) {
   return NextResponse.json(body, { status, headers: { ...CORS_HEADERS, ...headers } });
+}
+
+function log(entry: Omit<Parameters<typeof recordUsage>[0], "createdAt">) {
+  recordUsage({ ...entry, createdAt: new Date() });
 }
 
 type RouteContext = { params: Promise<{ slug: string }> };
@@ -61,11 +68,18 @@ async function handle(req: Request, slug: string) {
     return respond(401, { success: false, error: "无效或已吊销的 API 密钥" });
   }
 
-  // 3) 密钥级封禁与限流
+  // 2b) 过期校验
+  if (apiKey.expiresAt && apiKey.expiresAt.getTime() < Date.now()) {
+    return respond(401, { success: false, error: "API 密钥已过期" });
+  }
+
+  // 3) 密钥级封禁与限流（支持密钥自定义每分钟上限）
   if (await isBanned("apiKey", apiKey.id)) {
     return respond(403, { success: false, error: "该密钥已被临时封禁，请稍后再试" });
   }
-  const keyRl = await rateLimit("apiPerKey", apiKey.id);
+  const keyRl = apiKey.rateLimitPerMin
+    ? await rateLimitCustom(`keymin:${apiKey.id}`, apiKey.rateLimitPerMin, 60_000)
+    : await rateLimit("apiPerKey", apiKey.id);
   if (!keyRl.success) {
     await logSecurityEvent({
       type: "RATE_LIMIT",
@@ -80,24 +94,44 @@ async function handle(req: Request, slug: string) {
     );
   }
 
-  // 4) 接口与计费校验
-  const api = await prisma.api.findUnique({ where: { slug } });
+  // 4) 接口校验
+  const api = await prisma.api.findUnique({
+    where: { slug },
+    include: { category: { select: { slug: true } } },
+  });
   if (!api || api.status === "DEPRECATED") {
     return respond(404, { success: false, error: "接口不存在或已下线" }, rateHeaders(keyRl));
   }
 
+  // 4b) Scope 校验（密钥仅允许指定分类）
+  const scopes = (apiKey.scopes ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (scopes.length > 0 && !scopes.includes(api.category.slug)) {
+    log({
+      userId: apiKey.userId,
+      apiId: api.id,
+      apiKeyId: apiKey.id,
+      endpoint: api.path,
+      statusCode: 403,
+      latencyMs: 0,
+      creditsCost: 0,
+    });
+    return respond(403, { success: false, error: "该密钥无权访问此接口分类" }, rateHeaders(keyRl));
+  }
+
+  // 5) 计费校验
   const cost = api.pricePerCall;
   if (apiKey.user.credits < cost) {
-    await prisma.requestLog.create({
-      data: {
-        userId: apiKey.userId,
-        apiId: api.id,
-        apiKeyId: apiKey.id,
-        endpoint: api.path,
-        statusCode: 402,
-        latencyMs: 0,
-        creditsCost: 0,
-      },
+    log({
+      userId: apiKey.userId,
+      apiId: api.id,
+      apiKeyId: apiKey.id,
+      endpoint: api.path,
+      statusCode: 402,
+      latencyMs: 0,
+      creditsCost: 0,
     });
     return respond(
       402,
@@ -106,7 +140,7 @@ async function handle(req: Request, slug: string) {
     );
   }
 
-  // 5) 每日配额
+  // 6) 配额：用户全局每日 + 密钥独立每日
   const quota = await rateLimit("dailyQuota", apiKey.userId);
   if (!quota.success) {
     await logSecurityEvent({
@@ -122,29 +156,43 @@ async function handle(req: Request, slug: string) {
       rateHeaders(quota, true),
     );
   }
+  if (apiKey.dailyQuota) {
+    const keyQuota = await rateLimitCustom(`keyday:${apiKey.id}`, apiKey.dailyQuota, 86_400_000);
+    if (!keyQuota.success) {
+      await logSecurityEvent({
+        type: "QUOTA",
+        scope: "key",
+        identifier: apiKey.id,
+        userId: apiKey.userId,
+        detail: "已达密钥每日配额",
+      });
+      return respond(
+        429,
+        { success: false, error: "该密钥已达今日配额上限" },
+        rateHeaders(keyQuota, true),
+      );
+    }
+  }
 
-  // 6) 执行 + 计费 + 日志
+  // 7) 执行 + 计费（积分扣减同步保证一致），日志异步批量写入
   const startedAt = Date.now();
   try {
     const data = await runApi(slug, url.searchParams);
     const latencyMs = Date.now() - startedAt;
 
-    await prisma.$transaction([
-      prisma.user.update({ where: { id: apiKey.userId }, data: { credits: { decrement: cost } } }),
-      prisma.apiKey.update({ where: { id: apiKey.id }, data: { lastUsedAt: new Date() } }),
-      prisma.api.update({ where: { id: api.id }, data: { popularity: { increment: 1 } } }),
-      prisma.requestLog.create({
-        data: {
-          userId: apiKey.userId,
-          apiId: api.id,
-          apiKeyId: apiKey.id,
-          endpoint: api.path,
-          statusCode: 200,
-          latencyMs,
-          creditsCost: cost,
-        },
-      }),
-    ]);
+    await prisma.user.update({
+      where: { id: apiKey.userId },
+      data: { credits: { decrement: cost } },
+    });
+    log({
+      userId: apiKey.userId,
+      apiId: api.id,
+      apiKeyId: apiKey.id,
+      endpoint: api.path,
+      statusCode: 200,
+      latencyMs,
+      creditsCost: cost,
+    });
 
     return respond(
       200,
@@ -158,18 +206,17 @@ async function handle(req: Request, slug: string) {
   } catch (err) {
     const latencyMs = Date.now() - startedAt;
     const isInput = err instanceof ApiInputError;
-    await prisma.requestLog.create({
-      data: {
-        userId: apiKey.userId,
-        apiId: api.id,
-        apiKeyId: apiKey.id,
-        endpoint: api.path,
-        statusCode: isInput ? 400 : 500,
-        latencyMs,
-        creditsCost: 0,
-      },
+    log({
+      userId: apiKey.userId,
+      apiId: api.id,
+      apiKeyId: apiKey.id,
+      endpoint: api.path,
+      statusCode: isInput ? 400 : 500,
+      latencyMs,
+      creditsCost: 0,
     });
     await recordApiError(apiKey.id, apiKey.userId);
+    if (!isInput) captureError(err, { slug, apiId: api.id, userId: apiKey.userId });
     return respond(
       isInput ? 400 : 500,
       { success: false, error: isInput ? err.message : "接口执行失败" },

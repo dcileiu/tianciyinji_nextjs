@@ -6,7 +6,14 @@
 - 渲染性能：保证首屏与导航速度。公开页优先静态/ISR,控制端组件懒加载,控制首屏 JS;改完用 `pnpm build` 确认。
 
 ## 环境 / 校验
-- 包管理器 pnpm,Node >= 20。校验:`pnpm lint`(oxlint)、`pnpm format:check`(biome)、`pnpm typecheck`(tsc)、`pnpm build`。
+- 包管理器 pnpm,Node >= 20。校验:`pnpm lint`(oxlint)、`pnpm format:check`(biome)、`pnpm typecheck`(tsc)、`pnpm test`(vitest)、`pnpm build`。
+- 测试:Vitest,纯逻辑单测放在 `src/**/*.test.ts`(无 DB);Node 环境通过 `vitest.config.ts` 桩掉 `server-only`。
+
+## 可观测性 / 性能
+- 健康检查:`GET /api/health`(探活 DB + 限流后端,降级返回 503)。
+- 日志/错误:`src/lib/logger.ts`(结构化日志)、`src/lib/observability.ts` 的 `captureError`(统一上报入口,接 Sentry 在此处接)。
+- 用量写入异步化:接口调用经 `src/server/logging/usage-recorder.ts` 缓冲批量写 `RequestLog` 并增量汇总到 `UsageDaily`;积分扣减仍同步保证一致。仪表盘概览/趋势/Top 读 `UsageDaily`,明细列表读 `RequestLog`。
+- 密钥安全:`ApiKey` 支持 `scopes`(分类白名单)、`expiresAt`(过期)、`rateLimitPerMin`(每分钟覆盖)、`dailyQuota`(独立每日配额),均在 `/api/v1/[slug]` 校验。
 - 数据库:MySQL + Prisma(v6)。本地 `docker compose up -d` 起 MySQL,然后 `pnpm db:push` 建表、`pnpm db:seed` 灌种子数据。
 - 鉴权:Auth.js v5(Credentials + JWT 会话 + Prisma adapter),配置见 `src/server/auth/`。
 - 环境变量集中在 `src/lib/env.ts`(zod 校验),示例见 `.env.example`。

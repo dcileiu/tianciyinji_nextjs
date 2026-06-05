@@ -37,6 +37,22 @@ export async function rateLimit(name: ThroughputPolicy, id: string): Promise<Rat
   };
 }
 
+/** 自定义阈值限流（用于密钥级覆盖：每分钟上限、独立每日配额等）。 */
+export async function rateLimitCustom(
+  id: string,
+  limit: number,
+  windowMs: number,
+): Promise<RateResult> {
+  const { count, resetMs } = await getRateStore().hit(`rlc:${id}`, windowMs);
+  return {
+    success: count <= limit,
+    limit,
+    remaining: Math.max(0, limit - count),
+    resetSec: Math.ceil((Date.now() + resetMs) / 1000),
+    retryAfterSec: Math.max(1, Math.ceil(resetMs / 1000)),
+  };
+}
+
 /** 记录一次失败；若达到阈值则封禁并返回 true（策略由后台动态配置）。 */
 export async function registerFailure(scope: AbusePolicy, id: string): Promise<boolean> {
   const policy = await getAbuse(scope);

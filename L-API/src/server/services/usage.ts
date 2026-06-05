@@ -1,4 +1,5 @@
 import "server-only";
+import { startOfUtcDay, utcDateKey, utcDaysAgo } from "@/lib/day";
 import { formatMonthDay } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
@@ -8,26 +9,25 @@ export interface OverviewStats {
   activeKeys: number;
 }
 
-function startOfToday() {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-function daysAgo(n: number) {
-  const d = new Date();
-  d.setDate(d.getDate() - n);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
+// 概览/趋势/Top 走 UsageDaily 汇总表（避免扫全量日志）；明细列表仍读 RequestLog。
 export async function getOverviewStats(userId: string): Promise<OverviewStats> {
-  const [weekRequests, todayRequests, activeKeys] = await Promise.all([
-    prisma.requestLog.count({ where: { userId, createdAt: { gte: daysAgo(7) } } }),
-    prisma.requestLog.count({ where: { userId, createdAt: { gte: startOfToday() } } }),
+  const today = startOfUtcDay();
+  const [week, todayAgg, activeKeys] = await Promise.all([
+    prisma.usageDaily.aggregate({
+      _sum: { requests: true },
+      where: { userId, date: { gte: utcDaysAgo(6) } },
+    }),
+    prisma.usageDaily.aggregate({
+      _sum: { requests: true },
+      where: { userId, date: { gte: today } },
+    }),
     prisma.apiKey.count({ where: { userId, status: "ACTIVE" } }),
   ]);
-  return { weekRequests, todayRequests, activeKeys };
+  return {
+    weekRequests: week._sum.requests ?? 0,
+    todayRequests: todayAgg._sum.requests ?? 0,
+    activeKeys,
+  };
 }
 
 export interface TrendPoint {
@@ -36,24 +36,22 @@ export interface TrendPoint {
 }
 
 export async function getRequestTrend(userId: string, days = 7): Promise<TrendPoint[]> {
-  const start = daysAgo(days - 1);
-  const logs = await prisma.requestLog.findMany({
-    where: { userId, createdAt: { gte: start } },
-    select: { createdAt: true },
+  const start = utcDaysAgo(days - 1);
+  const rows = await prisma.usageDaily.groupBy({
+    by: ["date"],
+    where: { userId, date: { gte: start } },
+    _sum: { requests: true },
   });
 
-  const buckets = new Map<string, number>();
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    buckets.set(formatMonthDay(d), 0);
-  }
-  for (const log of logs) {
-    const key = formatMonthDay(log.createdAt);
-    if (buckets.has(key)) buckets.set(key, (buckets.get(key) ?? 0) + 1);
-  }
+  const byDay = new Map<string, number>();
+  for (const row of rows) byDay.set(utcDateKey(row.date), row._sum.requests ?? 0);
 
-  return [...buckets.entries()].map(([date, requests]) => ({ date, requests }));
+  const points: TrendPoint[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = utcDaysAgo(i);
+    points.push({ date: formatMonthDay(d), requests: byDay.get(utcDateKey(d)) ?? 0 });
+  }
+  return points;
 }
 
 export interface TopApi {
@@ -63,11 +61,11 @@ export interface TopApi {
 }
 
 export async function getTopApis(userId: string, limit = 5): Promise<TopApi[]> {
-  const grouped = await prisma.requestLog.groupBy({
+  const grouped = await prisma.usageDaily.groupBy({
     by: ["apiId"],
-    where: { userId, apiId: { not: null }, createdAt: { gte: daysAgo(7) } },
-    _count: { _all: true },
-    orderBy: { _count: { apiId: "desc" } },
+    where: { userId, apiId: { not: "" }, date: { gte: utcDaysAgo(6) } },
+    _sum: { requests: true },
+    orderBy: { _sum: { requests: "desc" } },
     take: limit,
   });
 
@@ -84,7 +82,7 @@ export async function getTopApis(userId: string, limit = 5): Promise<TopApi[]> {
     .map((g) => {
       const api = g.apiId ? apiById.get(g.apiId) : undefined;
       if (!api) return null;
-      return { slug: api.slug, name: api.name, requests: g._count._all };
+      return { slug: api.slug, name: api.name, requests: g._sum.requests ?? 0 };
     })
     .filter((x): x is TopApi => x !== null);
 }

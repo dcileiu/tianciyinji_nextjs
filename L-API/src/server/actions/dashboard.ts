@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { purchasePackage } from "@/server/services/billing";
 import { toggleSubscription } from "@/server/services/hot";
 import { createKey, revokeKey } from "@/server/services/keys";
@@ -8,9 +9,25 @@ import { requireUser } from "@/server/services/user";
 
 export type ActionResult<T = unknown> = { ok: true; data?: T } | { ok: false; error: string };
 
-export async function createApiKeyAction(name: string): Promise<ActionResult<{ key: string }>> {
+const createKeySchema = z.object({
+  name: z.string().trim().max(50).optional().default(""),
+  scopes: z.array(z.string().min(1)).optional().default([]),
+  expiresInDays: z.number().int().positive().max(3650).nullable().optional(),
+  dailyQuota: z.number().int().positive().max(10_000_000).nullable().optional(),
+  rateLimitPerMin: z.number().int().positive().max(100_000).nullable().optional(),
+});
+
+export type CreateKeyActionInput = z.input<typeof createKeySchema>;
+
+export async function createApiKeyAction(
+  input: CreateKeyActionInput,
+): Promise<ActionResult<{ key: string }>> {
   const user = await requireUser();
-  const { key } = await createKey(user.id, name);
+  const parsed = createKeySchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "参数有误" };
+  }
+  const { key } = await createKey(user.id, parsed.data);
   revalidatePath("/dashboard/keys");
   revalidatePath("/dashboard");
   return { ok: true, data: { key } };

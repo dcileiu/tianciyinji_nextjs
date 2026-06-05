@@ -18,6 +18,10 @@ function startOfDay(d: Date) {
   return x;
 }
 
+function utcDay(d: Date) {
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+}
+
 const categories = [
   {
     slug: "data",
@@ -270,6 +274,7 @@ async function main() {
   console.log("Seeding database ...");
 
   // 清理（开发用）
+  await prisma.usageDaily.deleteMany();
   await prisma.requestLog.deleteMany();
   await prisma.hotItem.deleteMany();
   await prisma.order.deleteMany();
@@ -344,9 +349,21 @@ async function main() {
     data: { userId: user.id, name: "默认密钥", prefix, hash, status: "ACTIVE" },
   });
 
-  // 近 7 天请求日志
+  // 近 7 天请求日志 + 日维度汇总
   const apiList = [...apiIdBySlug.entries()];
   const now = new Date();
+  const rollups = new Map<
+    string,
+    {
+      date: Date;
+      userId: string;
+      apiId: string;
+      requests: number;
+      errors: number;
+      creditsCost: number;
+      latencySumMs: number;
+    }
+  >();
   for (let day = 6; day >= 0; day--) {
     const base = new Date(now);
     base.setDate(now.getDate() - day);
@@ -354,6 +371,7 @@ async function main() {
     for (let i = 0; i < count; i++) {
       const [, apiId] = apiList[Math.floor(Math.random() * apiList.length)];
       const ok = Math.random() > 0.08;
+      const latencyMs = 20 + Math.floor(Math.random() * 180);
       const createdAt = new Date(base);
       createdAt.setHours(Math.floor(Math.random() * 24), Math.floor(Math.random() * 60));
       await prisma.requestLog.create({
@@ -362,13 +380,42 @@ async function main() {
           apiId,
           endpoint: "/api/v1",
           statusCode: ok ? 200 : 400,
-          latencyMs: 20 + Math.floor(Math.random() * 180),
+          latencyMs,
           creditsCost: ok ? 1 : 0,
           createdAt,
         },
       });
+
+      const date = utcDay(createdAt);
+      const k = `${date.toISOString()}|${user.id}|${apiId}`;
+      const agg = rollups.get(k) ?? {
+        date,
+        userId: user.id,
+        apiId,
+        requests: 0,
+        errors: 0,
+        creditsCost: 0,
+        latencySumMs: 0,
+      };
+      agg.requests += 1;
+      if (!ok) agg.errors += 1;
+      agg.creditsCost += ok ? 1 : 0;
+      agg.latencySumMs += latencyMs;
+      rollups.set(k, agg);
     }
   }
+
+  await prisma.usageDaily.createMany({
+    data: [...rollups.values()].map((r) => ({
+      date: r.date,
+      userId: r.userId,
+      apiId: r.apiId,
+      requests: r.requests,
+      errors: r.errors,
+      creditsCost: r.creditsCost,
+      latencySumMs: r.latencySumMs,
+    })),
+  });
 
   // 今日热榜
   const today = startOfDay(now);

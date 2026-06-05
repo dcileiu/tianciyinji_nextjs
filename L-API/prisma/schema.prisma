@@ -145,7 +145,14 @@ model ApiKey {
   hash       String
   lastUsedAt DateTime?
   status     KeyStatus @default(ACTIVE)
-  createdAt  DateTime  @default(now())
+
+  // 安全增强
+  scopes          String?   @db.Text // 逗号分隔的分类 slug，空=全部
+  expiresAt       DateTime? // 过期时间，空=永不过期
+  rateLimitPerMin Int? // 每分钟调用上限覆盖，空=使用全局策略
+  dailyQuota      Int? // 该密钥每日调用上限，空=不单独限制
+
+  createdAt DateTime @default(now())
 
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   requestLogs RequestLog[]
@@ -174,6 +181,21 @@ model RequestLog {
 
   @@index([userId, createdAt])
   @@index([apiId])
+}
+
+// 每日用量汇总（由日志异步批量增量写入，供仪表盘聚合查询，避免扫全量日志）。
+model UsageDaily {
+  id           String   @id @default(cuid())
+  date         DateTime // 当日 0 点（UTC）
+  userId       String
+  apiId        String?
+  requests     Int      @default(0)
+  errors       Int      @default(0)
+  creditsCost  Int      @default(0)
+  latencySumMs Int      @default(0)
+
+  @@unique([date, userId, apiId])
+  @@index([userId, date])
 }
 
 // ---------------------------------------------------------------------------

@@ -26,7 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { maskApiKey } from "@/lib/api-key";
-import { formatDateTime } from "@/lib/format";
+import { formatDate, formatDateTime } from "@/lib/format";
 import { createApiKeyAction, revokeApiKeyAction } from "@/server/actions/dashboard";
 
 export interface KeyItem {
@@ -36,26 +36,64 @@ export interface KeyItem {
   status: "ACTIVE" | "REVOKED";
   createdAt: string;
   lastUsedAt: string | null;
+  scopes: string | null;
+  expiresAt: string | null;
+  dailyQuota: number | null;
+  rateLimitPerMin: number | null;
 }
 
-export function KeysManager({ keys }: { keys: KeyItem[] }) {
+export interface Category {
+  slug: string;
+  name: string;
+}
+
+const EXPIRY_OPTIONS = [
+  { value: "0", label: "永不过期" },
+  { value: "30", label: "30 天" },
+  { value: "90", label: "90 天" },
+  { value: "365", label: "1 年" },
+];
+
+export function KeysManager({ keys, categories }: { keys: KeyItem[]; categories: Category[] }) {
   const router = useRouter();
   const [createOpen, setCreateOpen] = useState(false);
   const [name, setName] = useState("");
+  const [scopes, setScopes] = useState<string[]>([]);
+  const [expiry, setExpiry] = useState("0");
+  const [dailyQuota, setDailyQuota] = useState("");
+  const [ratePerMin, setRatePerMin] = useState("");
   const [creating, setCreating] = useState(false);
   const [revealedKey, setRevealedKey] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
 
+  function resetForm() {
+    setName("");
+    setScopes([]);
+    setExpiry("0");
+    setDailyQuota("");
+    setRatePerMin("");
+  }
+
+  function toggleScope(slug: string) {
+    setScopes((prev) => (prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]));
+  }
+
   async function handleCreate() {
     setCreating(true);
-    const res = await createApiKeyAction(name);
+    const res = await createApiKeyAction({
+      name,
+      scopes,
+      expiresInDays: expiry === "0" ? null : Number(expiry),
+      dailyQuota: dailyQuota ? Number(dailyQuota) : null,
+      rateLimitPerMin: ratePerMin ? Number(ratePerMin) : null,
+    });
     setCreating(false);
     if (!res.ok) {
       toast.error(res.error);
       return;
     }
     setCreateOpen(false);
-    setName("");
+    resetForm();
     setRevealedKey(res.data?.key ?? null);
     router.refresh();
   }
@@ -71,6 +109,15 @@ export function KeysManager({ keys }: { keys: KeyItem[] }) {
     }
     toast.success("密钥已吊销");
     router.refresh();
+  }
+
+  function limitSummary(key: KeyItem): string {
+    const parts: string[] = [];
+    const scopeList = key.scopes?.split(",").filter(Boolean) ?? [];
+    parts.push(scopeList.length > 0 ? `${scopeList.length} 个分类` : "全部分类");
+    if (key.rateLimitPerMin) parts.push(`${key.rateLimitPerMin}/分`);
+    if (key.dailyQuota) parts.push(`${key.dailyQuota}/日`);
+    return parts.join(" · ");
   }
 
   return (
@@ -98,44 +145,59 @@ export function KeysManager({ keys }: { keys: KeyItem[] }) {
                 <TableHead>名称</TableHead>
                 <TableHead>密钥</TableHead>
                 <TableHead>状态</TableHead>
+                <TableHead>限制</TableHead>
+                <TableHead>有效期</TableHead>
                 <TableHead>最近使用</TableHead>
-                <TableHead>创建时间</TableHead>
                 <TableHead className="text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {keys.map((key) => (
-                <TableRow key={key.id}>
-                  <TableCell className="font-medium">{key.name}</TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">
-                    {maskApiKey(key.prefix)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={key.status === "ACTIVE" ? "secondary" : "outline"}>
-                      {key.status === "ACTIVE" ? "启用" : "已吊销"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {key.lastUsedAt ? formatDateTime(key.lastUsedAt) : "从未"}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDateTime(key.createdAt)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {key.status === "ACTIVE" && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        disabled={pendingId === key.id}
-                        onClick={() => handleRevoke(key.id)}
-                      >
-                        {pendingId === key.id ? <Loader2 className="animate-spin" /> : null}
-                        吊销
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {keys.map((key) => {
+                const expired = key.expiresAt
+                  ? new Date(key.expiresAt).getTime() < Date.now()
+                  : false;
+                return (
+                  <TableRow key={key.id}>
+                    <TableCell className="font-medium">{key.name}</TableCell>
+                    <TableCell className="font-mono text-xs text-muted-foreground">
+                      {maskApiKey(key.prefix)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={key.status === "ACTIVE" ? "secondary" : "outline"}>
+                        {key.status === "ACTIVE" ? "启用" : "已吊销"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {limitSummary(key)}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {key.expiresAt ? (
+                        <span className={expired ? "text-rose-600 dark:text-rose-400" : undefined}>
+                          {expired ? "已过期" : formatDate(key.expiresAt)}
+                        </span>
+                      ) : (
+                        "永久"
+                      )}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {key.lastUsedAt ? formatDateTime(key.lastUsedAt) : "从未"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {key.status === "ACTIVE" && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          disabled={pendingId === key.id}
+                          onClick={() => handleRevoke(key.id)}
+                        >
+                          {pendingId === key.id ? <Loader2 className="animate-spin" /> : null}
+                          吊销
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         )}
@@ -146,16 +208,83 @@ export function KeysManager({ keys }: { keys: KeyItem[] }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>创建 API 密钥</DialogTitle>
-            <DialogDescription>为密钥取一个便于识别的名称。</DialogDescription>
+            <DialogDescription>可设置访问范围、有效期与独立配额。</DialogDescription>
           </DialogHeader>
-          <div className="space-y-2">
-            <Label htmlFor="key-name">名称</Label>
-            <Input
-              id="key-name"
-              value={name}
-              placeholder="例如：生产环境"
-              onChange={(e) => setName(e.target.value)}
-            />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="key-name">名称</Label>
+              <Input
+                id="key-name"
+                value={name}
+                placeholder="例如：生产环境"
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>访问范围（不选 = 全部分类）</Label>
+              <div className="flex flex-wrap gap-2">
+                {categories.map((cat) => {
+                  const active = scopes.includes(cat.slug);
+                  return (
+                    <button
+                      key={cat.slug}
+                      type="button"
+                      onClick={() => toggleScope(cat.slug)}
+                      className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                        active
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {cat.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="key-expiry">有效期</Label>
+                <select
+                  id="key-expiry"
+                  value={expiry}
+                  onChange={(e) => setExpiry(e.target.value)}
+                  className="h-9 w-32 rounded-md border border-input bg-transparent px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                >
+                  {EXPIRY_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="key-rate">每分钟上限</Label>
+                <Input
+                  id="key-rate"
+                  type="number"
+                  min={1}
+                  value={ratePerMin}
+                  placeholder="默认"
+                  onChange={(e) => setRatePerMin(e.target.value)}
+                  className="w-28"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="key-quota">每日配额</Label>
+                <Input
+                  id="key-quota"
+                  type="number"
+                  min={1}
+                  value={dailyQuota}
+                  placeholder="不限"
+                  onChange={(e) => setDailyQuota(e.target.value)}
+                  className="w-28"
+                />
+              </div>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>
