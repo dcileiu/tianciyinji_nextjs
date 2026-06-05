@@ -33,6 +33,7 @@ type ArticleJsonLdOptions = {
   authorName?: string;
   section?: string;
   wordCount?: number;
+  locale?: Locale;
 };
 
 type CreativeWorkJsonLdOptions = {
@@ -45,6 +46,7 @@ type CreativeWorkJsonLdOptions = {
   encodingFormat?: string;
   downloadUrl?: string;
   image?: string | null;
+  locale?: Locale;
 };
 
 export const defaultSocialImage = absoluteUrl('/opengraph-image');
@@ -139,7 +141,7 @@ export function buildPageMetadata({
   };
 }
 
-export function buildWebSiteJsonLd() {
+export function buildWebSiteJsonLd(locale?: Locale) {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -147,7 +149,7 @@ export function buildWebSiteJsonLd() {
     alternateName: siteConfig.title,
     url: siteConfig.url,
     description: siteConfig.description,
-    inLanguage: siteConfig.language,
+    inLanguage: locale ?? siteConfig.language,
     publisher: {
       '@type': 'Person',
       name: siteConfig.name,
@@ -199,6 +201,7 @@ export function buildArticleJsonLd({
   authorName,
   section,
   wordCount,
+  locale,
 }: ArticleJsonLdOptions) {
   return {
     '@context': 'https://schema.org',
@@ -207,7 +210,7 @@ export function buildArticleJsonLd({
     description,
     url: absoluteUrl(path),
     mainEntityOfPage: absoluteUrl(path),
-    inLanguage: siteConfig.language,
+    inLanguage: locale ?? siteConfig.language,
     datePublished: publishedTime,
     dateModified: modifiedTime || publishedTime,
     articleSection: section,
@@ -239,6 +242,7 @@ export function buildCreativeWorkJsonLd({
   encodingFormat,
   downloadUrl,
   image,
+  locale,
 }: CreativeWorkJsonLdOptions) {
   return {
     '@context': 'https://schema.org',
@@ -247,7 +251,7 @@ export function buildCreativeWorkJsonLd({
     description,
     url: absoluteUrl(path),
     mainEntityOfPage: absoluteUrl(path),
-    inLanguage: siteConfig.language,
+    inLanguage: locale ?? siteConfig.language,
     datePublished: publishedTime,
     dateModified: modifiedTime || publishedTime,
     keywords,
@@ -275,10 +279,12 @@ export function buildCollectionPageJsonLd({
   title,
   description,
   path,
+  locale,
 }: {
   title: string;
   description: string;
   path: string;
+  locale?: Locale;
 }) {
   return {
     '@context': 'https://schema.org',
@@ -286,7 +292,7 @@ export function buildCollectionPageJsonLd({
     name: title,
     description,
     url: absoluteUrl(path),
-    inLanguage: siteConfig.language,
+    inLanguage: locale ?? siteConfig.language,
     isPartOf: {
       '@type': 'WebSite',
       name: siteConfig.name,

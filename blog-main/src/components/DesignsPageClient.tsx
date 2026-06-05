@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import designsData from '@/app/designs/designs-data.json';
+import designsData from '@/app/[locale]/designs/designs-data.json';
 import { useI18n } from '@/components/I18nProvider';
 
 interface Design {

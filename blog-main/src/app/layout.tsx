@@ -4,10 +4,8 @@ import JsonLd from '@/components/JsonLd';
 import { ThemeProvider } from 'next-themes';
 import { ChristmasEffect } from '@/components/ChristmasEffect';
 import { FabricBackground } from '@/components/FabricBackground';
-import { LayoutClient } from '@/components/LayoutClient';
 import { MusicRuntime } from '@/components/music/music-runtime';
-import { getDictionary, getLocalizedSiteConfig } from '@/lib/i18n';
-import { getLocale } from '@/lib/i18n-server';
+import { defaultLocale, getLocalizedSiteConfig } from '@/lib/i18n';
 import { absoluteUrl, siteConfig, siteKeywords } from '@/lib/site-config';
 import { buildPageMetadata, buildPersonJsonLd, buildWebSiteJsonLd } from '@/lib/seo';
 
@@ -52,10 +50,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = await getLocale();
-  const dictionary = getDictionary(locale);
-  const localizedSiteConfig = getLocalizedSiteConfig(locale);
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const localizedSiteConfig = getLocalizedSiteConfig(defaultLocale);
 
   return (
     <html lang={localizedSiteConfig.language} suppressHydrationWarning className="christmas">
@@ -66,6 +62,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               (function () {
                 try {
                   var root = document.documentElement;
+
+                  var path = window.location.pathname;
+                  if (path === '/en' || path.indexOf('/en/') === 0) {
+                    root.lang = 'en';
+                  }
+
                   var rawConfig = localStorage.getItem('appearance-config');
                   var layout = 'default';
                   var backgroundStyle = 'fabric';
@@ -115,12 +117,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <JsonLd data={[buildWebSiteJsonLd(), buildPersonJsonLd()]} />
           <MusicRuntime>
-            <LayoutClient
-              dictionary={dictionary}
-              locale={locale}
-            >
-              {children}
-            </LayoutClient>
+            {children}
             <FabricBackground />
             <ChristmasEffect zIndex={0} showCursorHat={false} />
           </MusicRuntime>

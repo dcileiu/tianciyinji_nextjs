@@ -2,12 +2,12 @@
 
 import { Check, Languages } from 'lucide-react';
 import type { Route } from 'next';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState, useTransition } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useTransition } from 'react';
 import { useI18n } from '@/components/I18nProvider';
 import { Button } from '@/components/ui/button';
 import { SimpleDropdown, SimpleDropdownItem } from '@/components/ui/simple-dropdown';
-import { getPathLocale, localizePath, LOCALE_COOKIE, type Locale } from '@/lib/i18n';
+import { localizePath, locales, LOCALE_COOKIE, type Locale } from '@/lib/i18n';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
 
 interface LanguageSwitcherProps {
@@ -18,33 +18,29 @@ export function LanguageSwitcher({ label }: LanguageSwitcherProps) {
   const { dictionary, locale } = useI18n();
   const pathname = usePathname() || '/';
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [pendingLocale, setPendingLocale] = useState<Locale | null>(null);
   const ariaLabel = label ?? dictionary.header.language;
 
+  // 预取其它语言版本的当前页，切换时服务端内容也能秒出（而非现拉 RSC）
   useEffect(() => {
-    if (!pendingLocale) return;
-    if (getPathLocale(pathname) !== pendingLocale) return;
-
-    router.refresh();
-    setPendingLocale(null);
-  }, [pendingLocale, pathname, router]);
+    for (const target of locales) {
+      if (target === locale) continue;
+      router.prefetch(localizePath(pathname, target) as Route);
+    }
+  }, [pathname, locale, router]);
 
   const handleSelect = (nextLocale: Locale) => {
     triggerHaptic(HapticFeedback.Light);
     document.cookie = `${LOCALE_COOKIE}=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
-    setPendingLocale(nextLocale);
 
-    if (nextLocale === locale) {
-      router.refresh();
-      setPendingLocale(null);
-      return;
-    }
+    if (nextLocale === locale) return;
 
-    const queryString = searchParams.toString();
+    // locale 现在是真正的路由段（/ 对应 [locale]=zh-CN，/en 对应 [locale]=en），
+    // 软导航到另一语言会命中不同的段树，服务端内容随之整体切换，无需 router.refresh()。
+    // 直接在点击时读取 location.search 保留查询串，避免使用 useSearchParams（其会阻止页面静态预渲染）。
+    const queryString = typeof window !== 'undefined' ? window.location.search : '';
     const targetPath = localizePath(pathname, nextLocale);
-    const targetHref = `${targetPath}${queryString ? `?${queryString}` : ''}` as Route;
+    const targetHref = `${targetPath}${queryString}` as Route;
     startTransition(() => {
       router.push(targetHref);
     });
