@@ -2,13 +2,16 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import BrandLogo from '@/components/BrandLogo';
 
 const INTRO_DURATION_MS = 3200;
 const EXIT_DURATION_MS = 1050;
 
 type IntroState = 'playing' | 'leaving' | 'hidden';
+
+// 本次页面加载内是否已播放过（模块级，跨 SPA 导航保留、整页刷新重置）。
+// 用于 SPA 返回首页时直接跳过开场动画，避免重挂载导致的一帧闪烁。
+let introPlayedThisLoad = false;
 
 interface HomeIntroOverlayProps {
   enabled?: boolean;
@@ -23,15 +26,13 @@ function easeOutCubic(t: number) {
 }
 
 export default function HomeIntroOverlay({ enabled = true }: HomeIntroOverlayProps) {
-  const [mounted, setMounted] = useState(false);
-  const [state, setState] = useState<IntroState>(enabled ? 'playing' : 'hidden');
+  // 初始状态即为 'playing'，使开场动画首帧随首页静态 HTML 一起 SSR 输出，
+  // 首屏绘制时就覆盖内容，而不是等到 React 水合后才出现。
+  // SPA 内已播放过则直接隐藏（模块级标记在服务端始终为 false，水合保持一致）。
+  const [state, setState] = useState<IntroState>(enabled && !introPlayedThisLoad ? 'playing' : 'hidden');
   const [progress, setProgress] = useState(0);
   const rafRef = useRef<number | null>(null);
   const hideTimerRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -55,6 +56,7 @@ export default function HomeIntroOverlay({ enabled = true }: HomeIntroOverlayPro
     const introDuration = prefersReducedMotion ? 700 : INTRO_DURATION_MS;
     const exitDuration = prefersReducedMotion ? 260 : EXIT_DURATION_MS;
 
+    introPlayedThisLoad = true;
     setState('playing');
     setProgress(0);
 
@@ -94,7 +96,7 @@ export default function HomeIntroOverlay({ enabled = true }: HomeIntroOverlayPro
     };
   }, [state]);
 
-  if (!mounted || !enabled || state === 'hidden') return null;
+  if (!enabled || state === 'hidden') return null;
 
   const isLeaving = state === 'leaving';
   const logoOpacity = clamp((progress - 24) / 22, 0, 1);
@@ -117,8 +119,10 @@ export default function HomeIntroOverlay({ enabled = true }: HomeIntroOverlayPro
     maskSize: 'contain',
   } as const;
 
-  return createPortal(
+  return (
     <motion.div
+      id="home-intro-overlay"
+      suppressHydrationWarning
       initial={{ opacity: 1 }}
       animate={{
         opacity: isLeaving ? 0 : 1,
@@ -179,7 +183,6 @@ export default function HomeIntroOverlay({ enabled = true }: HomeIntroOverlayPro
           <span className="pb-[0.18em] text-[26px] tracking-[-0.08em] sm:text-[38px] md:text-[44px]">%</span>
         </div>
       </motion.div>
-    </motion.div>,
-    document.body
+    </motion.div>
   );
 }

@@ -8,6 +8,12 @@
   --transition-duration: 200ms;
 }
 
+/* 本会话已播放过开场动画时，首屏脚本会给 <html> 加该类，
+   在绘制前隐藏 SSR 出来的开场遮罩，避免重复访问首页时闪烁。 */
+html.home-intro-shown #home-intro-overlay {
+  display: none !important;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

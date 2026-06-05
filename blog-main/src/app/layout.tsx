@@ -68,6 +68,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     root.lang = 'en';
                   }
 
+                  // 首页开场动画每会话只播一次：已播放过则在绘制前隐藏 SSR 遮罩，避免闪烁
+                  if (path === '/' || path === '/en' || path === '/en/') {
+                    try {
+                      if (sessionStorage.getItem('home-intro-shown')) {
+                        root.classList.add('home-intro-shown');
+                      }
+                    } catch (e) {}
+                  }
+
                   var rawConfig = localStorage.getItem('appearance-config');
                   var layout = 'default';
                   var backgroundStyle = 'fabric';
