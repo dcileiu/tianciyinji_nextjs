@@ -158,7 +158,7 @@ export default function ParticleLogo({ className }: ParticleLogoProps) {
       ctx.clearRect(0, 0, width, height);
 
       const particles = particlesRef.current;
-      const radius = Math.max(48, Math.min(width, height) * 0.22);
+      const radius = Math.max(70, Math.min(width, height) * 0.32);
       const radiusSq = radius * radius;
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
@@ -202,6 +202,7 @@ export default function ParticleLogo({ className }: ParticleLogoProps) {
       rafRef.current = window.requestAnimationFrame(animate);
     };
 
+    // 在 window 上监听：鼠标靠近画布（即使没盖在上面）也能推开粒子
     const onPointerMove = (event: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
       mouseRef.current.x = event.clientX - rect.left;
@@ -234,21 +235,23 @@ export default function ParticleLogo({ className }: ParticleLogoProps) {
     const themeObserver = new MutationObserver(resolveColor);
     themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
-    canvas.addEventListener('pointermove', onPointerMove, { passive: true });
-    canvas.addEventListener('pointerleave', onPointerLeave);
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('blur', onPointerLeave);
+    document.addEventListener('pointerleave', onPointerLeave);
 
     return () => {
       resizeObserver.disconnect();
       themeObserver.disconnect();
-      canvas.removeEventListener('pointermove', onPointerMove);
-      canvas.removeEventListener('pointerleave', onPointerLeave);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('blur', onPointerLeave);
+      document.removeEventListener('pointerleave', onPointerLeave);
       if (rafRef.current !== null) window.cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
   return (
     <div ref={containerRef} className={className} aria-hidden="true">
-      <canvas ref={canvasRef} className="h-full w-full touch-none" />
+      <canvas ref={canvasRef} className="pointer-events-none h-full w-full" />
     </div>
   );
 }
