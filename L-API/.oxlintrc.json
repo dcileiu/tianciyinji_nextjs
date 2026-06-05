@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/no-unknown-property": "off",
+    "no-underscore-dangle": "off"
+  },
+  "ignorePatterns": [
+    "**/.next/**",
+    "**/node_modules/**",
+    "src/components/ui/**",
+    "src/hooks/use-mobile.ts",
+    "next-env.d.ts"
+  ]
+}
