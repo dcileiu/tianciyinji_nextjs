@@ -81,16 +81,18 @@ export default function ParticleLogo({ className }: ParticleLogoProps) {
       const octx = off.getContext('2d');
       if (!octx) return;
 
-      // 1) 实心圆盘
+      // 1) 实心圆盘（占画布 80%，四周留边距，鼠标把粒子推开时不会被画布矩形裁掉）
+      const discRadius = (box / 2) * 0.8;
+      const discDiameter = discRadius * 2;
       octx.fillStyle = '#000';
       octx.beginPath();
-      octx.arc(box / 2, box / 2, (box / 2) * 0.98, 0, Math.PI * 2);
+      octx.arc(box / 2, box / 2, discRadius, 0, Math.PI * 2);
       octx.fill();
 
       // 2) 把居中的 logo 从圆盘里抠掉（destination-out）
       // logo 内容包围盒（viewBox 0..96）：x 26..84、y 14..82，中心约 (55, 48)
       const logoFraction = 0.52; // logo 占圆盘直径比例
-      const s = (logoFraction * box) / 68;
+      const s = (logoFraction * discDiameter) / 68;
       const tx = box / 2 - 55 * s;
       const ty = box / 2 - 48 * s;
       octx.globalCompositeOperation = 'destination-out';

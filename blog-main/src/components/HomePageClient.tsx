@@ -83,9 +83,9 @@ export default function HomePageClient({ posts, total }: HomePageClientProps) {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:py-24">
-      <header className="relative mb-16 overflow-hidden rounded-[32px] border border-[#e5dbff] bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(244,237,255,0.92))] px-6 py-8 shadow-[0_24px_80px_rgba(91,61,245,0.09)] sm:mb-20 sm:px-8 sm:py-10 md:mb-24 md:px-10 md:py-12 lg:mb-28 dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.88),rgba(15,11,27,0.94))]">
+      <header className="relative mb-16 overflow-hidden rounded-[32px] border border-[#e5dbff] bg-[linear-gradient(135deg,rgba(255,255,255,0.58),rgba(244,237,255,0.48))] px-6 py-8 shadow-[0_24px_80px_rgba(91,61,245,0.09)] sm:mb-20 sm:px-8 sm:py-10 md:mb-24 md:px-10 md:py-12 lg:mb-28 dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(24,18,43,0.42),rgba(15,11,27,0.5))]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(126,92,255,0.16),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(216,205,255,0.18),transparent_34%)]" />
-        <div className="relative flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
           <div className="min-w-0 flex-1">
             <p className="mb-4 text-xs uppercase tracking-[0.24em] text-[#7f71ab] sm:mb-5 sm:text-sm dark:text-[#ab9cd8]">
               {homeText.eyebrow}
@@ -130,7 +130,7 @@ export default function HomePageClient({ posts, total }: HomePageClientProps) {
             <div className="h-[2px] w-12 bg-[#5b3df5] sm:w-14 md:w-16 dark:bg-[#d8cdff]" />
           </div>
 
-          <ParticleLogo className="mx-auto aspect-square w-full max-w-[240px] shrink-0 cursor-crosshair sm:max-w-[280px] lg:mx-0 lg:w-[300px] lg:max-w-none" />
+          <ParticleLogo className="mx-auto aspect-square w-full max-w-[300px] shrink-0 cursor-crosshair sm:max-w-[340px] lg:mx-0 lg:w-[360px] lg:max-w-none" />
         </div>
       </header>
 
