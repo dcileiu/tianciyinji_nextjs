@@ -10,9 +10,7 @@ const schema = z.object({
   AUTH_SECRET: z.string().min(1).default("dev-insecure-secret-change-me-0123456789abcdef"),
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-  // 可选：限流共享存储。自建用 REDIS_URL（ioredis）；Serverless 可用 Upstash REST。
-  // 多实例（如 PM2 cluster）下必须配置其一，否则各进程计数不共享。
-  REDIS_URL: z.string().min(1).optional(),
+  // 可选：配置后限流计数走 Redis（多实例/Serverless 共享），否则用内存。
   UPSTASH_REDIS_REST_URL: z.string().url().optional(),
   UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
   // 可选：支付宝（电脑网站支付）。配齐后走真实结账，否则回退模拟到账。
@@ -40,7 +38,6 @@ export const env = schema.parse({
   AUTH_SECRET: process.env.AUTH_SECRET,
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   NODE_ENV: process.env.NODE_ENV,
-  REDIS_URL: process.env.REDIS_URL,
   UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
   UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
   ALIPAY_APP_ID: process.env.ALIPAY_APP_ID,
