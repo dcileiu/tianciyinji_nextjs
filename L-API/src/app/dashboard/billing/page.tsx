@@ -1,7 +1,7 @@
-import { Coins, Sparkles } from "lucide-react";
+import { CheckCircle2, Coins, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
+import { BuyCredits } from "@/components/dashboard/buy-credits";
 import { PageHeading } from "@/components/dashboard/page-heading";
-import { PurchaseButton } from "@/components/dashboard/purchase-button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { formatDateTime, formatNumber, formatPrice } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { enabledPaymentMethods } from "@/server/payments";
 import { listOrders, listPackages } from "@/server/services/billing";
 import { requireUser } from "@/server/services/user";
 
@@ -25,13 +26,29 @@ const ORDER_STATUS: Record<string, string> = {
   FAILED: "失败",
 };
 
-export default async function BillingPage() {
+export default async function BillingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ paid?: string }>;
+}) {
   const user = await requireUser();
-  const [packages, orders] = await Promise.all([listPackages(), listOrders(user.id)]);
+  const [{ paid }, packages, orders] = await Promise.all([
+    searchParams,
+    listPackages(),
+    listOrders(user.id),
+  ]);
+  const methods = enabledPaymentMethods();
 
   return (
     <div>
       <PageHeading title="账单" description="管理积分余额、购买资源包与查看订单。" />
+
+      {paid && (
+        <div className="mb-6 flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-700 dark:text-emerald-400">
+          <CheckCircle2 className="size-4" />
+          支付完成后积分将在确认到账后更新，如未及时显示请稍候刷新。
+        </div>
+      )}
 
       <Card className="mb-8 gap-0 bg-gradient-to-br from-primary/10 to-transparent p-6">
         <span className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -69,10 +86,11 @@ export default async function BillingPage() {
               {pkg.bonus > 0 && <span className="text-primary"> + {formatNumber(pkg.bonus)}</span>}
             </p>
             <div className="mt-4">
-              <PurchaseButton
+              <BuyCredits
                 packageId={pkg.id}
-                label={pkg.priceCents === 0 ? "免费领取" : "购买"}
-                variant={pkg.popular ? "default" : "outline"}
+                priceCents={pkg.priceCents}
+                methods={methods}
+                popular={pkg.popular}
               />
             </div>
           </Card>
@@ -118,7 +136,9 @@ export default async function BillingPage() {
       </div>
 
       <p className="mt-6 text-xs text-muted-foreground">
-        * 第一版为功能演示，购买为模拟支付，不产生真实扣费。
+        {methods.length > 0
+          ? "* 支持支付宝 / 微信支付，支付完成后由支付平台异步通知到账。"
+          : "* 当前未配置支付渠道，购买为模拟到账（仅用于演示）。"}
       </p>
     </div>
   );

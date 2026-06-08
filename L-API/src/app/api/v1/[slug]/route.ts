@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { hashApiKey } from "@/lib/api-key";
 import { captureError } from "@/lib/observability";
 import { prisma } from "@/lib/prisma";
+import { readRequestParams } from "@/lib/request-params";
 import { ApiInputError, runApi } from "@/server/api-runtime";
+import { completeIdempotent, lookupIdempotent, reserveIdempotent } from "@/server/idempotency";
 import { recordUsage } from "@/server/logging/usage-recorder";
 import {
   getClientIp,
@@ -19,7 +21,7 @@ export const dynamic = "force-dynamic";
 const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "x-api-key, content-type",
+  "Access-Control-Allow-Headers": "x-api-key, content-type, idempotency-key",
   "Access-Control-Max-Age": "86400",
 };
 
@@ -51,7 +53,7 @@ async function handle(req: Request, slug: string) {
     );
   }
 
-  // 2) 密钥鉴权
+  // 2) 密钥鉴权（hash 唯一索引，等值命中）
   const key = req.headers.get("x-api-key") ?? url.searchParams.get("key");
   if (!key) {
     return respond(401, {
@@ -60,17 +62,30 @@ async function handle(req: Request, slug: string) {
     });
   }
 
-  const apiKey = await prisma.apiKey.findFirst({
-    where: { hash: hashApiKey(key), status: "ACTIVE" },
+  const apiKey = await prisma.apiKey.findUnique({
+    where: { hash: hashApiKey(key) },
     include: { user: true },
   });
-  if (!apiKey) {
+  if (!apiKey || apiKey.status !== "ACTIVE") {
     return respond(401, { success: false, error: "无效或已吊销的 API 密钥" });
   }
 
   // 2b) 过期校验
   if (apiKey.expiresAt && apiKey.expiresAt.getTime() < Date.now()) {
     return respond(401, { success: false, error: "API 密钥已过期" });
+  }
+
+  // 幂等键（可选）：尽早回放已完成结果，避免重复扣费与副作用
+  const idemKey = req.headers.get("idempotency-key");
+  const scopeKey = idemKey ? `${apiKey.id}:${idemKey}` : null;
+  if (scopeKey) {
+    const hit = await lookupIdempotent(scopeKey);
+    if (hit.kind === "replay") {
+      return respond(hit.statusCode, hit.body, { "Idempotent-Replayed": "true" });
+    }
+    if (hit.kind === "pending") {
+      return respond(409, { success: false, error: "请求处理中，请勿重复提交" });
+    }
   }
 
   // 3) 密钥级封禁与限流（支持密钥自定义每分钟上限）
@@ -121,7 +136,7 @@ async function handle(req: Request, slug: string) {
     return respond(403, { success: false, error: "该密钥无权访问此接口分类" }, rateHeaders(keyRl));
   }
 
-  // 5) 计费校验
+  // 5) 余额快速预检（最终以原子扣费为准）
   const cost = api.pricePerCall;
   if (apiKey.user.credits < cost) {
     log({
@@ -174,16 +189,45 @@ async function handle(req: Request, slug: string) {
     }
   }
 
-  // 7) 执行 + 计费（积分扣减同步保证一致），日志异步批量写入
-  const startedAt = Date.now();
-  try {
-    const data = await runApi(slug, url.searchParams);
-    const latencyMs = Date.now() - startedAt;
+  // 幂等预留（扣费前）：并发下仅一个请求继续，其余回放/等待
+  if (scopeKey) {
+    const reserved = await reserveIdempotent(scopeKey);
+    if (reserved.kind === "replay") {
+      return respond(reserved.statusCode, reserved.body, { "Idempotent-Replayed": "true" });
+    }
+    if (reserved.kind === "pending") {
+      return respond(409, { success: false, error: "请求处理中，请勿重复提交" });
+    }
+  }
 
-    await prisma.user.update({
-      where: { id: apiKey.userId },
-      data: { credits: { decrement: cost } },
+  // 7) 原子扣费（条件更新，杜绝并发超扣）
+  const charged = await prisma.user.updateMany({
+    where: { id: apiKey.userId, credits: { gte: cost } },
+    data: { credits: { decrement: cost } },
+  });
+  if (charged.count === 0) {
+    log({
+      userId: apiKey.userId,
+      apiId: api.id,
+      apiKeyId: apiKey.id,
+      endpoint: api.path,
+      statusCode: 402,
+      latencyMs: 0,
+      creditsCost: 0,
     });
+    const payload = { success: false, error: "积分不足，请前往控制台购买资源包" };
+    if (scopeKey) await completeIdempotent(scopeKey, 402, payload);
+    return respond(402, payload, rateHeaders(keyRl));
+  }
+
+  // 8) 执行（失败则退款），日志异步批量写入
+  const startedAt = Date.now();
+  let status: number;
+  let payload: unknown;
+  try {
+    const params = await readRequestParams(req);
+    const data = await runApi(slug, params);
+    const latencyMs = Date.now() - startedAt;
     log({
       userId: apiKey.userId,
       apiId: api.id,
@@ -193,19 +237,24 @@ async function handle(req: Request, slug: string) {
       latencyMs,
       creditsCost: cost,
     });
-
-    return respond(
-      200,
-      {
-        success: true,
-        data,
-        meta: { creditsCost: cost, creditsRemaining: apiKey.user.credits - cost, latencyMs },
+    status = 200;
+    payload = {
+      success: true,
+      data,
+      meta: {
+        creditsCost: cost,
+        creditsRemaining: Math.max(0, apiKey.user.credits - cost),
+        latencyMs,
       },
-      rateHeaders(keyRl),
-    );
+    };
   } catch (err) {
     const latencyMs = Date.now() - startedAt;
     const isInput = err instanceof ApiInputError;
+    // 退款：执行失败不计费
+    await prisma.user.update({
+      where: { id: apiKey.userId },
+      data: { credits: { increment: cost } },
+    });
     log({
       userId: apiKey.userId,
       apiId: api.id,
@@ -217,12 +266,12 @@ async function handle(req: Request, slug: string) {
     });
     await recordApiError(apiKey.id, apiKey.userId);
     if (!isInput) captureError(err, { slug, apiId: api.id, userId: apiKey.userId });
-    return respond(
-      isInput ? 400 : 500,
-      { success: false, error: isInput ? err.message : "接口执行失败" },
-      rateHeaders(keyRl),
-    );
+    status = isInput ? 400 : 500;
+    payload = { success: false, error: isInput ? err.message : "接口执行失败" };
   }
+
+  if (scopeKey) await completeIdempotent(scopeKey, status, payload);
+  return respond(status, payload, rateHeaders(keyRl));
 }
 
 export async function OPTIONS() {

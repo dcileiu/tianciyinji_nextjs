@@ -14,7 +14,16 @@
 - 日志/错误:`src/lib/logger.ts`(结构化日志)、`src/lib/observability.ts` 的 `captureError`(统一上报入口,接 Sentry 在此处接)。
 - 用量写入异步化:接口调用经 `src/server/logging/usage-recorder.ts` 缓冲批量写 `RequestLog` 并增量汇总到 `UsageDaily`;积分扣减仍同步保证一致。仪表盘概览/趋势/Top 读 `UsageDaily`,明细列表读 `RequestLog`。
 - 密钥安全:`ApiKey` 支持 `scopes`(分类白名单)、`expiresAt`(过期)、`rateLimitPerMin`(每分钟覆盖)、`dailyQuota`(独立每日配额),均在 `/api/v1/[slug]` 校验。
-- 数据库:MySQL + Prisma(v6)。本地 `docker compose up -d` 起 MySQL,然后 `pnpm db:push` 建表、`pnpm db:seed` 灌种子数据。
+- 数据库:MySQL + Prisma(v6)。本地 `docker compose up -d` 起 MySQL。**迁移用 `prisma/migrations`(基线 `0_init`)**:全新库 `pnpm db:deploy`;已用 `db:push` 建过表的旧库执行 `pnpm exec prisma migrate resolve --applied 0_init` 打基线后再 `db:deploy`。改 schema 后用 `pnpm db:migrate --name xxx` 生成新迁移。最后 `pnpm db:seed` 灌种子。`db:push` 仅限本地快速试验。
+- 计费正确性:`/api/v1/[slug]` **先原子条件扣费**(`updateMany where credits>=cost`,杜绝并发超扣)再执行,**执行失败自动退款**。支持 `Idempotency-Key` 请求头幂等(`IdempotencyRecord` 表 + `src/server/idempotency.ts`,预留占位/回放/陈旧回收),重试不重复扣费。
+- 请求参数:`src/lib/request-params.ts` 的 `readRequestParams` 合并 query 与 POST/PUT body(JSON / urlencoded),`runApi` 统一消费。
+- 密钥查找走 `ApiKey.hash` 唯一索引(`findUnique`),非全表扫描。
+
+## 真实集成(配了 env 走真实,没配优雅回退)
+- 支付:支付宝(电脑网站支付,跳转)+ 微信(Native 扫码)。模块在 `src/server/payments/`(`alipay.ts`/`wechat.ts` 懒加载 SDK + 验签,`index.ts` 暴露 `enabledPaymentMethods()`)。下单/到账在 `src/server/services/billing.ts`:`startCheckout` 返回 `credited|redirect|qr`;`grantOrder` 幂等(PENDING→PAID 一次)。Webhook 在 `src/app/api/webhooks/{alipay,wechat}`(`runtime=nodejs`,验签后发放)。前端 `src/components/dashboard/buy-credits.tsx`(渠道选择 + 微信二维码弹窗轮询订单)。**未配置商户密钥时回退为模拟到账**,UI 自动切换。SDK 含动态 require,已在 `next.config.ts` 的 `serverExternalPackages` 标记。
+- 错误追踪:`src/lib/observability.ts` 的 `captureError` 配置 `SENTRY_DSN` 后异步上报(自建 envelope,无重型 SDK),否则仅日志。
+- 邮件:`src/server/email/`(Resend via fetch + 模板)。注册发欢迎信、购买到账发收据;未配 `RESEND_API_KEY/EMAIL_FROM` 则跳过。
+- 这些可选变量都在 `src/lib/env.ts`(zod,全部 optional),示例见 `.env.example`。
 - 鉴权:Auth.js v5(Credentials + JWT 会话 + Prisma adapter),配置见 `src/server/auth/`。
 - 环境变量集中在 `src/lib/env.ts`(zod 校验),示例见 `.env.example`。
 
