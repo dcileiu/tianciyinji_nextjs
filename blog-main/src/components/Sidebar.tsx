@@ -149,7 +149,7 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
                     >
                       <ul
                         className={cn(
-                          'grid w-[min(28rem,calc(100vw-7rem))] max-h-[70vh] grid-cols-2 gap-x-2 gap-y-1 overflow-y-auto overscroll-contain rounded-xl p-2',
+                          'w-[min(28rem,calc(100vw-7rem))] max-h-[70vh] columns-2 gap-2 overflow-y-auto overscroll-contain rounded-xl p-2',
                           'bg-popover text-popover-foreground',
                           'border border-border',
                           'shadow-[0_12px_40px_rgba(63,42,143,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)]',
@@ -161,7 +161,7 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
 
                           if (groupTools.length === 0) {
                             return (
-                              <li key={child.label} className="col-span-2">
+                              <li key={child.label} className="mb-1 break-inside-avoid">
                                 <Link
                                   href={localizedHref(child.href) as any}
                                   className={cn(
@@ -178,7 +178,7 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
                           }
 
                           return (
-                            <li key={child.label} className="min-w-0">
+                            <li key={child.label} className="mb-2 break-inside-avoid">
                               <span
                                 className={cn(
                                   'block px-3 py-1.5 text-xs font-semibold uppercase tracking-wide whitespace-nowrap select-none',
