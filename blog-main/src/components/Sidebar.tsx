@@ -141,15 +141,15 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
                   {hasChildren && (
                     <div
                       className={cn(
-                        'invisible absolute left-full top-0 z-50 pl-2 opacity-0',
-                        'translate-x-1 transition-all duration-200',
+                        'invisible absolute left-full top-1/2 z-50 pl-2 opacity-0',
+                        '-translate-y-1/2 translate-x-1 transition-all duration-200',
                         'group-hover/navitem:visible group-hover/navitem:translate-x-0 group-hover/navitem:opacity-100',
                         'group-focus-within/navitem:visible group-focus-within/navitem:translate-x-0 group-focus-within/navitem:opacity-100'
                       )}
                     >
                       <ul
                         className={cn(
-                          'min-w-[12rem] max-h-[78vh] overflow-y-auto overscroll-contain rounded-xl p-1.5',
+                          'grid w-[min(28rem,calc(100vw-7rem))] max-h-[70vh] grid-cols-2 gap-x-2 gap-y-1 overflow-y-auto overscroll-contain rounded-xl p-2',
                           'bg-popover text-popover-foreground',
                           'border border-border',
                           'shadow-[0_12px_40px_rgba(63,42,143,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)]',
@@ -161,7 +161,7 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
 
                           if (groupTools.length === 0) {
                             return (
-                              <li key={child.label}>
+                              <li key={child.label} className="col-span-2">
                                 <Link
                                   href={localizedHref(child.href) as any}
                                   className={cn(
@@ -178,7 +178,7 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
                           }
 
                           return (
-                            <li key={child.label} className="mt-1.5 first:mt-0">
+                            <li key={child.label} className="min-w-0">
                               <span
                                 className={cn(
                                   'block px-3 py-1.5 text-xs font-semibold uppercase tracking-wide whitespace-nowrap select-none',
