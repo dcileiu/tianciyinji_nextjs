@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { localizePath } from '@/lib/i18n';
 import { absoluteUrl, siteConfig } from '@/lib/site-config';
+import { toolCatalog, toolHref } from '@/lib/tools/catalog';
 import { getAllBlogPosts } from '@/utils/posts';
 import { getResources } from '@/utils/resources';
 
@@ -53,6 +54,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]);
 
+  const toolRoutes: MetadataRoute.Sitemap = toolCatalog.flatMap((tool) => {
+    const path = toolHref(tool.id);
+    return [
+      {
+        url: absoluteUrl(path),
+        lastModified: now,
+        changeFrequency: 'weekly',
+        priority: 0.7,
+        alternates: withAlternates(path),
+      },
+      {
+        url: absoluteUrl(localizePath(path, 'en')),
+        lastModified: now,
+        changeFrequency: 'weekly',
+        priority: 0.7,
+        alternates: withAlternates(path),
+      },
+    ];
+  });
+
   const postRoutes: MetadataRoute.Sitemap = posts.flatMap((post) => {
     const path = `/post/${post.slug}`;
     return [{
@@ -89,5 +110,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }];
   });
 
-  return [...staticRoutes, ...postRoutes, ...resourceRoutes];
+  return [...staticRoutes, ...toolRoutes, ...postRoutes, ...resourceRoutes];
 }

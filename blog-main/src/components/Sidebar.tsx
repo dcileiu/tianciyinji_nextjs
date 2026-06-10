@@ -81,12 +81,9 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
   };
 
   const visibleItems = useMemo(() => navItems.filter((item) => item.enabled), [navItems]);
+  // 仅预取顶级导航项：工具子菜单含数十个独立页，全部预取会造成不必要的请求与开销。
   const navHrefs = useMemo(
-    () =>
-      visibleItems.flatMap((item) => [
-        localizedHref(item.href),
-        ...(item.children?.filter((child) => child.enabled).map((child) => localizedHref(child.href)) ?? []),
-      ]),
+    () => visibleItems.map((item) => localizedHref(item.href)),
     [localizedHref, visibleItems],
   );
 
@@ -152,28 +149,64 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
                     >
                       <ul
                         className={cn(
-                          'min-w-[11rem] rounded-xl p-1.5',
+                          'min-w-[12rem] max-h-[78vh] overflow-y-auto overscroll-contain rounded-xl p-1.5',
                           'bg-popover text-popover-foreground',
                           'border border-border',
                           'shadow-[0_12px_40px_rgba(63,42,143,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)]',
                           'backdrop-blur-xl'
                         )}
                       >
-                        {children.map((child) => (
-                          <li key={child.label}>
-                            <Link
-                              href={localizedHref(child.href) as any}
-                              className={cn(
-                                'block rounded-lg px-3 py-2 text-sm whitespace-nowrap',
-                                'text-foreground/80',
-                                'hover:bg-accent hover:text-accent-foreground',
-                                'transition-colors duration-150'
-                              )}
-                            >
-                              {child.label}
-                            </Link>
-                          </li>
-                        ))}
+                        {children.map((child) => {
+                          const groupTools = child.children?.filter((tool) => tool.enabled) ?? [];
+
+                          if (groupTools.length === 0) {
+                            return (
+                              <li key={child.label}>
+                                <Link
+                                  href={localizedHref(child.href) as any}
+                                  className={cn(
+                                    'block rounded-lg px-3 py-2 text-sm whitespace-nowrap',
+                                    'text-foreground/80',
+                                    'hover:bg-accent hover:text-accent-foreground',
+                                    'transition-colors duration-150'
+                                  )}
+                                >
+                                  {child.label}
+                                </Link>
+                              </li>
+                            );
+                          }
+
+                          return (
+                            <li key={child.label} className="mt-1.5 first:mt-0">
+                              <span
+                                className={cn(
+                                  'block px-3 py-1.5 text-xs font-semibold uppercase tracking-wide whitespace-nowrap select-none',
+                                  'text-foreground/45'
+                                )}
+                              >
+                                {child.label}
+                              </span>
+                              <ul>
+                                {groupTools.map((tool) => (
+                                  <li key={tool.label}>
+                                    <Link
+                                      href={localizedHref(tool.href) as any}
+                                      className={cn(
+                                        'block rounded-lg px-3 py-1.5 text-sm whitespace-nowrap',
+                                        'text-foreground/80',
+                                        'hover:bg-accent hover:text-accent-foreground',
+                                        'transition-colors duration-150'
+                                      )}
+                                    >
+                                      {tool.label}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            </li>
+                          );
+                        })}
                       </ul>
                     </div>
                   )}
@@ -297,26 +330,68 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
                                 // @ts-ignore - framer-motion type issue
                                 className="overflow-hidden pl-4"
                               >
-                                {children.map((child) => (
-                                  <li key={child.label}>
-                                    <Link
-                                      href={localizedHref(child.href) as any}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleClose();
-                                      }}
-                                      className={cn(
-                                        'block rounded-lg px-4 py-2.5',
-                                        'text-lg font-medium',
-                                        'text-foreground/75',
-                                        'hover:bg-accent hover:text-foreground',
-                                        'transition-colors duration-200'
-                                      )}
-                                    >
-                                      {child.label}
-                                    </Link>
-                                  </li>
-                                ))}
+                                {children.map((child) => {
+                                  const groupTools = child.children?.filter((tool) => tool.enabled) ?? [];
+
+                                  if (groupTools.length === 0) {
+                                    return (
+                                      <li key={child.label}>
+                                        <Link
+                                          href={localizedHref(child.href) as any}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleClose();
+                                          }}
+                                          className={cn(
+                                            'block rounded-lg px-4 py-2.5',
+                                            'text-lg font-medium',
+                                            'text-foreground/75',
+                                            'hover:bg-accent hover:text-foreground',
+                                            'transition-colors duration-200'
+                                          )}
+                                        >
+                                          {child.label}
+                                        </Link>
+                                      </li>
+                                    );
+                                  }
+
+                                  return (
+                                    <li key={child.label} className="mt-2 first:mt-0">
+                                      <span
+                                        className={cn(
+                                          'block px-4 py-1.5 select-none',
+                                          'text-sm font-semibold uppercase tracking-wide',
+                                          'text-foreground/45'
+                                        )}
+                                      >
+                                        {child.label}
+                                      </span>
+                                      <ul className="pl-2">
+                                        {groupTools.map((tool) => (
+                                          <li key={tool.label}>
+                                            <Link
+                                              href={localizedHref(tool.href) as any}
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleClose();
+                                              }}
+                                              className={cn(
+                                                'block rounded-lg px-4 py-2',
+                                                'text-base font-medium',
+                                                'text-foreground/75',
+                                                'hover:bg-accent hover:text-foreground',
+                                                'transition-colors duration-200'
+                                              )}
+                                            >
+                                              {tool.label}
+                                            </Link>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </li>
+                                  );
+                                })}
                               </motion.ul>
                             )}
                           </AnimatePresence>

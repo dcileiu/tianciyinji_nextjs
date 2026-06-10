@@ -352,7 +352,7 @@ export default function ToolsHub({ locale }: { locale: Locale }) {
                 {module.tools.map((tool) => (
                   <Link
                     key={tool.id}
-                    href={`${localizedHref(module.base, locale)}?tool=${tool.id}` as Route}
+                    href={`${localizedHref(module.base, locale)}/${tool.id}` as Route}
                     className="rounded-full border border-[#ddd0ff] bg-white/70 px-3 py-1 text-xs text-[#5f4e89] transition hover:border-[#8b6bff] hover:bg-[#ece3ff] hover:text-[#4f31d7] dark:border-[#392d56] dark:bg-white/[0.03] dark:text-[#cabbef] dark:hover:border-[#8b6bff] dark:hover:bg-[#2b1f43] dark:hover:text-[#efe9ff]"
                   >
                     {tool.name}
