@@ -22,6 +22,21 @@ interface SidebarProps {
   onClose?: () => void;
 }
 
+function splitIntoBalancedColumns(items: NavItem[]): [NavItem[], NavItem[]] {
+  const columns: [NavItem[], NavItem[]] = [[], []];
+  const heights = [0, 0];
+
+  for (const item of items) {
+    const childCount = item.children?.filter((child) => child.enabled).length ?? 0;
+    const estimatedHeight = childCount + 1;
+    const targetColumn = heights[0] <= heights[1] ? 0 : 1;
+    columns[targetColumn].push(item);
+    heights[targetColumn] += estimatedHeight;
+  }
+
+  return columns;
+}
+
 export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
   const { localizedHref } = useI18n();
   const router = useRouter();
@@ -113,6 +128,7 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
           <ul className="space-y-2">
             {visibleItems.map((item) => {
               const children = item.children?.filter((child) => child.enabled) ?? [];
+              const childColumns = splitIntoBalancedColumns(children);
               const hasChildren = children.length > 0;
 
               return (
@@ -147,67 +163,71 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
                         'group-focus-within/navitem:visible group-focus-within/navitem:translate-x-0 group-focus-within/navitem:opacity-100'
                       )}
                     >
-                      <ul
+                      <div
                         className={cn(
-                          'w-[min(28rem,calc(100vw-7rem))] max-h-[70vh] columns-2 gap-2 overflow-y-auto overscroll-contain rounded-xl p-2',
+                          'grid w-[min(28rem,calc(100vw-7rem))] max-h-[70vh] grid-cols-2 gap-2 overflow-y-auto overscroll-contain rounded-xl p-2',
                           'bg-popover text-popover-foreground',
                           'border border-border',
                           'shadow-[0_12px_40px_rgba(63,42,143,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)]',
                           'backdrop-blur-xl'
                         )}
                       >
-                        {children.map((child) => {
-                          const groupTools = child.children?.filter((tool) => tool.enabled) ?? [];
+                        {childColumns.map((column, columnIndex) => (
+                          <ul key={columnIndex} className="min-w-0 space-y-2">
+                            {column.map((child) => {
+                              const groupTools = child.children?.filter((tool) => tool.enabled) ?? [];
 
-                          if (groupTools.length === 0) {
-                            return (
-                              <li key={child.label} className="mb-1 break-inside-avoid">
-                                <Link
-                                  href={localizedHref(child.href) as any}
-                                  className={cn(
-                                    'block rounded-lg px-3 py-2 text-sm whitespace-nowrap',
-                                    'text-foreground/80',
-                                    'hover:bg-accent hover:text-accent-foreground',
-                                    'transition-colors duration-150'
-                                  )}
-                                >
-                                  {child.label}
-                                </Link>
-                              </li>
-                            );
-                          }
-
-                          return (
-                            <li key={child.label} className="mb-2 break-inside-avoid">
-                              <span
-                                className={cn(
-                                  'block px-3 py-1.5 text-xs font-semibold uppercase tracking-wide whitespace-nowrap select-none',
-                                  'text-foreground/45'
-                                )}
-                              >
-                                {child.label}
-                              </span>
-                              <ul>
-                                {groupTools.map((tool) => (
-                                  <li key={tool.label}>
+                              if (groupTools.length === 0) {
+                                return (
+                                  <li key={child.label}>
                                     <Link
-                                      href={localizedHref(tool.href) as any}
+                                      href={localizedHref(child.href) as any}
                                       className={cn(
-                                        'block rounded-lg px-3 py-1.5 text-sm whitespace-nowrap',
+                                        'block rounded-lg px-3 py-2 text-sm whitespace-nowrap',
                                         'text-foreground/80',
                                         'hover:bg-accent hover:text-accent-foreground',
                                         'transition-colors duration-150'
                                       )}
                                     >
-                                      {tool.label}
+                                      {child.label}
                                     </Link>
                                   </li>
-                                ))}
-                              </ul>
-                            </li>
-                          );
-                        })}
-                      </ul>
+                                );
+                              }
+
+                              return (
+                                <li key={child.label}>
+                                  <span
+                                    className={cn(
+                                      'block px-3 py-1.5 text-xs font-semibold uppercase tracking-wide whitespace-nowrap select-none',
+                                      'text-foreground/45'
+                                    )}
+                                  >
+                                    {child.label}
+                                  </span>
+                                  <ul>
+                                    {groupTools.map((tool) => (
+                                      <li key={tool.label}>
+                                        <Link
+                                          href={localizedHref(tool.href) as any}
+                                          className={cn(
+                                            'block rounded-lg px-3 py-1.5 text-sm whitespace-nowrap',
+                                            'text-foreground/80',
+                                            'hover:bg-accent hover:text-accent-foreground',
+                                            'transition-colors duration-150'
+                                          )}
+                                        >
+                                          {tool.label}
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </li>
