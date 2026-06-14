@@ -37,14 +37,14 @@ export const worksIntro =
 export const works: WorkItem[] = [
   {
     title: '品牌官网',
-    summary: '正在打造的 Next.js 企业品牌网站，前台有丰富的交互动画，内置智能问答机器人，后台支持全站 10 种语言管理。',
+    summary: '已上线的 Next.js 企业品牌网站，前台有丰富的交互动画，内置智能问答机器人，后台支持全站 10 种语言管理。',
     description: [
       '面向品牌展示与业务转化的 Next.js 官网项目。页面里塞了不少有意思的交互动效——滚动叙事、元素进场、悬停反馈等，让整站浏览起来像在读一本会动的画册，而不只是静态信息堆砌。',
       '站点集成了智能问答机器人，访客可以直接用自然语言咨询产品、服务与常见问题，减少跳转成本，也让品牌侧多了一个 24 小时在线的接待入口。',
       '配套完整的后台管理系统，文章、页面模块、媒体资源都能在一个面板里维护；全站内容支持 10 种语言，方便面向不同地区市场做本地化运营。',
     ],
     year: '2026',
-    status: '开发中',
+    status: '已上线',
     tags: ['Next.js', 'Motion', 'AI Chatbot', 'i18n', 'Admin'],
     href: 'https://ryoex.com',
     linkLabel: '访问官网',
@@ -63,7 +63,7 @@ export const works: WorkItem[] = [
     status: '内部使用',
     tags: ['Vue', 'TypeScript', 'API Docs', 'Collaboration', 'Motion'],
     href: 'https://apidocs.aletaplanet.com/web/login',
-    linkLabel: '登录系统',
+    linkLabel: '访问站点',
     images: ['/works/doc-api/doc-api-1.webp', '/works/doc-api/doc-api-2.webp'],
   },
   {
@@ -140,14 +140,14 @@ const worksEn: WorkItem[] = [
   {
     title: 'Brand Website',
     summary:
-      'An enterprise brand site in active development, built with Next.js, with rich interactive animations, an intelligent Q&A chatbot, and an admin panel for managing the full site in 10 languages.',
+      'A live Next.js enterprise brand site with rich interactive animations, an intelligent Q&A chatbot, and an admin panel for managing the full site in 10 languages.',
     description: [
       'A Next.js brand website built for storytelling and conversion. The front end is packed with engaging motion—scroll-driven narratives, staged entrances, and hover feedback—so browsing feels like flipping through a living brochure, not reading a flat brochure PDF.',
       'An intelligent Q&A chatbot is built in, so visitors can ask about products, services, and FAQs in natural language without hunting through pages—giving the brand a always-on reception desk.',
       'A full admin backend keeps articles, page modules, and media in one place. The entire site supports 10 languages, making it easier to localize content for different regional markets.',
     ],
     year: '2026',
-    status: 'In development',
+    status: 'Live',
     tags: ['Next.js', 'Motion', 'AI Chatbot', 'i18n', 'Admin'],
     href: 'https://ryoex.com',
     linkLabel: 'Visit site',
