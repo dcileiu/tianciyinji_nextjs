@@ -53,10 +53,10 @@ export const works: WorkItem[] = [
   },
   {
     title: 'API 文档协同编辑系统',
-    summary: '基于 Vue 的 API 文档多人协同编辑平台，Logo 动画与主题切换过渡是亮点；文档内容内部使用，需登录后查看。',
+    summary: '基于 Vue 的 API 文档平台，多人协同编辑、Logo 动画与主题切换过渡都是亮点；文档内容内部使用，需登录后查看。',
     description: [
-      '一套面向团队内部的 API 文档协同编辑系统，用 Vue 全栈搭建。多人可同时维护接口说明、调试示例与版本记录，减少文档散落在各处、各写各的问题。',
-      '视觉上有两个我比较得意的细节：Logo 进场与状态变化做了连贯动画，切换明暗主题时也不是硬切，而是带过渡的翻转/渐变效果，文档站也能有一点产品感。',
+      '一套面向团队内部的 API 文档协同编辑系统，用 Vue 全栈搭建。多人可同时维护接口说明、调试示例与版本记录，是我觉得最值得写进作品里的能力——文档不再散落在各处、各写各的。',
+      '视觉上也下了功夫：Logo 进场与状态变化做了连贯动画，切换明暗主题时带过渡的翻转/渐变效果，文档站也能有一点产品感。',
       '涉及业务接口与协作内容，不便对外公开展示，访问需登录鉴权。作品页仅展示外壳界面与动效截图。',
     ],
     year: '2025',
@@ -91,15 +91,15 @@ export const works: WorkItem[] = [
     images: [],
   },
   {
-    title: 'CI 自动化',
-    summary: '持续集成与部署相关的自动化方案，把构建、检查与发布流程串成可复用的流水线。',
+    title: '工作流自动化',
+    summary: '基于 n8n 等工作流工具搭建的自动化方案，把重复性任务串成可复用的流程，减少手工操作。',
     description: [
-      '长期维护的 CI 自动化实践，覆盖代码提交后的自动构建、质量检查与部署触发，减少手工重复操作。',
-      '通过流水线把 lint、测试、构建等步骤标准化，让多个项目都能沿用同一套自动化流程。',
+      '长期维护的工作流自动化实践，主要用 n8n 把数据采集、内容处理、通知推送、发布等环节连成一条链路。',
+      '适合新闻抓取、电商上新、定时巡检等场景——节点可视化编排，改流程不用重写脚本，多个项目也能复用同一套模板。',
     ],
     year: '长期维护',
     status: '持续更新',
-    tags: ['CI/CD', 'GitHub Actions', 'Automation', 'DevOps'],
+    tags: ['n8n', 'Workflow', 'Automation', 'AI'],
     images: ['/works/CI/image.webp'],
   },
   {
@@ -157,10 +157,10 @@ const worksEn: WorkItem[] = [
   {
     title: 'API Docs Collaborative Editor',
     summary:
-      'A Vue-based API documentation platform for multi-user collaborative editing, with standout logo and theme-switch animations. Internal use only.',
+      'A Vue-based API documentation platform where multi-user collaborative editing, logo animation, and theme-switch transitions are all standouts. Internal use only.',
     description: [
-      'An internal API documentation system built with Vue across the stack, where multiple teammates can maintain endpoint specs, try-it examples, and version history together—instead of docs living in scattered files.',
-      'Two motion details I am especially happy with: the logo has a cohesive entrance and state animation, and light/dark theme changes use a smooth transition instead of a hard cut—so even a docs site feels a bit like a product.',
+      'An internal API documentation system built with Vue across the stack, where multiple teammates maintain endpoint specs, try-it examples, and version history together—the collaborative editing flow is one of the features I am most proud of.',
+      'On the visual side: the logo has a cohesive entrance and state animation, and light/dark theme changes use a smooth transition instead of a hard cut—so even a docs site feels a bit like a product.',
       'Content involves business APIs and team collaboration data, so it is not publicly available and requires login. The portfolio only shows shell UI and motion screenshots.',
     ],
     year: '2025',
@@ -197,15 +197,15 @@ const worksEn: WorkItem[] = [
     images: [],
   },
   {
-    title: 'CI Automation',
-    summary: 'Automation for continuous integration and delivery—build, checks, and release steps wired into reusable pipelines.',
+    title: 'Workflow Automation',
+    summary: 'Automation built with workflow tools like n8n—wire repetitive tasks into reusable flows and cut manual work.',
     description: [
-      'Ongoing CI automation practice covering post-commit builds, quality gates, and deploy triggers to cut repetitive manual work.',
-      'Pipelines standardize lint, test, and build steps so multiple projects can share the same automation flow.',
+      'Ongoing workflow automation practice, mainly using n8n to chain data ingestion, content processing, notifications, and publishing into one pipeline.',
+      'Good for news scraping, product listing, scheduled checks, and similar jobs—visual node editing, tweak flows without rewriting scripts, and reuse templates across projects.',
     ],
     year: 'Long-term',
     status: 'Updating',
-    tags: ['CI/CD', 'GitHub Actions', 'Automation', 'DevOps'],
+    tags: ['n8n', 'Workflow', 'Automation', 'AI'],
     images: ['/works/CI/image.webp'],
   },
   {
