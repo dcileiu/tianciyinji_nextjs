@@ -47,9 +47,7 @@ export const works: WorkItem[] = [
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Markdown'],
     href: '/',
     linkLabel: '进入首页',
-    // 示例：把截图放进 public/works/blog/ 后填入路径
-    // images: ['/works/blog/1.png', '/works/blog/2.png'],
-    images: [],
+    images: ['/works/blog/blog-new.webp', '/works/blog/blog-new2.webp'],
     featured: true,
   },
   {
@@ -83,7 +81,7 @@ const worksEn: WorkItem[] = [
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Markdown'],
     href: '/',
     linkLabel: 'Open home',
-    images: [],
+    images: ['/works/blog/blog-new.webp', '/works/blog/blog-new2.webp'],
     featured: true,
   },
   {
