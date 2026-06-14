@@ -408,7 +408,8 @@
       "noResults": "没有匹配的工具",
       "commonTools": "常用工具",
       "devTools": "开发工具",
-      "dewatermark": "去水印"
+      "dewatermark": "去水印",
+      "allTools": "全部工具"
     },
     "sections": {
       "local-tools": {

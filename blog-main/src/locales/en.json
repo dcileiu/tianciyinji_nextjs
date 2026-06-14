@@ -407,7 +407,8 @@
       "noResults": "No matching tools",
       "commonTools": "Favorites",
       "devTools": "Developer Tools",
-      "dewatermark": "Dewatermark"
+      "dewatermark": "Dewatermark",
+      "allTools": "All Tools"
     },
     "sections": {
       "local-tools": {

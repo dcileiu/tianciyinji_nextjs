@@ -4,10 +4,13 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useI18n } from '@/components/I18nProvider';
 import {
+  sectionMeta,
+  segmentBySectionId,
+  toolCatalog,
   toolHref,
   toolNavMenuGroups,
   type ToolNavEntry,
-  type ToolNavGroupId,
+  type SectionId,
 } from '@/lib/tools/catalog';
 import { cn } from '@/lib/utils';
 
@@ -20,9 +23,10 @@ interface NavToolLink {
 }
 
 interface NavToolGroup {
-  id: ToolNavGroupId;
+  id: string;
   label: string;
   tools: NavToolLink[];
+  sectionHref?: string;
 }
 
 function resolveEntryLabel(entry: ToolNavEntry, dictionary: Dictionary): string {
@@ -49,7 +53,7 @@ function resolveGroupLabel(labelKey: string, dictionary: Dictionary): string {
   return navMenu[labelKey] ?? labelKey;
 }
 
-function buildNavGroups(dictionary: Dictionary): NavToolGroup[] {
+function buildFeaturedGroups(dictionary: Dictionary): NavToolGroup[] {
   return toolNavMenuGroups.map((group) => ({
     id: group.id,
     label: resolveGroupLabel(group.labelKey, dictionary),
@@ -59,6 +63,36 @@ function buildNavGroups(dictionary: Dictionary): NavToolGroup[] {
       href: resolveEntryHref(entry),
     })),
   }));
+}
+
+function buildAllSectionGroups(dictionary: Dictionary): NavToolGroup[] {
+  const sections = dictionary.toolsPage.sections as Record<string, { title: string } | undefined>;
+  const toolTitles = dictionary.toolsPage.toolTitles as Record<string, string | undefined>;
+
+  return sectionMeta.map((section) => ({
+    id: section.id,
+    label: sections[section.id]?.title ?? section.id,
+    sectionHref: `/tools/${segmentBySectionId[section.id as SectionId]}`,
+    tools: toolCatalog
+      .filter((tool) => tool.sectionId === section.id)
+      .map((tool) => ({
+        key: tool.id,
+        label: toolTitles[tool.id] ?? tool.id,
+        href: toolHref(tool.id),
+      })),
+  }));
+}
+
+function mergeSearchPool(...groupLists: NavToolGroup[][]): NavToolLink[] {
+  const map = new Map<string, NavToolLink>();
+  for (const groups of groupLists) {
+    for (const group of groups) {
+      for (const tool of group.tools) {
+        map.set(tool.href, tool);
+      }
+    }
+  }
+  return [...map.values()];
 }
 
 function splitGroupsIntoColumns(groups: NavToolGroup[]): [NavToolGroup[], NavToolGroup[]] {
@@ -82,19 +116,28 @@ interface ToolsNavSubmenuProps {
 
 export function ToolsNavSubmenu({ variant = 'desktop', onNavigate }: ToolsNavSubmenuProps) {
   const { dictionary, localizedHref } = useI18n();
-  const navMenu = dictionary.toolsPage.navMenu as { searchPlaceholder: string; noResults: string };
+  const navMenu = dictionary.toolsPage.navMenu as {
+    searchPlaceholder: string;
+    noResults: string;
+    allTools: string;
+  };
   const [query, setQuery] = useState('');
 
-  const groups = useMemo(() => buildNavGroups(dictionary), [dictionary]);
-  const groupColumns = useMemo(() => splitGroupsIntoColumns(groups), [groups]);
+  const featuredGroups = useMemo(() => buildFeaturedGroups(dictionary), [dictionary]);
+  const allSectionGroups = useMemo(() => buildAllSectionGroups(dictionary), [dictionary]);
+  const featuredColumns = useMemo(() => splitGroupsIntoColumns(featuredGroups), [featuredGroups]);
+  const allSectionColumns = useMemo(() => splitGroupsIntoColumns(allSectionGroups), [allSectionGroups]);
+
+  const searchPool = useMemo(
+    () => mergeSearchPool(featuredGroups, allSectionGroups),
+    [featuredGroups, allSectionGroups],
+  );
 
   const filteredTools = useMemo(() => {
     const trimmed = query.trim().toLowerCase();
     if (!trimmed) return null;
-    return groups
-      .flatMap((group) => group.tools)
-      .filter((tool) => tool.label.toLowerCase().includes(trimmed));
-  }, [groups, query]);
+    return searchPool.filter((tool) => tool.label.toLowerCase().includes(trimmed));
+  }, [query, searchPool]);
 
   const isMobile = variant === 'mobile';
   const linkClass = isMobile
@@ -118,19 +161,48 @@ export function ToolsNavSubmenu({ variant = 'desktop', onNavigate }: ToolsNavSub
 
   const renderGroup = (group: NavToolGroup) => (
     <li key={group.id} className={cn(isMobile ? 'mt-3 first:mt-0' : 'min-w-0')}>
-      <span
-        className={cn(
-          'block select-none font-semibold uppercase tracking-wide text-foreground/45',
-          isMobile ? 'px-3 py-1.5 text-sm' : 'px-2.5 py-1.5 text-xs whitespace-nowrap',
-        )}
-      >
-        {group.label}
-      </span>
+      {group.sectionHref ? (
+        <Link
+          href={localizedHref(group.sectionHref) as any}
+          onClick={(e) => {
+            e.stopPropagation();
+            onNavigate?.();
+          }}
+          className={cn(
+            'block font-semibold uppercase tracking-wide text-foreground/45 hover:text-foreground/70 transition-colors',
+            isMobile ? 'px-3 py-1.5 text-sm' : 'px-2.5 py-1.5 text-xs whitespace-nowrap',
+          )}
+        >
+          {group.label}
+        </Link>
+      ) : (
+        <span
+          className={cn(
+            'block select-none font-semibold uppercase tracking-wide text-foreground/45',
+            isMobile ? 'px-3 py-1.5 text-sm' : 'px-2.5 py-1.5 text-xs whitespace-nowrap',
+          )}
+        >
+          {group.label}
+        </span>
+      )}
       <ul className={cn('grid grid-cols-2 gap-x-1 gap-y-0.5', isMobile ? 'px-1' : '')}>
         {group.tools.map(renderToolLink)}
       </ul>
     </li>
   );
+
+  const renderGroupColumns = (columns: [NavToolGroup[], NavToolGroup[]]) =>
+    isMobile ? (
+      <ul className="space-y-1">{columns.flat().map(renderGroup)}</ul>
+    ) : (
+      <div className="grid grid-cols-2 gap-2">
+        {columns.map((column, columnIndex) => (
+          <ul key={columnIndex} className="min-w-0 space-y-2">
+            {column.map(renderGroup)}
+          </ul>
+        ))}
+      </div>
+    );
 
   return (
     <div className={cn(isMobile ? 'space-y-2 px-1' : 'flex flex-col gap-2')}>
@@ -159,15 +231,18 @@ export function ToolsNavSubmenu({ variant = 'desktop', onNavigate }: ToolsNavSub
             {navMenu.noResults}
           </p>
         )
-      ) : isMobile ? (
-        <ul className="space-y-1">{groups.map(renderGroup)}</ul>
       ) : (
-        <div className="grid grid-cols-2 gap-2">
-          {groupColumns.map((column, columnIndex) => (
-            <ul key={columnIndex} className="min-w-0 space-y-2">
-              {column.map(renderGroup)}
-            </ul>
-          ))}
+        <div className="space-y-3">
+          {renderGroupColumns(featuredColumns)}
+          <div
+            className={cn(
+              'border-t border-border/60 pt-2 text-xs font-semibold uppercase tracking-wide text-foreground/40',
+              isMobile ? 'px-3' : 'px-2.5',
+            )}
+          >
+            {navMenu.allTools}
+          </div>
+          {renderGroupColumns(allSectionColumns)}
         </div>
       )}
     </div>
