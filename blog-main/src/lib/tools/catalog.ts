@@ -124,3 +124,53 @@ export function toolHref(toolId: ToolId): string {
   if (!tool) return '/tools';
   return `/tools/${segmentBySectionId[tool.sectionId]}/${toolId}`;
 }
+
+/** 侧栏工具子菜单：精选分组与条目（单一数据源） */
+export type ToolNavEntry =
+  | { kind: 'page'; href: string; labelKey: string }
+  | { kind: 'tool'; id: ToolId };
+
+export type ToolNavGroupId = 'common-tools' | 'image-tools' | 'dev-tools' | 'network-tools';
+
+export const toolNavMenuGroups: ReadonlyArray<{
+  id: ToolNavGroupId;
+  /** i18n key under toolsPage.navMenu，或以 section. 前缀复用分区标题 */
+  labelKey: string;
+  entries: readonly ToolNavEntry[];
+}> = [
+  {
+    id: 'common-tools',
+    labelKey: 'commonTools',
+    entries: [
+      { kind: 'page', href: '/tools/dewatermark', labelKey: 'dewatermark' },
+      { kind: 'tool', id: 'image-compress' },
+      { kind: 'tool', id: 'json' },
+    ],
+  },
+  {
+    id: 'image-tools',
+    labelKey: 'section.image-tools',
+    entries: [
+      { kind: 'tool', id: 'favicon' },
+      { kind: 'tool', id: 'image-base64' },
+    ],
+  },
+  {
+    id: 'dev-tools',
+    labelKey: 'devTools',
+    entries: [
+      { kind: 'tool', id: 'word-count' },
+      { kind: 'tool', id: 'regex-tester' },
+      { kind: 'tool', id: 'jwt-decode' },
+    ],
+  },
+  {
+    id: 'network-tools',
+    labelKey: 'section.network-tools',
+    entries: [
+      { kind: 'tool', id: 'client-ip' },
+      { kind: 'tool', id: 'dns-lookup' },
+      { kind: 'tool', id: 'ping' },
+    ],
+  },
+] as const;

@@ -5,6 +5,7 @@ import { ChevronDown, ChevronRight, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { ToolsNavSubmenu } from '@/components/ToolsNavSubmenu';
 import { useI18n } from '@/components/I18nProvider';
 import type { NavItem } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -127,9 +128,10 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
         <nav className="flex h-full flex-col items-start justify-center px-3 lg:px-4">
           <ul className="space-y-2">
             {visibleItems.map((item) => {
+              const isToolsNav = item.href === '/tools';
               const children = item.children?.filter((child) => child.enabled) ?? [];
               const childColumns = splitIntoBalancedColumns(children);
-              const hasChildren = children.length > 0;
+              const hasChildren = isToolsNav || children.length > 0;
 
               return (
                 <li key={item.label} className="group/navitem relative">
@@ -165,68 +167,74 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
                     >
                       <div
                         className={cn(
-                          'grid w-[min(28rem,calc(100vw-7rem))] max-h-[70vh] grid-cols-2 gap-2 overflow-y-auto overscroll-contain rounded-xl p-2',
+                          'w-[min(28rem,calc(100vw-7rem))] max-h-[70vh] overflow-y-auto overscroll-contain rounded-xl p-2',
                           'bg-popover text-popover-foreground',
                           'border border-border',
                           'shadow-[0_12px_40px_rgba(63,42,143,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)]',
                           'backdrop-blur-xl'
                         )}
                       >
-                        {childColumns.map((column, columnIndex) => (
-                          <ul key={columnIndex} className="min-w-0 space-y-2">
-                            {column.map((child) => {
-                              const groupTools = child.children?.filter((tool) => tool.enabled) ?? [];
+                        {isToolsNav ? (
+                          <ToolsNavSubmenu />
+                        ) : (
+                          <div className="grid grid-cols-2 gap-2">
+                            {childColumns.map((column, columnIndex) => (
+                              <ul key={columnIndex} className="min-w-0 space-y-2">
+                                {column.map((child) => {
+                                  const groupTools = child.children?.filter((tool) => tool.enabled) ?? [];
 
-                              if (groupTools.length === 0) {
-                                return (
-                                  <li key={child.label}>
-                                    <Link
-                                      href={localizedHref(child.href) as any}
-                                      className={cn(
-                                        'block rounded-lg px-3 py-2 text-sm whitespace-nowrap',
-                                        'text-foreground/80',
-                                        'hover:bg-accent hover:text-accent-foreground',
-                                        'transition-colors duration-150'
-                                      )}
-                                    >
-                                      {child.label}
-                                    </Link>
-                                  </li>
-                                );
-                              }
-
-                              return (
-                                <li key={child.label}>
-                                  <span
-                                    className={cn(
-                                      'block px-3 py-1.5 text-xs font-semibold uppercase tracking-wide whitespace-nowrap select-none',
-                                      'text-foreground/45'
-                                    )}
-                                  >
-                                    {child.label}
-                                  </span>
-                                  <ul>
-                                    {groupTools.map((tool) => (
-                                      <li key={tool.label}>
+                                  if (groupTools.length === 0) {
+                                    return (
+                                      <li key={child.label}>
                                         <Link
-                                          href={localizedHref(tool.href) as any}
+                                          href={localizedHref(child.href) as any}
                                           className={cn(
-                                            'block rounded-lg px-3 py-1.5 text-sm whitespace-nowrap',
+                                            'block rounded-lg px-3 py-2 text-sm whitespace-nowrap',
                                             'text-foreground/80',
                                             'hover:bg-accent hover:text-accent-foreground',
                                             'transition-colors duration-150'
                                           )}
                                         >
-                                          {tool.label}
+                                          {child.label}
                                         </Link>
                                       </li>
-                                    ))}
-                                  </ul>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        ))}
+                                    );
+                                  }
+
+                                  return (
+                                    <li key={child.label}>
+                                      <span
+                                        className={cn(
+                                          'block px-3 py-1.5 text-xs font-semibold uppercase tracking-wide whitespace-nowrap select-none',
+                                          'text-foreground/45'
+                                        )}
+                                      >
+                                        {child.label}
+                                      </span>
+                                      <ul>
+                                        {groupTools.map((tool) => (
+                                          <li key={tool.label}>
+                                            <Link
+                                              href={localizedHref(tool.href) as any}
+                                              className={cn(
+                                                'block rounded-lg px-3 py-1.5 text-sm whitespace-nowrap',
+                                                'text-foreground/80',
+                                                'hover:bg-accent hover:text-accent-foreground',
+                                                'transition-colors duration-150'
+                                              )}
+                                            >
+                                              {tool.label}
+                                            </Link>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -281,8 +289,9 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
               <nav className="flex min-h-full flex-col justify-center px-8 py-20">
                 <ul className="space-y-1">
                   {visibleItems.map((item) => {
+                    const isToolsNav = item.href === '/tools';
                     const children = item.children?.filter((child) => child.enabled) ?? [];
-                    const hasChildren = children.length > 0;
+                    const hasChildren = isToolsNav || children.length > 0;
                     const isExpanded = expandedLabel === item.label;
 
                     return (
@@ -341,78 +350,84 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
                         {hasChildren && (
                           <AnimatePresence initial={false}>
                             {isExpanded && (
-                              <motion.ul
+                              <motion.div
                                 key={`${item.label}-children`}
                                 initial={{ height: 0, opacity: 0 }}
                                 animate={{ height: 'auto', opacity: 1 }}
                                 exit={{ height: 0, opacity: 0 }}
                                 transition={{ duration: 0.22, ease: 'easeOut' }}
                                 // @ts-ignore - framer-motion type issue
-                                className="overflow-hidden pl-4"
+                                className="overflow-hidden pl-2 pr-2"
                               >
-                                {children.map((child) => {
-                                  const groupTools = child.children?.filter((tool) => tool.enabled) ?? [];
+                                {isToolsNav ? (
+                                  <ToolsNavSubmenu variant="mobile" onNavigate={handleClose} />
+                                ) : (
+                                  <ul>
+                                    {children.map((child) => {
+                                      const groupTools = child.children?.filter((tool) => tool.enabled) ?? [];
 
-                                  if (groupTools.length === 0) {
-                                    return (
-                                      <li key={child.label}>
-                                        <Link
-                                          href={localizedHref(child.href) as any}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleClose();
-                                          }}
-                                          className={cn(
-                                            'block rounded-lg px-4 py-2.5',
-                                            'text-lg font-medium',
-                                            'text-foreground/75',
-                                            'hover:bg-accent hover:text-foreground',
-                                            'transition-colors duration-200'
-                                          )}
-                                        >
-                                          {child.label}
-                                        </Link>
-                                      </li>
-                                    );
-                                  }
-
-                                  return (
-                                    <li key={child.label} className="mt-2 first:mt-0">
-                                      <span
-                                        className={cn(
-                                          'block px-4 py-1.5 select-none',
-                                          'text-sm font-semibold uppercase tracking-wide',
-                                          'text-foreground/45'
-                                        )}
-                                      >
-                                        {child.label}
-                                      </span>
-                                      <ul className="pl-2">
-                                        {groupTools.map((tool) => (
-                                          <li key={tool.label}>
+                                      if (groupTools.length === 0) {
+                                        return (
+                                          <li key={child.label}>
                                             <Link
-                                              href={localizedHref(tool.href) as any}
+                                              href={localizedHref(child.href) as any}
                                               onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleClose();
                                               }}
                                               className={cn(
-                                                'block rounded-lg px-4 py-2',
-                                                'text-base font-medium',
+                                                'block rounded-lg px-4 py-2.5',
+                                                'text-lg font-medium',
                                                 'text-foreground/75',
                                                 'hover:bg-accent hover:text-foreground',
                                                 'transition-colors duration-200'
                                               )}
                                             >
-                                              {tool.label}
+                                              {child.label}
                                             </Link>
                                           </li>
-                                        ))}
-                                      </ul>
-                                    </li>
-                                  );
-                                })}
-                              </motion.ul>
+                                        );
+                                      }
+
+                                      return (
+                                        <li key={child.label} className="mt-2 first:mt-0">
+                                          <span
+                                            className={cn(
+                                              'block px-4 py-1.5 select-none',
+                                              'text-sm font-semibold uppercase tracking-wide',
+                                              'text-foreground/45'
+                                            )}
+                                          >
+                                            {child.label}
+                                          </span>
+                                          <ul className="pl-2">
+                                            {groupTools.map((tool) => (
+                                              <li key={tool.label}>
+                                                <Link
+                                                  href={localizedHref(tool.href) as any}
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleClose();
+                                                  }}
+                                                  className={cn(
+                                                    'block rounded-lg px-4 py-2',
+                                                    'text-base font-medium',
+                                                    'text-foreground/75',
+                                                    'hover:bg-accent hover:text-foreground',
+                                                    'transition-colors duration-200'
+                                                  )}
+                                                >
+                                                  {tool.label}
+                                                </Link>
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </li>
+                                      );
+                                    })}
+                                  </ul>
+                                )}
+                              </motion.div>
                             )}
                           </AnimatePresence>
                         )}

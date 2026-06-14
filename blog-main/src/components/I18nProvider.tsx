@@ -10,7 +10,7 @@ import {
   stripLocalePrefix,
   type Locale,
 } from '@/lib/i18n';
-import { sectionMeta, segmentBySectionId, toolCatalog, toolHref } from '@/lib/tools/catalog';
+import { toolNavMenuGroups, toolHref, type ToolNavEntry } from '@/lib/tools/catalog';
 import type { NavItem } from '@/lib/types';
 
 type Dictionary = ReturnType<typeof getDictionary>;
@@ -44,25 +44,43 @@ function cloneNavItems(items: readonly ReadonlyNavItem[]): NavItem[] {
   }));
 }
 
-// 工具菜单子项改为「按分区分组」：每个分区一个标题（链接到分区页），其下列出该分区的工具独立页；
-// 保留置顶的去水印入口。
-function buildToolNavChildren(existingChildren: NavItem[] | undefined, dictionary: Dictionary): NavItem[] {
-  const dewatermark = existingChildren?.find((child) => child.href === '/tools/dewatermark');
-  const sections = dictionary.toolsPage.sections as Record<string, { title: string } | undefined>;
+function resolveToolNavEntry(entry: ToolNavEntry, dictionary: Dictionary): NavItem {
+  const navMenu = dictionary.toolsPage.navMenu as Record<string, string | undefined>;
   const toolTitles = dictionary.toolsPage.toolTitles as Record<string, string | undefined>;
-  const groups: NavItem[] = sectionMeta.map((section) => ({
-    label: sections[section.id]?.title ?? section.id,
-    href: `/tools/${segmentBySectionId[section.id]}`,
+
+  if (entry.kind === 'page') {
+    return {
+      label: navMenu[entry.labelKey] ?? entry.labelKey,
+      href: entry.href,
+      enabled: true,
+    };
+  }
+
+  return {
+    label: toolTitles[entry.id] ?? entry.id,
+    href: toolHref(entry.id),
     enabled: true,
-    children: toolCatalog
-      .filter((tool) => tool.sectionId === section.id)
-      .map((tool) => ({
-        label: toolTitles[tool.id] ?? tool.id,
-        href: toolHref(tool.id),
-        enabled: true,
-      })),
+  };
+}
+
+function resolveToolNavGroupLabel(labelKey: string, dictionary: Dictionary): string {
+  const navMenu = dictionary.toolsPage.navMenu as Record<string, string | undefined>;
+  if (labelKey.startsWith('section.')) {
+    const sectionId = labelKey.slice('section.'.length);
+    const sections = dictionary.toolsPage.sections as Record<string, { title: string } | undefined>;
+    return sections[sectionId]?.title ?? sectionId;
+  }
+  return navMenu[labelKey] ?? labelKey;
+}
+
+// 侧栏工具子菜单：精选分组 + 常用工具置顶
+function buildToolNavChildren(_existingChildren: NavItem[] | undefined, dictionary: Dictionary): NavItem[] {
+  return toolNavMenuGroups.map((group) => ({
+    label: resolveToolNavGroupLabel(group.labelKey, dictionary),
+    href: '/tools',
+    enabled: true,
+    children: group.entries.map((entry) => resolveToolNavEntry(entry, dictionary)),
   }));
-  return dewatermark ? [dewatermark, ...groups] : groups;
 }
 
 function injectToolChildren(items: NavItem[], dictionary: Dictionary): NavItem[] {

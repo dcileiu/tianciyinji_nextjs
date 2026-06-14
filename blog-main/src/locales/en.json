@@ -402,6 +402,13 @@
   "toolsPage": {
     "all": "All",
     "backToToolsMenu": "Back to tools menu",
+    "navMenu": {
+      "searchPlaceholder": "Search tools",
+      "noResults": "No matching tools",
+      "commonTools": "Favorites",
+      "devTools": "Developer Tools",
+      "dewatermark": "Dewatermark"
+    },
     "sections": {
       "local-tools": {
         "title": "Local Tools",

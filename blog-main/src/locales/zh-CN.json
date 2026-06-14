@@ -403,6 +403,13 @@
   "toolsPage": {
     "all": "全部",
     "backToToolsMenu": "返回工具菜单",
+    "navMenu": {
+      "searchPlaceholder": "搜索工具",
+      "noResults": "没有匹配的工具",
+      "commonTools": "常用工具",
+      "devTools": "开发工具",
+      "dewatermark": "去水印"
+    },
     "sections": {
       "local-tools": {
         "title": "纯本地工具",
