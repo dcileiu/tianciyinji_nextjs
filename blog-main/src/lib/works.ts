@@ -46,6 +46,8 @@ export const works: WorkItem[] = [
     year: '2026',
     status: '开发中',
     tags: ['Next.js', 'Motion', 'AI Chatbot', 'i18n', 'Admin'],
+    href: 'https://ryoex.com',
+    linkLabel: '访问官网',
     images: ['/works/brand/brand-1.webp', '/works/brand/brand-2.webp', '/works/brand/brand-3.webp'],
     featured: true,
   },
@@ -60,6 +62,8 @@ export const works: WorkItem[] = [
     year: '2025',
     status: '内部使用',
     tags: ['Vue', 'TypeScript', 'API Docs', 'Collaboration', 'Motion'],
+    href: 'https://apidocs.aletaplanet.com/web/login',
+    linkLabel: '登录系统',
     images: ['/works/doc-api/doc-api-1.webp', '/works/doc-api/doc-api-2.webp'],
   },
   {
@@ -99,6 +103,24 @@ export const works: WorkItem[] = [
     images: ['/works/CI/image.webp'],
   },
   {
+    title: '微信小程序',
+    summary: '自研的三款微信小程序：麻上计分、去水印壁纸鸭、洛克万能助手，覆盖娱乐工具与游戏辅助场景。',
+    description: [
+      '麻上计分：朋友组局打麻将时的记账工具，免费无广告，支持建房、加减分、结算与历史记录，附带打牌间隙会用的小功能。',
+      '去水印壁纸鸭：解析抖音、小红书、公众号等平台的分享链接，一键去水印保存图片与壁纸，顺手解决「刷到好图却带水印」的痛点。',
+      '洛克万能助手：面向《洛克王国：世界》玩家的工具小程序，可查远行商人、孵蛋、家园与玩家信息，少开游戏也能确认关键数据。',
+    ],
+    year: '长期维护',
+    status: '已上线',
+    tags: ['微信小程序', 'uni-app', 'Tools', 'Game'],
+    images: [
+      '/works/xcx/麻将计分-0.webp',
+      '/works/xcx/麻将计分-1.webp',
+      '/works/xcx/去水印壁纸鸭.webp',
+      '/works/xcx/洛克万能助手远行商人.webp',
+    ],
+  },
+  {
     title: '个人博客',
     summary: '用 Next.js 搭建的个人站点，发布文章、整理作品、沉淀资源与一套在线工具箱。',
     description: [
@@ -127,6 +149,8 @@ const worksEn: WorkItem[] = [
     year: '2026',
     status: 'In development',
     tags: ['Next.js', 'Motion', 'AI Chatbot', 'i18n', 'Admin'],
+    href: 'https://ryoex.com',
+    linkLabel: 'Visit site',
     images: ['/works/brand/brand-1.webp', '/works/brand/brand-2.webp', '/works/brand/brand-3.webp'],
     featured: true,
   },
@@ -142,6 +166,8 @@ const worksEn: WorkItem[] = [
     year: '2025',
     status: 'Internal',
     tags: ['Vue', 'TypeScript', 'API Docs', 'Collaboration', 'Motion'],
+    href: 'https://apidocs.aletaplanet.com/web/login',
+    linkLabel: 'Visit site',
     images: ['/works/doc-api/doc-api-1.webp', '/works/doc-api/doc-api-2.webp'],
   },
   {
@@ -181,6 +207,25 @@ const worksEn: WorkItem[] = [
     status: 'Updating',
     tags: ['CI/CD', 'GitHub Actions', 'Automation', 'DevOps'],
     images: ['/works/CI/image.webp'],
+  },
+  {
+    title: 'WeChat Mini Programs',
+    summary:
+      'Three WeChat mini programs: Mashang Scorekeeper, Watermark Wallpaper Duck, and Roco Universal Assistant—for casual tools and game helpers.',
+    description: [
+      'Mashang Scorekeeper: A free, ad-free score tracker for mahjong nights—rooms, scoring, settlement, and history, plus small side utilities between rounds.',
+      'Watermark Wallpaper Duck: Parses share links from Douyin, Xiaohongshu, WeChat articles, and more to save images and wallpapers without watermarks.',
+      'Roco Universal Assistant: A helper for Roco Kingdom: World players—check traveling merchants, hatching, home bases, and player info without launching the game every time.',
+    ],
+    year: 'Long-term',
+    status: 'Live',
+    tags: ['WeChat Mini Program', 'uni-app', 'Tools', 'Game'],
+    images: [
+      '/works/xcx/麻将计分-0.webp',
+      '/works/xcx/麻将计分-1.webp',
+      '/works/xcx/去水印壁纸鸭.webp',
+      '/works/xcx/洛克万能助手远行商人.webp',
+    ],
   },
   {
     title: 'Personal Blog',
