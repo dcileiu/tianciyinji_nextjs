@@ -30,6 +30,7 @@ import { useI18n } from "@/components/I18nProvider";
 import dynamic from "next/dynamic";
 import { SectionCard } from "@/components/tools/tool-ui";
 import { cn } from "@/lib/utils";
+import { sectionMeta, toolCatalog, type SectionId, type ToolId } from "@/lib/tools/catalog";
 import { TranslationProvider } from "./tools/TranslationContext";
 
 // 各工具模块按需懒加载：访问某个分区页时，只有该分区实际渲染的工具所在模块 chunk 才会下载，
@@ -110,106 +111,6 @@ const MinecraftPlayerTool = dynamic(() => import("@/components/tools/data-tools"
 const MinecraftServerTool = dynamic(() => import("@/components/tools/data-tools").then((m) => m.MinecraftServerTool));
 const MobileAreaTool = dynamic(() => import("@/components/tools/data-tools").then((m) => m.MobileAreaTool));
 
-const sectionMeta = [
-  { id: "local-tools" },
-  { id: "image-tools" },
-  { id: "network-tools" },
-  { id: "public-data-tools" },
-  { id: "seo-geo-tools" },
-  { id: "calc-tools" },
-  { id: "cn-tools" },
-  { id: "css-tools" },
-] as const;
-
-type SectionId = (typeof sectionMeta)[number]["id"];
-
-const toolCatalog = [
-  { id: "word-count", sectionId: "local-tools" },
-  { id: "rmb-capital", sectionId: "local-tools" },
-  { id: "regex-tester", sectionId: "local-tools" },
-  { id: "color-tool", sectionId: "local-tools" },
-  { id: "data-convert", sectionId: "local-tools" },
-  { id: "jwt-decode", sectionId: "local-tools" },
-  { id: "cron", sectionId: "local-tools" },
-  { id: "sha-hash", sectionId: "local-tools" },
-  { id: "base-convert", sectionId: "local-tools" },
-  { id: "text-diff", sectionId: "local-tools" },
-  { id: "case-convert", sectionId: "local-tools" },
-  { id: "aes", sectionId: "local-tools" },
-  { id: "base64", sectionId: "local-tools" },
-  { id: "md5", sectionId: "local-tools" },
-  { id: "random", sectionId: "local-tools" },
-  { id: "timestamp", sectionId: "local-tools" },
-  { id: "json", sectionId: "local-tools" },
-  { id: "code-obfuscate", sectionId: "local-tools" },
-  { id: "params", sectionId: "local-tools" },
-  { id: "sensitive", sectionId: "local-tools" },
-  { id: "favicon", sectionId: "image-tools" },
-  { id: "image-convert", sectionId: "image-tools" },
-  { id: "image-resize", sectionId: "image-tools" },
-  { id: "image-watermark", sectionId: "image-tools" },
-  { id: "color-extract", sectionId: "image-tools" },
-  { id: "qrcode", sectionId: "image-tools" },
-  { id: "image-base64", sectionId: "image-tools" },
-  { id: "svg-image", sectionId: "image-tools" },
-  { id: "image-compress", sectionId: "image-tools" },
-  { id: "pet-gif", sectionId: "image-tools" },
-  { id: "llms-txt", sectionId: "seo-geo-tools" },
-  { id: "site-traffic", sectionId: "seo-geo-tools" },
-  { id: "meta-tags", sectionId: "seo-geo-tools" },
-  { id: "robots-txt", sectionId: "seo-geo-tools" },
-  { id: "json-ld", sectionId: "seo-geo-tools" },
-  { id: "keyword-density", sectionId: "seo-geo-tools" },
-  { id: "client-ip", sectionId: "network-tools" },
-  { id: "dns-lookup", sectionId: "network-tools" },
-  { id: "ping", sectionId: "network-tools" },
-  { id: "port-scan", sectionId: "network-tools" },
-  { id: "url-status", sectionId: "network-tools" },
-  { id: "web-metadata", sectionId: "network-tools" },
-  { id: "web-images", sectionId: "network-tools" },
-  { id: "web-markdown", sectionId: "network-tools" },
-  {
-    id: "minecraft-player",
-    sectionId: "public-data-tools",
-  },
-  {
-    id: "minecraft-server",
-    sectionId: "public-data-tools",
-  },
-  {
-    id: "github-repo",
-    sectionId: "public-data-tools",
-  },
-  { id: "gravatar", sectionId: "public-data-tools" },
-  { id: "ip-geo", sectionId: "public-data-tools" },
-  { id: "mobile-area", sectionId: "public-data-tools" },
-  {
-    id: "bing-wallpaper",
-    sectionId: "public-data-tools",
-  },
-  {
-    id: "content-tools",
-    sectionId: "public-data-tools",
-  },
-  { id: "loan", sectionId: "calc-tools" },
-  { id: "income-tax", sectionId: "calc-tools" },
-  { id: "bmi", sectionId: "calc-tools" },
-  { id: "date-diff", sectionId: "calc-tools" },
-  { id: "unit-convert", sectionId: "calc-tools" },
-  { id: "hanzi-convert", sectionId: "cn-tools" },
-  { id: "pinyin", sectionId: "cn-tools" },
-  { id: "chinese-faker", sectionId: "cn-tools" },
-  { id: "css-gradient", sectionId: "css-tools" },
-  { id: "box-shadow", sectionId: "css-tools" },
-  { id: "border-radius", sectionId: "css-tools" },
-  { id: "palette", sectionId: "css-tools" },
-] as const satisfies ReadonlyArray<{
-  id: string;
-  sectionId: SectionId;
-}>;
-
-type ToolId = (typeof toolCatalog)[number]["id"];
-
 type ToolFilter = "all" | ToolId;
 type SectionFilter = "all" | SectionId;
 
@@ -221,8 +122,10 @@ function getUrlTool(): string | null {
 
 export default function ToolsClientPage({
   section,
+  tool,
 }: {
   section?: SectionId;
+  tool?: ToolId;
 }) {
   const { dictionary, localizedHref } = useI18n();
   const toolsText = dictionary.toolsPage;
@@ -248,16 +151,18 @@ export default function ToolsClientPage({
   // 从聚合页点击工具（客户端导航）时，不再出现“先展开全部、再收起到单个工具”的闪动；
   // 页面本身仍是静态、可被路由预取。用户在 tab 间切换时用 toolOverride 接管。
   const urlTool = useSyncExternalStore(emptySubscribe, getUrlTool, () => null);
-  const urlSelectedTool: ToolFilter =
-    urlTool &&
+  // 独立工具页通过 prop 指定初始工具；聚合/分区页仍支持 ?tool= 深链（prop 优先）。
+  const initialToolId = tool ?? urlTool;
+  const initialSelectedTool: ToolFilter =
+    initialToolId &&
     toolCatalog.some(
-      (item) => item.id === urlTool && (!section || item.sectionId === section),
+      (item) => item.id === initialToolId && (!section || item.sectionId === section),
     )
-      ? (urlTool as ToolFilter)
+      ? (initialToolId as ToolFilter)
       : "all";
 
   const [toolOverride, setToolOverride] = useState<ToolFilter | null>(null);
-  const selectedTool = toolOverride ?? urlSelectedTool;
+  const selectedTool = toolOverride ?? initialSelectedTool;
   const setSelectedTool = setToolOverride;
   const [selectedSection, setSelectedSection] = useState<SectionFilter>(
     section ?? "all",

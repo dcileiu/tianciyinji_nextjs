@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { getClientIp } from "@/lib/ip";
 import { prisma } from "@/lib/prisma";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
+import { sendEmail, welcomeEmail } from "@/server/email";
 import { logSecurityEvent, rateLimit } from "@/server/security";
 
 const WELCOME_CREDITS = 1000;
@@ -35,6 +36,9 @@ export async function registerUser(input: RegisterInput): Promise<RegisterResult
   await prisma.user.create({
     data: { name, email, password: hash, credits: WELCOME_CREDITS },
   });
+
+  const tpl = welcomeEmail(name);
+  void sendEmail({ to: email, subject: tpl.subject, html: tpl.html });
 
   return { ok: true };
 }

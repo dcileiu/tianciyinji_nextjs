@@ -16,6 +16,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // 支付 SDK 含动态 require（formidable/urllib），不参与打包，运行时从 node_modules 加载。
+  serverExternalPackages: ["wechatpay-node-v3", "alipay-sdk"],
   async headers() {
     return [
       {

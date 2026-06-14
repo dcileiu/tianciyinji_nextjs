@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { purchasePackage } from "@/server/services/billing";
+import type { PaymentMethod } from "@/server/payments";
+import { type CheckoutResult, getOrderStatus, startCheckout } from "@/server/services/billing";
 import { toggleSubscription } from "@/server/services/hot";
 import { createKey, revokeKey } from "@/server/services/keys";
 import { requireUser } from "@/server/services/user";
@@ -42,15 +43,27 @@ export async function revokeApiKeyAction(keyId: string): Promise<ActionResult> {
   return { ok: true };
 }
 
-export async function purchasePackageAction(
+export async function startCheckoutAction(
   packageId: string,
-): Promise<ActionResult<{ credits: number }>> {
+  method?: PaymentMethod,
+): Promise<CheckoutResult> {
   const user = await requireUser();
-  const res = await purchasePackage(user.id, packageId);
-  if (!res.ok) return { ok: false, error: res.error };
-  revalidatePath("/dashboard/billing");
-  revalidatePath("/dashboard");
-  return { ok: true, data: { credits: res.credits } };
+  const res = await startCheckout(user.id, packageId, method);
+  if (res.ok && res.kind === "credited") {
+    revalidatePath("/dashboard/billing");
+    revalidatePath("/dashboard");
+  }
+  return res;
+}
+
+export async function orderStatusAction(orderId: string): Promise<{ status: string | null }> {
+  const user = await requireUser();
+  const status = await getOrderStatus(user.id, orderId);
+  if (status === "PAID") {
+    revalidatePath("/dashboard/billing");
+    revalidatePath("/dashboard");
+  }
+  return { status };
 }
 
 export async function toggleHotSubscriptionAction(): Promise<

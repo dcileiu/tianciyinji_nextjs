@@ -10,6 +10,7 @@ import {
   stripLocalePrefix,
   type Locale,
 } from '@/lib/i18n';
+import { sectionMeta, segmentBySectionId, toolCatalog, toolHref } from '@/lib/tools/catalog';
 import type { NavItem } from '@/lib/types';
 
 type Dictionary = ReturnType<typeof getDictionary>;
@@ -43,6 +44,33 @@ function cloneNavItems(items: readonly ReadonlyNavItem[]): NavItem[] {
   }));
 }
 
+// 工具菜单子项改为「按分区分组」：每个分区一个标题（链接到分区页），其下列出该分区的工具独立页；
+// 保留置顶的去水印入口。
+function buildToolNavChildren(existingChildren: NavItem[] | undefined, dictionary: Dictionary): NavItem[] {
+  const dewatermark = existingChildren?.find((child) => child.href === '/tools/dewatermark');
+  const sections = dictionary.toolsPage.sections as Record<string, { title: string } | undefined>;
+  const toolTitles = dictionary.toolsPage.toolTitles as Record<string, string | undefined>;
+  const groups: NavItem[] = sectionMeta.map((section) => ({
+    label: sections[section.id]?.title ?? section.id,
+    href: `/tools/${segmentBySectionId[section.id]}`,
+    enabled: true,
+    children: toolCatalog
+      .filter((tool) => tool.sectionId === section.id)
+      .map((tool) => ({
+        label: toolTitles[tool.id] ?? tool.id,
+        href: toolHref(tool.id),
+        enabled: true,
+      })),
+  }));
+  return dewatermark ? [dewatermark, ...groups] : groups;
+}
+
+function injectToolChildren(items: NavItem[], dictionary: Dictionary): NavItem[] {
+  return items.map((item) =>
+    item.href === '/tools' ? { ...item, children: buildToolNavChildren(item.children, dictionary) } : item,
+  );
+}
+
 export function I18nProvider({
   children,
   initialDictionary,
@@ -57,7 +85,10 @@ export function I18nProvider({
   const locale = getPathLocale(pathname);
   const dictionary = locale === initialLocale ? initialDictionary : getDictionary(locale);
   const siteConfig = useMemo(() => getLocalizedSiteConfig(locale), [locale]);
-  const navItems = useMemo(() => cloneNavItems(dictionary.nav), [dictionary.nav]);
+  const navItems = useMemo(
+    () => injectToolChildren(cloneNavItems(dictionary.nav), dictionary),
+    [dictionary],
+  );
 
   useEffect(() => {
     document.documentElement.lang = dictionary.language;

@@ -142,7 +142,7 @@ model ApiKey {
   userId     String
   name       String
   prefix     String    @unique
-  hash       String
+  hash       String    @unique
   lastUsedAt DateTime?
   status     KeyStatus @default(ACTIVE)
 
@@ -198,6 +198,17 @@ model UsageDaily {
   @@index([userId, date])
 }
 
+// 幂等记录：携带 Idempotency-Key 的调用结果缓存，保证重试不重复扣费。
+model IdempotencyRecord {
+  id         String   @id @default(cuid())
+  scopeKey   String   @unique // `${apiKeyId}:${idempotencyKey}`
+  statusCode Int      @default(0) // 0 = 处理中（占位预留）
+  body       String   @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 // ---------------------------------------------------------------------------
 // 计费 / 积分
 // ---------------------------------------------------------------------------
@@ -228,6 +239,8 @@ model Order {
   credits     Int
   amountCents Int
   status      OrderStatus @default(PAID)
+  provider    String      @default("manual") // manual | stripe
+  externalId  String?     @unique // Stripe Checkout Session / PaymentIntent id（webhook 幂等）
   createdAt   DateTime    @default(now())
 
   user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
