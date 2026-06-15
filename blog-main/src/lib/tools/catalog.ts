@@ -130,7 +130,7 @@ export type ToolNavEntry =
   | { kind: 'page'; href: string; labelKey: string }
   | { kind: 'tool'; id: ToolId };
 
-export type ToolNavGroupId = 'common-tools' | 'image-tools' | 'dev-tools' | 'network-tools';
+export type ToolNavGroupId = 'common-tools' | 'seo-geo-tools' | 'dev-tools' | 'calc-tools';
 
 export const toolNavMenuGroups: ReadonlyArray<{
   id: ToolNavGroupId;
@@ -143,16 +143,18 @@ export const toolNavMenuGroups: ReadonlyArray<{
     labelKey: 'commonTools',
     entries: [
       { kind: 'page', href: '/tools/dewatermark', labelKey: 'dewatermark' },
-      { kind: 'page', href: '/tools/seo', labelKey: 'section.seo-geo-tools' },
-      { kind: 'page', href: '/tools/calc', labelKey: 'section.calc-tools' },
     ],
   },
   {
-    id: 'image-tools',
-    labelKey: 'section.image-tools',
+    id: 'seo-geo-tools',
+    labelKey: 'section.seo-geo-tools',
     entries: [
-      { kind: 'tool', id: 'favicon' },
-      { kind: 'tool', id: 'image-base64' },
+      { kind: 'tool', id: 'llms-txt' },
+      { kind: 'tool', id: 'site-traffic' },
+      { kind: 'tool', id: 'meta-tags' },
+      { kind: 'tool', id: 'robots-txt' },
+      { kind: 'tool', id: 'json-ld' },
+      { kind: 'tool', id: 'keyword-density' },
     ],
   },
   {
@@ -165,12 +167,14 @@ export const toolNavMenuGroups: ReadonlyArray<{
     ],
   },
   {
-    id: 'network-tools',
-    labelKey: 'section.network-tools',
+    id: 'calc-tools',
+    labelKey: 'section.calc-tools',
     entries: [
-      { kind: 'tool', id: 'client-ip' },
-      { kind: 'tool', id: 'dns-lookup' },
-      { kind: 'tool', id: 'ping' },
+      { kind: 'tool', id: 'loan' },
+      { kind: 'tool', id: 'income-tax' },
+      { kind: 'tool', id: 'bmi' },
+      { kind: 'tool', id: 'date-diff' },
+      { kind: 'tool', id: 'unit-convert' },
     ],
   },
 ] as const;
