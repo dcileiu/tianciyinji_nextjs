@@ -34,6 +34,9 @@ function resolveEntryLabel(entry: ToolNavEntry, dictionary: Dictionary): string 
   const toolTitles = dictionary.toolsPage.toolTitles as Record<string, string | undefined>;
 
   if (entry.kind === 'page') {
+    if (entry.labelKey.startsWith('section.')) {
+      return resolveGroupLabel(entry.labelKey, dictionary);
+    }
     return navMenu[entry.labelKey] ?? entry.labelKey;
   }
   return toolTitles[entry.id] ?? entry.id;
@@ -185,7 +188,7 @@ export function ToolsNavSubmenu({ variant = 'desktop', onNavigate }: ToolsNavSub
           {group.label}
         </span>
       )}
-      <ul className={cn('grid grid-cols-2 gap-x-1 gap-y-0.5', isMobile ? 'px-1' : '')}>
+      <ul className={cn('space-y-0.5', isMobile ? 'px-1' : '')}>
         {group.tools.map(renderToolLink)}
       </ul>
     </li>

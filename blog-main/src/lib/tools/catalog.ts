@@ -143,8 +143,8 @@ export const toolNavMenuGroups: ReadonlyArray<{
     labelKey: 'commonTools',
     entries: [
       { kind: 'page', href: '/tools/dewatermark', labelKey: 'dewatermark' },
-      { kind: 'tool', id: 'image-compress' },
-      { kind: 'tool', id: 'json' },
+      { kind: 'page', href: '/tools/seo', labelKey: 'section.seo-geo-tools' },
+      { kind: 'page', href: '/tools/calc', labelKey: 'section.calc-tools' },
     ],
   },
   {
