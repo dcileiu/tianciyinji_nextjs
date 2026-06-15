@@ -2,6 +2,8 @@
   "language": "en",
   "locale": "en_US",
   "site": {
+    "name": "Tianci's Toolbox",
+    "title": "Tianci's Toolbox",
     "description": "A personal space for writing, projects, resources, and long-term experiments.",
     "tagline": "Writing, projects, and a few things in progress.",
     "role": "Full-stack Developer / Mini Program Builder",
@@ -135,6 +137,24 @@
       "Reusable templates, checklists, and resources"
     ],
     "techTitle": "Common Stack",
+    "techStackGroups": [
+      {
+        "title": "Frontend",
+        "items": ["JavaScript", "TypeScript", "React", "Next.js", "Vue.js", "Tailwind CSS", "Framer Motion", "Mini Program"]
+      },
+      {
+        "title": "Backend",
+        "items": ["Node.js", "Python", "PostgreSQL", "Redis"]
+      },
+      {
+        "title": "AI & Automation",
+        "items": ["OpenAI API", "LangChain", "Agent Framework", "n8n", "Workflow"]
+      },
+      {
+        "title": "Tools & Platforms",
+        "items": ["Git", "Docker", "Linux", "GitHub Actions"]
+      }
+    ],
     "contactTitle": "Contact",
     "contactText": "If you want to talk collaboration, exchange technical ideas, or simply say hello, you can reach me by email or GitHub.",
     "emailAction": "Email me",

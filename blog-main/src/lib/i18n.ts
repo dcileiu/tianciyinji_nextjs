@@ -91,7 +91,7 @@ export function getLocalizedSiteConfig(locale: Locale) {
     about: {
       intro: dictionary.about.intro,
       focus: dictionary.about.focus,
-      techStack: ['TypeScript', 'React', 'Next.js', 'Node.js', 'Tailwind CSS', 'Vue', 'uni-app', 'Python', 'AI Tools'],
+      techStackGroups: dictionary.about.techStackGroups,
       contactText: dictionary.about.contactText,
     },
   };

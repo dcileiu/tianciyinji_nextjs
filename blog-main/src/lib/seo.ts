@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { defaultLocale, localizePath, type Locale } from './i18n';
-import { absoluteUrl, siteConfig, siteKeywords } from './site-config';
+import { defaultLocale, getDictionary, localizePath, type Locale } from './i18n';
+import { absoluteUrl, localizedSiteNames, localizePageTitle, siteConfig, siteKeywords } from './site-config';
 
 type PageMetadataOptions = {
   title: string;
@@ -78,9 +78,11 @@ export function buildPageMetadata({
   const canonical = absoluteUrl(localizePath(path, locale));
   const socialImage = Array.isArray(image) ? image.map((item) => normalizeImage(item)) : [normalizeImage(image)];
   const mergedKeywords = Array.from(new Set([...siteKeywords, ...keywords]));
+  const localizedTitle = localizePageTitle(title, locale);
+  const localizedSiteName = localizedSiteNames[locale];
 
   return {
-    title,
+    title: localizedTitle,
     description,
     keywords: mergedKeywords,
     alternates: {
@@ -115,17 +117,17 @@ export function buildPageMetadata({
           },
         },
     openGraph: {
-      title,
+      title: localizedTitle,
       description,
       url: canonical,
-      siteName: siteConfig.name,
+      siteName: localizedSiteName,
       locale: locale === 'en' ? 'en_US' : siteConfig.locale,
       type,
       images: socialImage.map((url) => ({
         url,
         width: 1200,
         height: 630,
-        alt: title,
+        alt: localizedTitle,
       })),
       publishedTime,
       modifiedTime,
@@ -134,7 +136,7 @@ export function buildPageMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: localizedTitle,
       description,
       images: socialImage,
     },
@@ -142,35 +144,37 @@ export function buildPageMetadata({
 }
 
 export function buildWebSiteJsonLd(locale?: Locale) {
+  const localizedSite = locale ? getDictionary(locale).site : siteConfig;
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: siteConfig.name,
-    alternateName: siteConfig.title,
+    name: localizedSite.name,
+    alternateName: localizedSite.title,
     url: siteConfig.url,
-    description: siteConfig.description,
+    description: localizedSite.description,
     inLanguage: locale ?? siteConfig.language,
     publisher: {
       '@type': 'Person',
-      name: siteConfig.name,
+      name: localizedSite.name,
       url: siteConfig.url,
       image: absoluteUrl(siteConfig.avatar),
     },
   };
 }
 
-export function buildPersonJsonLd() {
+export function buildPersonJsonLd(locale?: Locale) {
+  const localizedSite = locale ? getDictionary(locale).site : siteConfig;
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    name: siteConfig.name,
+    name: localizedSite.name,
     url: siteConfig.url,
     image: absoluteUrl(siteConfig.avatar),
-    description: siteConfig.about.intro,
-    jobTitle: siteConfig.role,
+    description: localizedSite.description,
+    jobTitle: localizedSite.role,
     homeLocation: {
       '@type': 'Place',
-      name: siteConfig.location,
+      name: localizedSite.location,
     },
     email: siteConfig.email,
     sameAs: getSiteSameAs(),
@@ -203,10 +207,12 @@ export function buildArticleJsonLd({
   wordCount,
   locale,
 }: ArticleJsonLdOptions) {
+  const localizedTitle = localizePageTitle(title, locale);
+  const localizedSiteName = localizedSiteNames[locale ?? defaultLocale];
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
-    headline: title,
+    headline: localizedTitle,
     description,
     url: absoluteUrl(path),
     mainEntityOfPage: absoluteUrl(path),
@@ -219,13 +225,13 @@ export function buildArticleJsonLd({
     image: normalizeImage(image),
     author: {
       '@type': 'Person',
-      name: authorName || siteConfig.name,
+      name: authorName || localizedSiteName,
       url: siteConfig.url,
       image: absoluteUrl(siteConfig.avatar),
     },
     publisher: {
       '@type': 'Person',
-      name: siteConfig.name,
+      name: localizedSiteName,
       url: siteConfig.url,
       image: absoluteUrl(siteConfig.avatar),
     },
@@ -244,10 +250,12 @@ export function buildCreativeWorkJsonLd({
   image,
   locale,
 }: CreativeWorkJsonLdOptions) {
+  const localizedTitle = localizePageTitle(title, locale);
+  const localizedSiteName = localizedSiteNames[locale ?? defaultLocale];
   return {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
-    name: title,
+    name: localizedTitle,
     description,
     url: absoluteUrl(path),
     mainEntityOfPage: absoluteUrl(path),
@@ -268,7 +276,7 @@ export function buildCreativeWorkJsonLd({
       : undefined,
     author: {
       '@type': 'Person',
-      name: siteConfig.name,
+      name: localizedSiteName,
       url: siteConfig.url,
       image: absoluteUrl(siteConfig.avatar),
     },
@@ -286,16 +294,18 @@ export function buildCollectionPageJsonLd({
   path: string;
   locale?: Locale;
 }) {
+  const localizedTitle = localizePageTitle(title, locale);
+  const localizedSiteName = localizedSiteNames[locale ?? defaultLocale];
   return {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: title,
+    name: localizedTitle,
     description,
     url: absoluteUrl(path),
     inLanguage: locale ?? siteConfig.language,
     isPartOf: {
       '@type': 'WebSite',
-      name: siteConfig.name,
+      name: localizedSiteName,
       url: siteConfig.url,
     },
   };

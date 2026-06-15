@@ -2,6 +2,8 @@
   "language": "zh-CN",
   "locale": "zh_CN",
   "site": {
+    "name": "刘典赐的工具箱",
+    "title": "刘典赐的工具箱",
     "description": "记录博客、作品、资源与一些长期主义的尝试",
     "tagline": "写作、项目与一些正在发生的事。",
     "role": "全栈开发 / 小程序",
@@ -135,6 +137,24 @@
       "可以复用的模板、清单和资源"
     ],
     "techTitle": "常用技术",
+    "techStackGroups": [
+      {
+        "title": "前端开发",
+        "items": ["JavaScript", "TypeScript", "React", "Next.js", "Vue.js", "Tailwind CSS", "Framer Motion", "小程序"]
+      },
+      {
+        "title": "后端开发",
+        "items": ["Node.js", "Python", "PostgreSQL", "Redis"]
+      },
+      {
+        "title": "AI & 自动化",
+        "items": ["OpenAI API", "LangChain", "Agent Framework", "n8n", "工作流"]
+      },
+      {
+        "title": "工具 & 平台",
+        "items": ["Git", "Docker", "Linux", "GitHub Actions"]
+      }
+    ],
     "contactTitle": "联系我",
     "contactText": "如果你想聊合作、交流技术，或者只是打个招呼，都可以通过邮箱或 GitHub 找到我。",
     "emailAction": "发邮件",

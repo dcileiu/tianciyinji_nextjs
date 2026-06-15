@@ -47,6 +47,10 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   // 移动端展开的子菜单（按 label 记录）
   const [expandedLabel, setExpandedLabel] = useState<string | null>(null);
+  // 桌面端飞出子菜单：首次悬停/聚焦后才挂载，避免重型工具菜单常驻渲染、拖慢首屏与语言切换
+  const [mountedDesktopMenus, setMountedDesktopMenus] = useState<Record<string, boolean>>({});
+  const markDesktopMenuMounted = (label: string) =>
+    setMountedDesktopMenus((prev) => (prev[label] ? prev : { ...prev, [label]: true }));
 
   useEffect(() => {
     if (isOpen) {
@@ -134,7 +138,12 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
               const hasChildren = isToolsNav || children.length > 0;
 
               return (
-                <li key={item.label} className="group/navitem relative">
+                <li
+                  key={item.label}
+                  className="group/navitem relative"
+                  onMouseEnter={hasChildren ? () => markDesktopMenuMounted(item.label) : undefined}
+                  onFocusCapture={hasChildren ? () => markDesktopMenuMounted(item.label) : undefined}
+                >
                   <Link
                     href={localizedHref(item.href) as any}
                     className={cn(
@@ -165,6 +174,7 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
                         'group-focus-within/navitem:visible group-focus-within/navitem:translate-x-0 group-focus-within/navitem:opacity-100'
                       )}
                     >
+                      {mountedDesktopMenus[item.label] && (
                       <div
                         className={cn(
                           'w-[min(28rem,calc(100vw-7rem))] max-h-[70vh] overflow-y-auto overscroll-contain rounded-xl p-2',
@@ -236,6 +246,7 @@ export function Sidebar({ isOpen, labels, navItems, onClose }: SidebarProps) {
                           </div>
                         )}
                       </div>
+                      )}
                     </div>
                   )}
                 </li>

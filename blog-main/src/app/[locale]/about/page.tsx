@@ -37,7 +37,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
     <div className="mx-auto max-w-4xl px-4 py-16 md:px-6 md:py-24">
       <JsonLd
         data={[
-          buildPersonJsonLd(),
+          buildPersonJsonLd(locale),
           buildBreadcrumbJsonLd([
             { name: aboutText.breadcrumbs.home, path: '/' },
             { name: aboutText.breadcrumbs.about, path: '/about' },
@@ -143,14 +143,23 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
           <h2 className="mb-4 text-2xl font-medium text-black md:text-3xl dark:text-white">
             {aboutText.techTitle}
           </h2>
-          <div className="flex flex-wrap gap-2">
-            {localizedSiteConfig.about.techStack.map((item) => (
-              <span
-                key={item}
-                className="rounded-full bg-black/[0.04] px-3 py-1.5 text-sm text-black/70 dark:bg-white/[0.06] dark:text-white/70"
-              >
-                {item}
-              </span>
+          <div className="grid gap-x-16 gap-y-9 md:grid-cols-2">
+            {localizedSiteConfig.about.techStackGroups.map((group) => (
+              <div key={group.title}>
+                <h3 className="mb-4 text-base font-semibold text-black/85 dark:text-white/85">
+                  {group.title}
+                </h3>
+                <div className="flex flex-wrap gap-2.5">
+                  {group.items.map((item) => (
+                    <span
+                      key={item}
+                      className="rounded-lg bg-black/[0.04] px-3 py-1.5 text-sm text-black/65 dark:bg-white/[0.06] dark:text-white/70"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </section>

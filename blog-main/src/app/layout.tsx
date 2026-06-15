@@ -1,13 +1,12 @@
 import './style/global.css';
 import type { Metadata } from 'next';
-import JsonLd from '@/components/JsonLd';
 import { ThemeProvider } from 'next-themes';
 // import { ChristmasEffect } from '@/components/ChristmasEffect';
 import FabricBackgroundLazy from '@/components/FabricBackgroundLazy';
 import { MusicRuntime } from '@/components/music/music-runtime';
 import { defaultLocale, getLocalizedSiteConfig } from '@/lib/i18n';
 import { absoluteUrl, siteConfig, siteKeywords } from '@/lib/site-config';
-import { buildPageMetadata, buildPersonJsonLd, buildWebSiteJsonLd } from '@/lib/seo';
+import { buildPageMetadata } from '@/lib/seo';
 
 const baseMetadata = buildPageMetadata({
   title: siteConfig.name,
@@ -124,7 +123,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         className="font-sans antialiased"
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <JsonLd data={[buildWebSiteJsonLd(), buildPersonJsonLd()]} />
           <MusicRuntime>
             {children}
             <FabricBackgroundLazy />

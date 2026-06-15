@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import HomePageClient from "@/components/HomePageClient";
 // import HomeIntroOverlay from "@/components/HomeIntroOverlay";
 // import HomeRepulsionField from '@/components/HomeRepulsionField';
-import { siteConfig } from "@/lib/site-config";
 import JsonLd from "@/components/JsonLd";
 import {
   buildCollectionPageJsonLd,
@@ -17,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const locale = normalizeLocale((await params).locale);
   const dictionary = getDictionary(locale);
   return buildPageMetadata({
-    title: siteConfig.name,
+    title: dictionary.site.name,
     description: dictionary.home.intro,
     path: "/",
     keywords:
@@ -30,6 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   const locale = normalizeLocale((await params).locale);
+  const dictionary = getDictionary(locale);
   const { posts, total } = await getBlogPosts(1);
 
   return (
@@ -37,8 +37,8 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
       <JsonLd
         data={[
           buildCollectionPageJsonLd({
-            title: siteConfig.name,
-            description: siteConfig.home.intro,
+            title: dictionary.site.name,
+            description: dictionary.home.intro,
             path: "/",
             locale,
           }),

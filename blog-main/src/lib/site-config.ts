@@ -62,8 +62,24 @@ export const primaryNavItems: NavItem[] = [
 
 export const hasGithubProfile = siteConfig.githubUsername.trim().length > 0;
 
-export function pageTitle(title: string) {
-  return `${title} - ${siteConfig.name}`;
+export const localizedSiteNames = {
+  'zh-CN': siteConfig.name,
+  en: "Tianci's Toolbox",
+} as const;
+
+export type SiteNameLocale = keyof typeof localizedSiteNames;
+
+export function pageTitle(title: string, locale: SiteNameLocale = 'zh-CN') {
+  return `${title} - ${localizedSiteNames[locale]}`;
+}
+
+export function localizePageTitle(title: string, locale: SiteNameLocale = 'zh-CN') {
+  const nextName = localizedSiteNames[locale];
+  for (const name of Object.values(localizedSiteNames)) {
+    const suffix = ` - ${name}`;
+    if (title.endsWith(suffix)) return `${title.slice(0, -suffix.length)} - ${nextName}`;
+  }
+  return title;
 }
 
 export function absoluteUrl(path = '/') {
