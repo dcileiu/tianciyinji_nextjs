@@ -140,19 +140,44 @@
     "techStackGroups": [
       {
         "title": "前端开发",
-        "items": ["JavaScript", "TypeScript", "React", "Next.js", "Vue.js", "Tailwind CSS", "Framer Motion", "小程序"]
+        "items": [
+          "JavaScript",
+          "TypeScript",
+          "React",
+          "Next.js",
+          "Vue.js",
+          "Tailwind CSS",
+          "Framer Motion",
+          "小程序"
+        ]
       },
       {
         "title": "后端开发",
-        "items": ["Node.js", "Python", "PostgreSQL", "Redis"]
+        "items": [
+          "Node.js",
+          "Python",
+          "PostgreSQL",
+          "Redis"
+        ]
       },
       {
         "title": "AI & 自动化",
-        "items": ["OpenAI API", "LangChain", "Agent Framework", "n8n", "工作流"]
+        "items": [
+          "OpenAI API",
+          "LangChain",
+          "Agent Framework",
+          "n8n",
+          "工作流"
+        ]
       },
       {
         "title": "工具 & 平台",
-        "items": ["Git", "Docker", "Linux", "GitHub Actions"]
+        "items": [
+          "Git",
+          "Docker",
+          "Linux",
+          "GitHub Actions"
+        ]
       }
     ],
     "contactTitle": "联系我",
@@ -300,7 +325,7 @@
     "description": "免费在线工具箱，涵盖文本与编码、图片处理、SEO / GEO、网络查询、计算换算、中文工具与去水印等。多数工具在浏览器本地完成，安全不上传，点选下方分类即可使用。",
     "featuredTitle": "去水印",
     "recommended": "推荐",
-    "featuredDescription": "公众号 / 抖音 / 小红书分享链接一键解析，返回无水印图片与视频资源。",
+    "featuredDescription": "公众号 / 抖音 / 小红书 / 快手分享链接一键解析，返回无水印图片与视频资源。",
     "countLabel": "{count} 个工具",
     "enterModule": "进入模块"
   },

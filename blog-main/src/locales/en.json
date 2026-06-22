@@ -140,19 +140,44 @@
     "techStackGroups": [
       {
         "title": "Frontend",
-        "items": ["JavaScript", "TypeScript", "React", "Next.js", "Vue.js", "Tailwind CSS", "Framer Motion", "Mini Program"]
+        "items": [
+          "JavaScript",
+          "TypeScript",
+          "React",
+          "Next.js",
+          "Vue.js",
+          "Tailwind CSS",
+          "Framer Motion",
+          "Mini Program"
+        ]
       },
       {
         "title": "Backend",
-        "items": ["Node.js", "Python", "PostgreSQL", "Redis"]
+        "items": [
+          "Node.js",
+          "Python",
+          "PostgreSQL",
+          "Redis"
+        ]
       },
       {
         "title": "AI & Automation",
-        "items": ["OpenAI API", "LangChain", "Agent Framework", "n8n", "Workflow"]
+        "items": [
+          "OpenAI API",
+          "LangChain",
+          "Agent Framework",
+          "n8n",
+          "Workflow"
+        ]
       },
       {
         "title": "Tools & Platforms",
-        "items": ["Git", "Docker", "Linux", "GitHub Actions"]
+        "items": [
+          "Git",
+          "Docker",
+          "Linux",
+          "GitHub Actions"
+        ]
       }
     ],
     "contactTitle": "Contact",
@@ -300,7 +325,7 @@
     "description": "A free toolbox for text and encoding, image processing, SEO / GEO, network checks, calculators, Chinese utilities, and dewatermarking. Most tools run locally in your browser.",
     "featuredTitle": "Dewatermark",
     "recommended": "Recommended",
-    "featuredDescription": "Parse WeChat Official Account, Douyin, and Xiaohongshu share links to retrieve clean image and video resources.",
+    "featuredDescription": "Parse WeChat Official Account, Douyin, Xiaohongshu, and Kuaishou share links to retrieve clean image and video resources.",
     "countLabel": "{count} tools",
     "enterModule": "Open module"
   },

@@ -1,35 +1,22 @@
 import { NextResponse } from 'next/server';
+import {
+  buildDewatermarkRequestBody,
+  DEWATERMARK_PLATFORM_ENDPOINT,
+  isSupportedDewatermarkPlatform,
+} from '@/lib/dewatermark';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const BACKEND_BASE_URL = (process.env.DEWATERMARK_BACKEND_URL || 'https://wallpaper.api.itianci.cn').replace(/\/+$/, '');
-
-const DEFAULT_VIDEO_PREFERENCE = 'resolution';
-const DEFAULT_XHS_IMAGE_FORMAT = 'jpeg';
-
-type Platform = 'wechat' | 'douyin' | 'xhs';
-
-const PLATFORM_ENDPOINT: Record<Platform, string> = {
-  wechat: '/api/v1/wechat/detail',
-  douyin: '/api/v1/douyin/detail',
-  xhs: '/api/v1/xhs/detail',
-};
+const BACKEND_BASE_URL = (process.env.DEWATERMARK_BACKEND_URL || 'https://wallpaper.api.itianci.cn').replace(
+  /\/+$/,
+  ''
+);
 
 function isEnglish(request: Request) {
   const headerLocale = request.headers.get('x-locale');
   const cookieLocale = request.headers.get('cookie')?.match(/NEXT_LOCALE=([^;]+)/)?.[1];
   return headerLocale === 'en' || cookieLocale === 'en';
-}
-
-function buildBody(platform: Platform, url: string) {
-  if (platform === 'wechat') return { url };
-  if (platform === 'douyin') return { url, videoPreference: DEFAULT_VIDEO_PREFERENCE };
-  return {
-    url,
-    imageFormat: DEFAULT_XHS_IMAGE_FORMAT,
-    videoPreference: DEFAULT_VIDEO_PREFERENCE,
-  };
 }
 
 export async function POST(request: Request) {
@@ -44,15 +31,15 @@ export async function POST(request: Request) {
     );
   }
 
-  const platform = payload.platform as Platform | undefined;
+  const platform = payload.platform;
   const url = typeof payload.url === 'string' ? payload.url.trim() : '';
 
-  if (!platform || !(platform in PLATFORM_ENDPOINT)) {
+  if (!isSupportedDewatermarkPlatform(platform)) {
     return NextResponse.json(
       {
         error: en
-          ? 'Unsupported platform. Only WeChat Official Account, Douyin, and Xiaohongshu are supported.'
-          : '未识别到支持的平台，仅支持公众号、抖音、小红书。',
+          ? 'Unsupported platform. Only WeChat Official Account, Douyin, Xiaohongshu, and Kuaishou are supported.'
+          : '未识别到支持的平台，仅支持公众号、抖音、小红书、快手。',
       },
       { status: 400 }
     );
@@ -64,7 +51,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const target = `${BACKEND_BASE_URL}${PLATFORM_ENDPOINT[platform]}`;
+  const target = `${BACKEND_BASE_URL}${DEWATERMARK_PLATFORM_ENDPOINT[platform]}`;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 120_000);
 
@@ -75,7 +62,7 @@ export async function POST(request: Request) {
         Accept: 'application/json, text/plain, */*',
         'Content-Type': 'application/json; charset=utf-8',
       },
-      body: JSON.stringify(buildBody(platform, url)),
+      body: JSON.stringify(buildDewatermarkRequestBody(platform, url)),
       signal: controller.signal,
       cache: 'no-store',
     });

@@ -6,10 +6,14 @@ import { toast } from 'sonner';
 import { useI18n } from '@/components/I18nProvider';
 import { Button } from '@/components/ui/button';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+import {
+  type DewatermarkPlatform,
+  detectDewatermarkPlatform,
+  SUPPORTED_DEWATERMARK_PLATFORMS,
+  type SupportedDewatermarkPlatform,
+} from '@/lib/dewatermark';
 import { cn } from '@/lib/utils';
 import { HapticFeedback, triggerHaptic } from '@/utils/haptics';
-
-type Platform = 'wechat' | 'douyin' | 'xhs' | 'unknown';
 
 interface ResourceItem {
   title: string;
@@ -23,7 +27,7 @@ interface ResourceGroup {
 }
 
 interface UnifiedResult {
-  platform: Exclude<Platform, 'unknown'>;
+  platform: SupportedDewatermarkPlatform;
   platformName: string;
   title: string;
   summary: string;
@@ -37,20 +41,13 @@ interface UnifiedResult {
   resources: ResourceGroup[];
 }
 
-const platformStyle: Record<Platform, string> = {
+const platformStyle: Record<DewatermarkPlatform, string> = {
   wechat: 'border-[#1aad19]/30 bg-[#1aad19]/10 text-[#0f8f1f] dark:text-[#7ee787]',
   douyin: 'border-[#fe2c55]/30 bg-[#fe2c55]/10 text-[#d81e44] dark:text-[#ff7a93]',
   xhs: 'border-[#ff2442]/30 bg-[#ff2442]/10 text-[#e01e38] dark:text-[#ff8198]',
+  kuaishou: 'border-[#ff8a00]/30 bg-[#ff8a00]/10 text-[#b95f00] dark:text-[#ffbd6b]',
   unknown: 'border-[#d9ccff] bg-white/70 text-[#7b69a5] dark:border-[#3a2f58] dark:bg-white/[0.05] dark:text-[#af9fda]',
 };
-
-function detectPlatform(value: string): Platform {
-  const text = String(value || '');
-  if (/mp\.weixin\.qq\.com\/s\//i.test(text)) return 'wechat';
-  if (/xhslink\.com\/|xiaohongshu\.com\//i.test(text)) return 'xhs';
-  if (/v\.douyin\.com\/|(?:www\.)?douyin\.com\/|(?:www\.)?iesdouyin\.com\//i.test(text)) return 'douyin';
-  return 'unknown';
-}
 
 function countResources(groups: ResourceGroup[]) {
   return groups.reduce((sum, group) => sum + group.items.length, 0);
@@ -69,15 +66,21 @@ function makeStat(label: string, value: unknown) {
 function labels(locale: 'zh-CN' | 'en') {
   return locale === 'en'
     ? {
-        platformName: { wechat: 'WeChat Official Account', douyin: 'Douyin', xhs: 'Xiaohongshu', unknown: 'Unknown' },
-        title: 'WeChat / Douyin / Xiaohongshu Dewatermark',
+        platformName: {
+          wechat: 'WeChat Official Account',
+          douyin: 'Douyin',
+          xhs: 'Xiaohongshu',
+          kuaishou: 'Kuaishou',
+          unknown: 'Unknown',
+        },
+        title: 'WeChat / Douyin / Xiaohongshu / Kuaishou Dewatermark',
         subtitle:
           'Paste a share link or command text. The tool detects the platform and returns clean images, videos, and article resource links.',
         inputTitle: 'Link Input',
         inputHint: 'Supports full share text, short links, and article URLs.',
         paste: 'Read clipboard',
         clear: 'Clear',
-        placeholder: 'Paste a WeChat article, Douyin, or Xiaohongshu share link or full command text',
+        placeholder: 'Paste a WeChat article, Douyin, Xiaohongshu, or Kuaishou share link or full command text',
         notEntered: 'No share link yet',
         unsupported: 'Unsupported platform',
         ready: (name: string) => `Ready for ${name}`,
@@ -113,7 +116,8 @@ function labels(locale: 'zh-CN' | 'en') {
         noWechatData: 'The WeChat API did not return usable data.',
         noData: 'The API did not return usable data.',
         needInput: 'Please paste a share link or command text first.',
-        needSupported: 'Unsupported platform. Only WeChat Official Account, Douyin, and Xiaohongshu links are supported.',
+        needSupported:
+          'Unsupported platform. Only WeChat Official Account, Douyin, Xiaohongshu, and Kuaishou links are supported.',
         clipboardEmpty: 'The clipboard does not contain readable text.',
         clipboardRead: 'Clipboard content loaded.',
         clipboardFailed: 'Failed to read the clipboard. Please paste manually.',
@@ -126,14 +130,14 @@ function labels(locale: 'zh-CN' | 'en') {
         statNames: { likes: 'Likes', saves: 'Saves', comments: 'Comments', shares: 'Shares' },
       }
     : {
-        platformName: { wechat: '公众号', douyin: '抖音', xhs: '小红书', unknown: '未知' },
-        title: '公众号 / 抖音 / 小红书去水印',
+        platformName: { wechat: '公众号', douyin: '抖音', xhs: '小红书', kuaishou: '快手', unknown: '未知' },
+        title: '公众号 / 抖音 / 小红书 / 快手去水印',
         subtitle: '粘贴分享口令或链接，自动识别平台并调用去水印接口，返回无水印资源、文章图片与视频候选链接。',
         inputTitle: '链接输入',
         inputHint: '支持完整分享文案、短链、文章链接。',
         paste: '读取剪贴板',
         clear: '清空',
-        placeholder: '粘贴公众号文章、抖音、小红书分享链接或完整口令',
+        placeholder: '粘贴公众号文章、抖音、小红书、快手分享链接或完整口令',
         notEntered: '未输入分享链接',
         unsupported: '未识别到支持的平台',
         ready: (name: string) => `已识别：${name}`,
@@ -169,7 +173,7 @@ function labels(locale: 'zh-CN' | 'en') {
         noWechatData: '公众号接口没有返回可用数据。',
         noData: '接口没有返回可用数据。',
         needInput: '请先粘贴分享口令或链接。',
-        needSupported: '未识别到支持的平台。当前仅支持公众号、抖音、小红书链接。',
+        needSupported: '未识别到支持的平台。当前仅支持公众号、抖音、小红书、快手链接。',
         clipboardEmpty: '剪贴板里没有可读取的文本内容。',
         clipboardRead: '已读取剪贴板内容。',
         clipboardFailed: '读取剪贴板失败，请手动粘贴。',
@@ -183,7 +187,7 @@ function labels(locale: 'zh-CN' | 'en') {
       };
 }
 
-function normalizeResult(locale: 'zh-CN' | 'en', platform: Exclude<Platform, 'unknown'>, payload: any): UnifiedResult {
+function normalizeResult(locale: 'zh-CN' | 'en', platform: SupportedDewatermarkPlatform, payload: any): UnifiedResult {
   const t = labels(locale);
 
   if (platform === 'wechat') {
@@ -246,7 +250,7 @@ function normalizeResult(locale: 'zh-CN' | 'en', platform: Exclude<Platform, 'un
 
   return {
     platform,
-    platformName: platform === 'douyin' ? t.platformName.douyin : t.platformName.xhs,
+    platformName: t.platformName[platform],
     title: detail.title || detail.desc || t.unnamed,
     summary: detail.desc || '',
     sourceUrl: detail.url || '',
@@ -279,7 +283,7 @@ export default function DewatermarkClient() {
   const [raw, setRaw] = useState<unknown>(null);
   const { copy } = useCopyToClipboard();
 
-  const platform = useMemo(() => detectPlatform(input), [input]);
+  const platform = useMemo(() => detectDewatermarkPlatform(input), [input]);
   const trimmed = input.trim();
   const platformName = t.platformName[platform];
 
@@ -289,7 +293,7 @@ export default function DewatermarkClient() {
       setError(t.needInput);
       return;
     }
-    const detected = detectPlatform(value);
+    const detected = detectDewatermarkPlatform(value);
     if (detected === 'unknown') {
       setError(t.needSupported);
       return;
@@ -390,8 +394,11 @@ export default function DewatermarkClient() {
             {t.subtitle}
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            {(['wechat', 'douyin', 'xhs'] as const).map((key) => (
-              <span key={key} className="rounded-full border border-[#d9ccff] bg-white/70 px-3 py-1 text-xs text-[#6b5b97] dark:border-[#3a2f58] dark:bg-white/[0.05] dark:text-[#c7baf1]">
+            {SUPPORTED_DEWATERMARK_PLATFORMS.map((key) => (
+              <span
+                key={key}
+                className="rounded-full border border-[#d9ccff] bg-white/70 px-3 py-1 text-xs text-[#6b5b97] dark:border-[#3a2f58] dark:bg-white/[0.05] dark:text-[#c7baf1]"
+              >
                 {t.platformName[key]}
               </span>
             ))}
@@ -426,7 +433,12 @@ export default function DewatermarkClient() {
         />
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-          <span className={cn('inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium', platformStyle[trimmed ? platform : 'unknown'])}>
+          <span
+            className={cn(
+              'inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium',
+              platformStyle[trimmed ? platform : 'unknown']
+            )}
+          >
             {!trimmed ? t.notEntered : platform === 'unknown' ? t.unsupported : t.ready(platformName)}
           </span>
           <Button onClick={handleParse} disabled={loading} className="gap-2">
@@ -435,7 +447,11 @@ export default function DewatermarkClient() {
           </Button>
         </div>
 
-        {error && <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200">{error}</p>}
+        {error && (
+          <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200">
+            {error}
+          </p>
+        )}
       </section>
 
       {result && (
@@ -450,19 +466,31 @@ export default function DewatermarkClient() {
 
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {metaItems.map((item) => (
-              <div key={item.label} className="rounded-2xl border border-[#eadfff] bg-white/60 px-4 py-3 text-sm dark:border-[#33274f] dark:bg-white/[0.03]">
-                <div className="text-xs uppercase tracking-[0.18em] text-[#8c7bb9] dark:text-[#aa9bd4]">{item.label}</div>
+              <div
+                key={item.label}
+                className="rounded-2xl border border-[#eadfff] bg-white/60 px-4 py-3 text-sm dark:border-[#33274f] dark:bg-white/[0.03]"
+              >
+                <div className="text-xs uppercase tracking-[0.18em] text-[#8c7bb9] dark:text-[#aa9bd4]">
+                  {item.label}
+                </div>
                 <div className="mt-1 break-words text-[#312355] dark:text-[#efe9ff]">{item.value}</div>
               </div>
             ))}
           </div>
 
-          {result.summary && <p className="mt-5 rounded-2xl bg-[#f7f1ff] px-4 py-3 text-sm leading-7 text-[#6b5b97] dark:bg-white/[0.04] dark:text-[#c8bbef]">{result.summary}</p>}
+          {result.summary && (
+            <p className="mt-5 rounded-2xl bg-[#f7f1ff] px-4 py-3 text-sm leading-7 text-[#6b5b97] dark:bg-white/[0.04] dark:text-[#c8bbef]">
+              {result.summary}
+            </p>
+          )}
 
           <div className="mt-6 space-y-5">
             <h3 className="text-sm font-semibold text-[#312355] dark:text-[#f4efff]">{t.resources}</h3>
             {result.resources.map((group) => (
-              <div key={group.label} className="rounded-2xl border border-[#eadfff] bg-white/55 p-4 dark:border-[#33274f] dark:bg-white/[0.03]">
+              <div
+                key={group.label}
+                className="rounded-2xl border border-[#eadfff] bg-white/55 p-4 dark:border-[#33274f] dark:bg-white/[0.03]"
+              >
                 <div className="mb-3 flex items-center justify-between gap-3 text-sm font-medium text-[#312355] dark:text-[#efe9ff]">
                   <span>{group.label}</span>
                   <span className="text-xs text-[#8c7bb9] dark:text-[#aa9bd4]">{group.items.length}</span>
@@ -473,10 +501,19 @@ export default function DewatermarkClient() {
                       <div className="flex flex-wrap items-start justify-between gap-2">
                         <div className="min-w-0 flex-1">
                           <div className="font-medium text-[#312355] dark:text-[#efe9ff]">{item.title}</div>
-                          <a href={item.url} target="_blank" rel="noopener noreferrer" className="mt-1 block break-all text-xs text-[#5b3df5] dark:text-[#bcaaff]">
+                          <a
+                            href={item.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-1 block break-all text-xs text-[#5b3df5] dark:text-[#bcaaff]"
+                          >
                             {item.url}
                           </a>
-                          {item.extra && <div className="mt-1 break-all text-xs text-[#8c7bb9] dark:text-[#aa9bd4]">{item.extra}</div>}
+                          {item.extra && (
+                            <div className="mt-1 break-all text-xs text-[#8c7bb9] dark:text-[#aa9bd4]">
+                              {item.extra}
+                            </div>
+                          )}
                         </div>
                         <div className="flex shrink-0 gap-2">
                           <Button variant="outline" size="sm" onClick={() => copy(item.url)} className="gap-1.5">
@@ -500,7 +537,9 @@ export default function DewatermarkClient() {
 
           {raw ? (
             <details className="mt-6 rounded-2xl border border-[#eadfff] bg-white/50 p-4 dark:border-[#33274f] dark:bg-white/[0.03]">
-              <summary className="cursor-pointer text-sm font-medium text-[#312355] dark:text-[#efe9ff]">{t.raw}</summary>
+              <summary className="cursor-pointer text-sm font-medium text-[#312355] dark:text-[#efe9ff]">
+                {t.raw}
+              </summary>
               <p className="mt-2 text-xs text-[#8c7bb9] dark:text-[#aa9bd4]">{t.rawHint}</p>
               <pre className="mt-3 max-h-80 overflow-auto rounded-xl bg-black/90 p-4 text-xs text-white">
                 {JSON.stringify(raw, null, 2)}
