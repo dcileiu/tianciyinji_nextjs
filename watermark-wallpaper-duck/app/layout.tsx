@@ -55,7 +55,7 @@ export default function RootLayout({
         "@id": `${SITE_URL}/#organization`,
         "name": "去水印壁纸鸭",
         "url": SITE_URL,
-        "logo": `${SITE_URL}/avatar/logo.png`
+        "logo": "https://wallpaper.cdn.itianci.cn/wallpaper-wx/duck.webp"
       },
       {
         "@type": "WebSite",
