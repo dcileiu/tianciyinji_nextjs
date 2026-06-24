@@ -8,39 +8,29 @@ export const metadata: Metadata = {
     "去水印壁纸鸭 API 接口价格方案，支持公众号、抖音、小红书、快手等平台的视频/图片去水印解析。联系客服微信 xy020477 开通。",
 };
 
-type Plan = {
+type PricingRow = {
   name: string;
-  price: string;
-  unit: string;
-  calls: string;
-  features: string[];
-  highlight?: boolean;
+  quantity: number;
+  unitPrice: number;
+  total: number | null;
+  free?: boolean;
 };
 
-const PLANS: Plan[] = [
-  {
-    name: "体验版",
-    price: "¥0",
-    unit: "/ 100 次",
-    calls: "100 次额度",
-    features: ["全平台解析", "高清无水印", "适合接入测试"],
-  },
-  {
-    name: "标准版",
-    price: "¥99",
-    unit: "/ 10,000 次",
-    calls: "约 ¥0.0099 / 次",
-    features: ["全平台解析", "高清无水印", "并发更高", "技术支持"],
-    highlight: true,
-  },
-  {
-    name: "企业版",
-    price: "¥899",
-    unit: "/ 100,000 次",
-    calls: "约 ¥0.009 / 次",
-    features: ["全平台解析", "高清无水印", "高并发专线", "专属客服支持"],
-  },
+const PRICING_ROWS: PricingRow[] = [
+  { name: "100次", quantity: 100, unitPrice: 0.02, total: 2, free: true },
+  { name: "2500次", quantity: 2500, unitPrice: 0.006, total: 15 },
+  { name: "5000次", quantity: 5000, unitPrice: 0.0056, total: 28 },
+  { name: "7500次", quantity: 7500, unitPrice: 0.0052, total: 39 },
+  { name: "1万次", quantity: 10000, unitPrice: 0.0048, total: 48 },
 ];
+
+function formatUnitPrice(value: number) {
+  return value.toFixed(4);
+}
+
+function formatTotal(value: number) {
+  return value.toFixed(2);
+}
 
 function Nav() {
   return (
@@ -86,50 +76,51 @@ export default function ApiPricingPage() {
             提供公众号、抖音、小红书、快手等平台的视频/图片去水印解析 API，按调用量计费，简单接入。
           </p>
 
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
-            {PLANS.map((plan) => (
-              <div
-                key={plan.name}
-                className={`rounded-2xl p-8 shadow ${
-                  plan.highlight
-                    ? "bg-blue-600 text-white shadow-lg"
-                    : "bg-white/90"
-                }`}
-              >
-                <h3 className="text-lg font-semibold">{plan.name}</h3>
-                <div className="mt-4 flex items-end gap-1">
-                  <span className="text-3xl font-bold">{plan.price}</span>
-                  <span
-                    className={`text-sm mb-1 ${
-                      plan.highlight ? "text-blue-100" : "text-zinc-500"
-                    }`}
+          <div className="mt-10 overflow-x-auto rounded-2xl bg-white/90 shadow">
+            <table className="w-full min-w-[640px] text-sm">
+              <thead>
+                <tr className="border-b border-zinc-200 bg-zinc-50 text-left text-zinc-600">
+                  <th className="px-6 py-4 font-medium">项目名称</th>
+                  <th className="px-6 py-4 font-medium">数量（次）</th>
+                  <th className="px-6 py-4 font-medium">单价（元/次）</th>
+                  <th className="px-6 py-4 font-medium">合计金额（元）</th>
+                </tr>
+              </thead>
+              <tbody>
+                {PRICING_ROWS.map((row) => (
+                  <tr
+                    key={row.name}
+                    className="border-b border-zinc-100 last:border-b-0"
                   >
-                    {plan.unit}
-                  </span>
-                </div>
-                <p
-                  className={`mt-1 text-sm ${
-                    plan.highlight ? "text-blue-100" : "text-zinc-500"
-                  }`}
-                >
-                  {plan.calls}
-                </p>
-                <ul className="mt-6 space-y-2 text-sm">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2">
-                      <span
-                        className={
-                          plan.highlight ? "text-blue-100" : "text-blue-600"
-                        }
-                      >
-                        ✓
-                      </span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+                    <td className="px-6 py-4 font-medium text-zinc-900">
+                      {row.name}
+                    </td>
+                    <td className="px-6 py-4 text-zinc-700">
+                      {row.quantity.toLocaleString("zh-CN")}
+                    </td>
+                    <td className="px-6 py-4 text-zinc-700">
+                      {formatUnitPrice(row.unitPrice)}
+                    </td>
+                    <td className="px-6 py-4 text-zinc-900">
+                      {row.free && row.total !== null ? (
+                        <span className="inline-flex items-center gap-2">
+                          <span className="text-zinc-400 line-through">
+                            {formatTotal(row.total)}
+                          </span>
+                          <span className="font-medium text-blue-600">
+                            免费使用
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="font-medium">
+                          {formatTotal(row.total ?? 0)}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
 

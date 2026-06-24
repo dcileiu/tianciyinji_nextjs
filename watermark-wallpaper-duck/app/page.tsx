@@ -31,14 +31,16 @@ function Nav() {
             API接口
           </Link>
           <div className="relative group">
-            <span className="cursor-pointer hover:text-zinc-900">微信小程序</span>
+            <span className="cursor-pointer hover:text-zinc-900">
+              微信小程序
+            </span>
             <div className="absolute right-0 top-full mt-2 z-10 hidden group-hover:block">
               <div className="bg-white rounded-xl p-3 shadow-lg border border-zinc-100">
                 <Image
                   src="/icons/qr.jpg"
                   alt="微信小程序物料码"
-                  width={160}
-                  height={160}
+                  width={480}
+                  height={480}
                 />
                 <p className="text-center text-xs text-zinc-500 mt-2">
                   微信扫码进入小程序
@@ -127,43 +129,47 @@ export default function Home() {
                 </button>
               </div>
 
-              <div className="mt-4 text-sm text-zinc-500">当前支持的平台：</div>
-              <div className="mt-3 flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-full shadow-sm">
-                  <Image
-                    src="/icons/wx.ico"
-                    alt="公众号"
-                    width={24}
-                    height={24}
-                  />
-                  <span className="text-sm">公众号</span>
+              <div className="flex items-center gap-3">
+                <div className="mt-4 text-sm text-zinc-500">
+                  当前支持的平台：
                 </div>
-                <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-full shadow-sm">
-                  <Image
-                    src="/icons/dy.png"
-                    alt="抖音"
-                    width={24}
-                    height={24}
-                  />
-                  <span className="text-sm">抖音</span>
-                </div>
-                <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-full shadow-sm">
-                  <Image
-                    src="/icons/xhs.ico"
-                    alt="小红书"
-                    width={24}
-                    height={24}
-                  />
-                  <span className="text-sm">小红书</span>
-                </div>
-                <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-full shadow-sm">
-                  <Image
-                    src="/icons/ks.ico"
-                    alt="快手"
-                    width={24}
-                    height={24}
-                  />
-                  <span className="text-sm">快手</span>
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-full shadow-sm">
+                    <Image
+                      src="/icons/wx.ico"
+                      alt="公众号"
+                      width={24}
+                      height={24}
+                    />
+                    <span className="text-sm">公众号</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-full shadow-sm">
+                    <Image
+                      src="/icons/dy.png"
+                      alt="抖音"
+                      width={24}
+                      height={24}
+                    />
+                    <span className="text-sm">抖音</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-full shadow-sm">
+                    <Image
+                      src="/icons/xhs.ico"
+                      alt="小红书"
+                      width={24}
+                      height={24}
+                    />
+                    <span className="text-sm">小红书</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-full shadow-sm">
+                    <Image
+                      src="/icons/ks.ico"
+                      alt="快手"
+                      width={24}
+                      height={24}
+                    />
+                    <span className="text-sm">快手</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -173,19 +179,19 @@ export default function Home() {
         <section className="max-w-6xl mx-auto px-6 mt-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-6 rounded-2xl bg-white/90 shadow">
-              <h3 className="font-semibold">张先生</h3>
+              <h3 className="font-semibold">赵先生</h3>
               <p className="text-sm text-zinc-500 mt-2">
                 “我的工作需要频繁下载视频，去水印壁纸鸭极大提升了我的效率。”
               </p>
             </div>
             <div className="p-6 rounded-2xl bg-amber-50 shadow">
-              <h3 className="font-semibold">单小姐</h3>
+              <h3 className="font-semibold">孙小姐</h3>
               <p className="text-sm text-zinc-500 mt-2">
                 “解析和下载非常方便，尤其适合内容运营人员。”
               </p>
             </div>
             <div className="p-6 rounded-2xl bg-white/90 shadow">
-              <h3 className="font-semibold">刘经理</h3>
+              <h3 className="font-semibold">李经理</h3>
               <p className="text-sm text-zinc-500 mt-2">
                 “非常好用，能快速保存高清无水印的视频和图片。”
               </p>
@@ -226,7 +232,7 @@ export default function Home() {
                     key={u + i}
                     className="rounded-xl bg-[#fffaf0] p-3 text-sm"
                   >
-                    直播/预览：
+                    预览：
                     <a
                       href={u}
                       target="_blank"
@@ -244,29 +250,50 @@ export default function Home() {
 
         <section className="max-w-6xl mx-auto px-6 mt-12 mb-24">
           <h2 className="text-2xl font-bold text-center">常见问题</h2>
+          <p className="text-center text-zinc-600 mt-2">
+            快速解答您最关心的问题
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div className="p-6 bg-white/90 rounded-2xl shadow">
               <h4 className="font-semibold">去水印壁纸鸭是什么？</h4>
               <p className="text-sm text-zinc-600 mt-2">
-                去水印壁纸鸭是一个免费的在线去水印下载工具，支持抖音、小红书、快手等平台的视频与图片解析与下载。
+                去水印壁纸鸭是一个强大的在线下载工具，让用户可以从包括抖音、小红书、豆包、千问等平台下载自己喜爱的视频、图片。
               </p>
             </div>
             <div className="p-6 bg-white/90 rounded-2xl shadow">
-              <h4 className="font-semibold">为什么还有水印？</h4>
+              <h4 className="font-semibold">为什么还存在水印？</h4>
               <p className="text-sm text-zinc-600 mt-2">
-                部分视频带有平台自身水印或经过 DRM 保护，工具可能无法完全去除。
+                水印为视频、图片本身自带的水印，本工具仅做解析和下载，无法去除原始内容中的水印。
               </p>
             </div>
             <div className="p-6 bg-white/90 rounded-2xl shadow">
-              <h4 className="font-semibold">下载是否合法？</h4>
+              <h4 className="font-semibold">
+                如果去水印壁纸鸭无法下载视频，我的选择是什么？
+              </h4>
               <p className="text-sm text-zinc-600 mt-2">
-                请仅在拥有版权或授权的前提下使用本工具，尊重创作者权益。
+                尽管支持多个平台，但有时由于源网站基础设施或政策的更改，获取视频可能会出现问题。如果出现这种情况，我们建议稍后再尝试获取视频，因为这可能是一个临时问题。然而，如果问题继续存在，建议将您的疑问与我们的支持团队联系。
+              </p>
+            </div>
+            <div className="p-6 bg-white/90 rounded-2xl shadow">
+              <h4 className="font-semibold">
+                从去水印壁纸鸭下载是否合法并且不侵犯版权？
+              </h4>
+              <p className="text-sm text-zinc-600 mt-2">
+                通常取决于您下载的视频及其版权情况。虽然去水印壁纸鸭为您提供了从各种平台检索视频的服务，但用户有责任尊重并遵守各个视频平台或内容创作者的版权政策。我们强烈建议仅将下载用于个人使用或为任何其他用途获得相应版权持有者的许可。
+              </p>
+            </div>
+            <div className="p-6 bg-white/90 rounded-2xl shadow">
+              <h4 className="font-semibold">
+                使用去水印壁纸鸭下载在线视频是否安全？
+              </h4>
+              <p className="text-sm text-zinc-600 mt-2">
+                是的，去水印壁纸鸭是一个完全安全的在线视频下载应用程序。我们提供对用户的安全性和隐私保护。
               </p>
             </div>
             <div className="p-6 bg-white/90 rounded-2xl shadow">
               <h4 className="font-semibold">下载后的视频打不开怎么办？</h4>
               <p className="text-sm text-zinc-600 mt-2">
-                请检查文件格式并尝试使用通用播放器播放，如问题仍然存在可联系我们。
+                这种情况极少发生，一般是文件后缀问题，把下载后的文件后缀名改为.mp4即可播放。如果还有疑问可与我们团队进行联系。
               </p>
             </div>
           </div>
