@@ -12,16 +12,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wallpaper.itianci.cn";
+
 export const metadata: Metadata = {
   title: "去水印壁纸鸭 - 在线视频图片去水印下载工具",
   description:
     "去水印壁纸鸭：专注于公众号、抖音、小红书、快手四个平台的视频与图片一键去水印并下载，无需登录，高质量保存。",
+  keywords: ["去水印", "去水印壁纸鸭", "抖音去水印", "小红书去水印", "快手去水印", "公众号去水印", "视频去水印", "图片去水印", "无水印下载"],
   authors: [{ name: "去水印壁纸鸭" }],
   openGraph: {
     title: "去水印壁纸鸭 - 在线去水印工具",
     description:
       "支持公众号、抖音、小红书、快手四个平台，免费在线解析并下载高清无水印内容。",
-    url: "https://example.com/",
+    url: SITE_URL,
     siteName: "去水印壁纸鸭",
   },
   twitter: {
@@ -44,31 +47,33 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        "name": "去水印壁纸鸭",
+        "url": SITE_URL,
+        "logo": `${SITE_URL}/avatar/logo.png`
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        "url": SITE_URL,
+        "name": "去水印壁纸鸭",
+        "publisher": { "@id": `${SITE_URL}/#organization` }
+      }
+    ]
+  };
+
   return (
     <html
       lang="zh-CN"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@graph": [
-            {
-              "@type": "Organization",
-              "@id": "https://example.com/#organization",
-              "name": "去水印壁纸鸭",
-              "url": "https://example.com/",
-              "logo": "https://example.com/avatar/logo.png"
-            },
-            {
-              "@type": "WebSite",
-              "@id": "https://example.com/#website",
-              "url": "https://example.com/",
-              "name": "去水印壁纸鸭",
-              "publisher": { "@id": "https://example.com/#organization" }
-            }
-          ]
-        }) }}/>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}/>
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
