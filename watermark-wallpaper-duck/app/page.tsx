@@ -103,7 +103,7 @@ export default function Home() {
 
       <main className="flex-1 w-full">
         <section className="max-w-6xl mx-auto px-6 pt-12">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-10 shadow-lg">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-10 shadow-even">
             <h1 className="text-3xl font-bold text-center">去水印壁纸鸭</h1>
             <p className="text-center text-zinc-600 mt-2">
               专注于公众号、抖音、小红书、快手四个平台的视频/图片去水印与下载。无需登录，一键解析并保存高清内容。
