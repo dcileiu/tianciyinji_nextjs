@@ -15,12 +15,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "去水印壁纸鸭 - 在线视频图片去水印下载工具",
   description:
-    "去水印壁纸鸭：支持抖音、小红书、快手等10+平台的视频与图片一键去水印并下载，无需登录，高质量保存。",
+    "去水印壁纸鸭：专注于公众号、抖音、小红书、快手四个平台的视频与图片一键去水印并下载，无需登录，高质量保存。",
   authors: [{ name: "去水印壁纸鸭" }],
   openGraph: {
     title: "去水印壁纸鸭 - 在线去水印工具",
     description:
-      "支持抖音、小红书、快手等平台，免费在线解析并下载高清无水印内容。",
+      "支持公众号、抖音、小红书、快手四个平台，免费在线解析并下载高清无水印内容。",
     url: "https://example.com/",
     siteName: "去水印壁纸鸭",
   },

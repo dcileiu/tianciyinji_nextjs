@@ -67,7 +67,7 @@ export default function Home() {
         <section className="max-w-6xl mx-auto px-6 pt-12">
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-10 shadow-lg">
             <h1 className="text-3xl font-bold text-center">去水印壁纸鸭</h1>
-            <p className="text-center text-zinc-600 mt-2">免费在线视频图片去水印并下载，支持抖音、小红书、快手等 10+ 平台</p>
+            <p className="text-center text-zinc-600 mt-2">专注于公众号、抖音、小红书、快手四个平台的视频/图片去水印与下载。无需登录，一键解析并保存高清内容。</p>
 
             <div className="mt-8">
               <label className="block text-sm text-zinc-700 mb-2">请输入 URL 地址</label>
@@ -76,7 +76,7 @@ export default function Home() {
                 <button onClick={handleParse} disabled={loading} className="bg-blue-600 text-white rounded-full px-8 py-3">{loading ? '解析中...' : '开始解析'}</button>
               </div>
 
-              <div className="mt-4 text-sm text-zinc-500">支持平台：</div>
+              <div className="mt-4 text-sm text-zinc-500">当前支持的平台：</div>
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-full shadow-sm">
                   <Image src="/icons/wx.ico" alt="公众号" width={24} height={24} />
@@ -93,16 +93,6 @@ export default function Home() {
                 <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-full shadow-sm">
                   <Image src="/icons/ks.ico" alt="快手" width={24} height={24} />
                   <span className="text-sm">快手</span>
-                </div>
-
-                {/* placeholders for future platforms */}
-                <div className="flex items-center gap-2 px-3 py-2 bg-white/60 rounded-full border border-dashed border-zinc-200 text-zinc-400">
-                  <div className="w-6 h-6 bg-zinc-200 rounded" />
-                  <span className="text-sm">占位</span>
-                </div>
-                <div className="flex items-center gap-2 px-3 py-2 bg-white/60 rounded-full border border-dashed border-zinc-200 text-zinc-400">
-                  <div className="w-6 h-6 bg-zinc-200 rounded" />
-                  <span className="text-sm">占位</span>
                 </div>
               </div>
             </div>
