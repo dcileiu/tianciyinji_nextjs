@@ -4,6 +4,54 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
+function StarRating() {
+  return (
+    <div className="flex gap-0.5 mt-3" aria-label="5 星评价">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <svg
+          key={i}
+          className="w-4 h-4 text-amber-400"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden
+        >
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
+const TESTIMONIALS = [
+  {
+    name: "张先生",
+    role: "自媒体工作者",
+    avatar: "张",
+    avatarBg: "bg-sky-100 text-sky-600",
+    cardBg: "bg-sky-50/80",
+    quote:
+      "我的工作要求我经常下载文件，曾经我对于这个工作很头痛，自从我发现了去水印下载鸭这个软件，我的工作变的超级简单、容易，带给我的是效率大幅度提升。",
+  },
+  {
+    name: "单小姐",
+    role: "网站运营",
+    avatar: "单",
+    avatarBg: "bg-rose-100 text-rose-600",
+    cardBg: "bg-amber-50",
+    quote:
+      "去水印下载鸭能支持的网站非常多，这一点省去我安装各种下载软件的烦恼，去水印下载鸭能快速下载清晰的视频文件，特别赞！",
+  },
+  {
+    name: "刘经理",
+    role: "产品经理",
+    avatar: "刘",
+    avatarBg: "bg-violet-100 text-violet-600",
+    cardBg: "bg-sky-50/80",
+    quote:
+      "第一次使用去水印下载鸭就有种惊艳的感觉，清新脱俗，粘贴一个APP或网页的地址就可以下载的清晰视频、图片，很高效。",
+  },
+] as const;
+
 function Nav() {
   return (
     <header className="w-full border-b border-transparent py-4">
@@ -123,7 +171,7 @@ export default function Home() {
                 <button
                   onClick={handleParse}
                   disabled={loading}
-                  className="bg-blue-600 text-white rounded-full px-8 py-3"
+                  className="bg-blue-600 cursor-pointer text-white rounded-full px-8 py-3 transition-all duration-200 hover:bg-blue-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none disabled:hover:bg-blue-600"
                 >
                   {loading ? "解析中..." : "开始解析"}
                 </button>
@@ -252,25 +300,37 @@ export default function Home() {
         </section>
 
         <section className="max-w-6xl mx-auto px-6 mt-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-2xl bg-white/90 shadow">
-              <h3 className="font-semibold">赵先生</h3>
-              <p className="text-sm text-zinc-500 mt-2">
-                “我的工作需要频繁下载视频，去水印壁纸鸭极大提升了我的效率。”
-              </p>
-            </div>
-            <div className="p-6 rounded-2xl bg-amber-50 shadow">
-              <h3 className="font-semibold">孙小姐</h3>
-              <p className="text-sm text-zinc-500 mt-2">
-                “解析和下载非常方便，尤其适合内容运营人员。”
-              </p>
-            </div>
-            <div className="p-6 rounded-2xl bg-white/90 shadow">
-              <h3 className="font-semibold">李经理</h3>
-              <p className="text-sm text-zinc-500 mt-2">
-                “非常好用，能快速保存高清无水印的视频和图片。”
-              </p>
-            </div>
+          <h2 className="text-2xl font-bold text-center">数千用户都说好</h2>
+          <p className="text-center text-zinc-600 mt-2">
+            真实用户反馈，信赖去水印下载鸭
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            {TESTIMONIALS.map((item) => (
+              <div
+                key={item.name}
+                className={`p-6 rounded-2xl shadow-even ${item.cardBg}`}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${item.avatarBg}`}
+                  >
+                    {item.avatar}
+                  </div>
+                  <div className="min-w-0">
+                    <span className="font-semibold text-zinc-900">
+                      {item.name}
+                    </span>
+                    <span className="text-sm text-zinc-500 ml-2">
+                      {item.role}
+                    </span>
+                  </div>
+                </div>
+                <StarRating />
+                <p className="text-sm text-zinc-600 mt-3 leading-relaxed">
+                  “{item.quote}”
+                </p>
+              </div>
+            ))}
           </div>
         </section>
 
