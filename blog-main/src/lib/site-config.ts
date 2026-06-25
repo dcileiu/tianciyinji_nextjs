@@ -59,6 +59,7 @@ export const primaryNavItems: NavItem[] = [
     ],
   },
   { label: '资源', href: '/resources', enabled: true },
+  { label: '友链', href: '/friends', enabled: true },
   { label: '关于', href: '/about', enabled: true },
 ];
 
