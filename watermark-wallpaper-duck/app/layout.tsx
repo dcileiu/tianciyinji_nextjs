@@ -20,6 +20,11 @@ export const metadata: Metadata = {
     "去水印壁纸鸭：专注于公众号、抖音、小红书、快手四个平台的视频与图片一键去水印并下载，无需登录，高质量保存。",
   keywords: ["去水印", "去水印壁纸鸭", "抖音去水印", "小红书去水印", "快手去水印", "公众号去水印", "视频去水印", "图片去水印", "无水印下载"],
   authors: [{ name: "去水印壁纸鸭" }],
+  icons: {
+    icon: "/icons/duck.webp",
+    shortcut: "/icons/duck.webp",
+    apple: "/icons/duck.webp",
+  },
   openGraph: {
     title: "去水印壁纸鸭 - 在线去水印工具",
     description:

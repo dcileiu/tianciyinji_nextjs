@@ -82,15 +82,16 @@ function Nav() {
             <span className="cursor-pointer hover:text-zinc-900">
               微信小程序
             </span>
-            <div className="absolute right-0 top-full mt-2 z-10 hidden group-hover:block">
-              <div className="bg-white rounded-xl p-3 shadow-lg border border-zinc-100">
+            <div className="absolute right-0 top-full mt-2 z-10 hidden group-hover:block w-96">
+              <div className="bg-white rounded-xl p-4 shadow-lg border border-zinc-100">
                 <Image
                   src="/icons/qr.jpg"
                   alt="微信小程序物料码"
                   width={480}
                   height={480}
+                  className="w-full h-auto"
                 />
-                <p className="text-center text-xs text-zinc-500 mt-2">
+                <p className="text-center text-sm text-zinc-500 mt-3">
                   微信扫码进入小程序
                 </p>
               </div>
