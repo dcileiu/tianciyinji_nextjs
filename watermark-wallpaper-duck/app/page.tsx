@@ -24,31 +24,31 @@ function StarRating() {
 
 const TESTIMONIALS = [
   {
-    name: "张先生",
+    name: "赵先生",
     role: "自媒体工作者",
-    avatar: "张",
+    avatar: "赵",
     avatarBg: "bg-sky-100 text-sky-600",
     cardBg: "bg-sky-50/80",
     quote:
-      "我的工作要求我经常下载文件，曾经我对于这个工作很头痛，自从我发现了去水印下载鸭这个软件，我的工作变的超级简单、容易，带给我的是效率大幅度提升。",
+      "我的工作要求我经常下载文件，曾经我对于这个工作很头痛，自从我发现了去水印壁纸鸭这个软件，我的工作变的超级简单、容易，带给我的是效率大幅度提升。",
   },
   {
-    name: "单小姐",
+    name: "孙小姐",
     role: "网站运营",
-    avatar: "单",
+    avatar: "孙",
     avatarBg: "bg-rose-100 text-rose-600",
     cardBg: "bg-amber-50",
     quote:
-      "去水印下载鸭能支持的网站非常多，这一点省去我安装各种下载软件的烦恼，去水印下载鸭能快速下载清晰的视频文件，特别赞！",
+      "去水印壁纸鸭能支持的网站非常多，这一点省去我安装各种下载软件的烦恼，去水印壁纸鸭能快速下载清晰的视频文件，特别赞！",
   },
   {
-    name: "刘经理",
+    name: "李经理",
     role: "产品经理",
-    avatar: "刘",
+    avatar: "李",
     avatarBg: "bg-violet-100 text-violet-600",
     cardBg: "bg-sky-50/80",
     quote:
-      "第一次使用去水印下载鸭就有种惊艳的感觉，清新脱俗，粘贴一个APP或网页的地址就可以下载的清晰视频、图片，很高效。",
+      "第一次使用去水印壁纸鸭就有种惊艳的感觉，清新脱俗，粘贴一个APP或网页的地址就可以下载的清晰视频、图片，很高效。",
   },
 ] as const;
 
@@ -300,9 +300,9 @@ export default function Home() {
         </section>
 
         <section className="max-w-6xl mx-auto px-6 mt-10">
-          <h2 className="text-2xl font-bold text-center">数千用户都说好</h2>
+          <h2 className="text-2xl font-bold text-center">数万用户都说好</h2>
           <p className="text-center text-zinc-600 mt-2">
-            真实用户反馈，信赖去水印下载鸭
+            真实用户反馈，信赖去水印壁纸鸭
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             {TESTIMONIALS.map((item) => (
