@@ -392,7 +392,7 @@ export default function Home() {
             <div className="p-6 bg-white/90 rounded-2xl shadow">
               <h4 className="font-semibold">去水印壁纸鸭是什么？</h4>
               <p className="text-sm text-zinc-600 mt-2">
-                去水印壁纸鸭是一个强大的在线下载工具，让用户可以从包括抖音、小红书、豆包、千问等平台下载自己喜爱的视频、图片。
+                去水印壁纸鸭是一个强大的在线下载工具，让用户可以从包括抖音、小红书、快手、公众号等平台下载自己喜爱的视频、图片。
               </p>
             </div>
             <div className="p-6 bg-white/90 rounded-2xl shadow">
