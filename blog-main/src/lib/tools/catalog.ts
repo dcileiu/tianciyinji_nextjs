@@ -1,6 +1,8 @@
 // 工具目录的单一数据源：被客户端聚合页、各工具独立页、sitemap、导航等共享。
 // 这里保持纯数据（无 'use client'），可在服务端与客户端通用。
 
+import { dewatermarkToolUrl } from '@/lib/site-config';
+
 export const sectionMeta = [
   { id: 'local-tools' },
   { id: 'image-tools' },
@@ -142,7 +144,7 @@ export const toolNavMenuGroups: ReadonlyArray<{
     id: 'common-tools',
     labelKey: 'commonTools',
     entries: [
-      { kind: 'page', href: '/tools/dewatermark', labelKey: 'dewatermark' },
+      { kind: 'page', href: dewatermarkToolUrl, labelKey: 'dewatermark' },
     ],
   },
   {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import { getDictionary, normalizeLocale } from "@/lib/i18n";
-import { pageTitle } from "@/lib/site-config";
+import { pageTitle, dewatermarkToolUrl } from "@/lib/site-config";
 import { buildCollectionPageJsonLd, buildPageMetadata } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -21,6 +21,12 @@ const friends = [
     name: "刘明野的工具箱",
     href: "https://tools.liumingye.cn/",
     description: "好用、易用的在线工具与站点导航，内容持续扩充。",
+  },
+  {
+    name: "去水印壁纸鸭",
+    href: dewatermarkToolUrl,
+    description:
+      "专注于公众号、抖音、小红书、快手的视频/图片去水印与下载，无需登录，一键解析并保存高清内容。",
   },
 ] as const;
 

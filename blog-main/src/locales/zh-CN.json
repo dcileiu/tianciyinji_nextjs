@@ -32,7 +32,7 @@
       "children": [
         {
           "label": "去水印",
-          "href": "/tools/dewatermark",
+          "href": "https://removewatermark.itianci.cn/",
           "enabled": true
         },
         {
@@ -400,6 +400,10 @@
       {
         "name": "刘明野的工具箱",
         "description": "好用、易用的在线工具与站点导航，内容持续扩充。"
+      },
+      {
+        "name": "去水印壁纸鸭",
+        "description": "专注于公众号、抖音、小红书、快手的视频/图片去水印与下载，无需登录，一键解析并保存高清内容。"
       }
     ]
   },

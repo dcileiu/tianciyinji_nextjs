@@ -32,7 +32,7 @@
       "children": [
         {
           "label": "Dewatermark",
-          "href": "/tools/dewatermark",
+          "href": "https://removewatermark.itianci.cn/",
           "enabled": true
         },
         {
@@ -399,6 +399,10 @@
       {
         "name": "Liu Mingye Tools",
         "description": "A practical and easy-to-use online toolbox and site directory that keeps growing."
+      },
+      {
+        "name": "Watermark Wallpaper Duck",
+        "description": "Remove watermarks and download videos or images from WeChat, Douyin, Xiaohongshu, and Kuaishou with one-click parsing."
       }
     ]
   },

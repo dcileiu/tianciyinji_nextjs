@@ -14,6 +14,7 @@ import {
 import Link from 'next/link';
 import type { Route } from 'next';
 import { getDictionary, localizedHref, type Locale } from '@/lib/i18n';
+import { dewatermarkToolUrl } from '@/lib/site-config';
 
 interface ToolChip {
   id: string;
@@ -298,8 +299,10 @@ export default function ToolsHub({ locale }: { locale: Locale }) {
       </header>
 
       {/* 特色工具：去水印 */}
-      <Link
-        href={localizedHref('/tools/dewatermark', locale) as Route}
+      <a
+        href={dewatermarkToolUrl}
+        target="_blank"
+        rel="noopener noreferrer"
         className="group mt-6 block overflow-hidden rounded-[28px] border border-[#e4d8ff] bg-[linear-gradient(135deg,rgba(124,92,255,0.12),rgba(244,237,255,0.6))] p-5 shadow-[0_18px_55px_rgba(91,61,245,0.08)] transition hover:border-[#8b6bff] hover:shadow-[0_22px_70px_rgba(91,61,245,0.16)] dark:border-[#2a2140] dark:bg-[linear-gradient(135deg,rgba(60,42,120,0.5),rgba(18,13,31,0.92))] sm:p-6"
       >
         <div className="flex items-center gap-4">
@@ -319,7 +322,7 @@ export default function ToolsHub({ locale }: { locale: Locale }) {
           </div>
           <ArrowRight className="h-5 w-5 flex-shrink-0 text-[#8b6bff] transition group-hover:translate-x-1" />
         </div>
-      </Link>
+      </a>
 
       {/* 四大模块 */}
       <div className="mt-6 grid gap-5 md:grid-cols-2">

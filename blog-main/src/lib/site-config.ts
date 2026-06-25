@@ -36,6 +36,8 @@ export const siteConfig = {
 
 export const siteKeywords = ['Dci', '个人站', '博客', '作品集', 'Next.js', 'Markdown', 'Vue', 'uni-app', 'Python', 'AI Tools'];
 
+export const dewatermarkToolUrl = 'https://removewatermark.itianci.cn/' as const;
+
 export const primaryNavItems: NavItem[] = [
   { label: '首页', href: '/', enabled: true },
   { label: '归档', href: '/archive', enabled: true },
@@ -45,7 +47,7 @@ export const primaryNavItems: NavItem[] = [
     href: '/tools',
     enabled: true,
     children: [
-      { label: '去水印', href: '/tools/dewatermark', enabled: true },
+      { label: '去水印', href: dewatermarkToolUrl, enabled: true },
       { label: 'SEO | GEO 工具', href: '/tools/seo', enabled: true },
       { label: '纯本地工具', href: '/tools/local', enabled: true },
       { label: '图片处理', href: '/tools/image', enabled: true },

@@ -22,7 +22,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/archive',
     '/works',
     '/tools',
-    '/tools/dewatermark',
     '/tools/seo',
     '/tools/local',
     '/tools/image',

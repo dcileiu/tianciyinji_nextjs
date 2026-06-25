@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
+import { NavHref } from '@/components/NavHref';
 import { useI18n } from '@/components/I18nProvider';
 import {
   sectionMeta,
@@ -149,8 +150,8 @@ export function ToolsNavSubmenu({ variant = 'desktop', onNavigate }: ToolsNavSub
 
   const renderToolLink = (tool: NavToolLink) => (
     <li key={tool.key}>
-      <Link
-        href={localizedHref(tool.href) as any}
+      <NavHref
+        href={tool.href}
         onClick={(e) => {
           e.stopPropagation();
           onNavigate?.();
@@ -158,7 +159,7 @@ export function ToolsNavSubmenu({ variant = 'desktop', onNavigate }: ToolsNavSub
         className={linkClass}
       >
         {tool.label}
-      </Link>
+      </NavHref>
     </li>
   );
 
