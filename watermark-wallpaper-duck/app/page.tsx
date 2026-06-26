@@ -82,7 +82,7 @@ function Nav() {
             <span className="cursor-pointer hover:text-zinc-900">
               微信小程序
             </span>
-            <div className="absolute right-0 top-full mt-2 z-10 hidden group-hover:block w-96">
+            <div className="absolute right-0 top-full mt-2 z-10 hidden group-hover:block w-[180px]">
               <div className="bg-white rounded-xl p-4 shadow-lg border border-zinc-100">
                 <Image
                   src="/icons/qr.jpg"
