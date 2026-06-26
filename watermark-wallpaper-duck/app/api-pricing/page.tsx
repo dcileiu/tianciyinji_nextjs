@@ -18,10 +18,10 @@ type PricingRow = {
 
 const PRICING_ROWS: PricingRow[] = [
   { name: "100次", quantity: 100, unitPrice: 0.02, total: 2, free: true },
-  { name: "2500次", quantity: 2500, unitPrice: 0.006, total: 15 },
-  { name: "5000次", quantity: 5000, unitPrice: 0.0056, total: 28 },
-  { name: "7500次", quantity: 7500, unitPrice: 0.0052, total: 39 },
-  { name: "1万次", quantity: 10000, unitPrice: 0.0048, total: 48 },
+  { name: "2500次", quantity: 2500, unitPrice: 0.00396, total: 9.9 },
+  { name: "5000次", quantity: 5000, unitPrice: 0.0036, total: 18 },
+  { name: "7500次", quantity: 7500, unitPrice: 0.00333, total: 25 },
+  { name: "1万次", quantity: 10000, unitPrice: 0.003, total: 30 },
 ];
 
 function formatUnitPrice(value: number) {
@@ -73,7 +73,8 @@ export default function ApiPricingPage() {
         <section className="max-w-6xl mx-auto px-6 pt-12">
           <h1 className="text-3xl font-bold text-center">API接口价格</h1>
           <p className="text-center text-zinc-600 mt-2">
-            提供公众号、抖音、小红书、快手等平台的视频/图片去水印解析 API，按调用量计费，简单接入。
+            提供公众号、抖音、小红书、快手等平台的视频/图片去水印解析
+            API，按调用量计费，简单接入。
           </p>
 
           <div className="mt-10 overflow-x-auto rounded-2xl bg-white/90 shadow">
@@ -126,7 +127,9 @@ export default function ApiPricingPage() {
 
         <section className="max-w-6xl mx-auto px-6 mt-12 mb-24">
           <div className="rounded-2xl bg-white/90 shadow p-8 text-center">
-            <h2 className="text-xl font-bold">开通 / 咨询 API 接入</h2>
+            <h2 className="text-xl font-bold">
+              开通 / 咨询 API 接入 / 定制开发
+            </h2>
             <p className="text-zinc-600 mt-2">
               如需开通 API 或了解更多定制方案，请联系客服微信：
             </p>
@@ -134,7 +137,7 @@ export default function ApiPricingPage() {
               微信号：xy020477
             </p>
             <p className="text-sm text-zinc-500 mt-4">
-              添加时请备注「API接入」，我们会尽快与您联系。
+              添加时请备注「API」，我们会尽快与您联系。
             </p>
           </div>
         </section>
