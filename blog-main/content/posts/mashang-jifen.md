@@ -9,7 +9,7 @@ tags:
   - 微信小程序
   - 麻将
   - 计分
-coverImage: /content/posts/mashang-jifen/1.webp
+coverImage: /content/posts/mashang-jifen/cover.webp
 ---
 
 我们几个朋友打麻将，计分这件事看起来小事，吵起来一点也不小事。
