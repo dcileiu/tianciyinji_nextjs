@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { absoluteUrl, siteConfig } from '@/lib/site-config';
 
 export default function robots(): MetadataRoute.Robots {
-  const disallow = ['/api/', '/search'];
+  const disallow = ['/api/', '/search', '/*/search'];
 
   return {
     rules: [
