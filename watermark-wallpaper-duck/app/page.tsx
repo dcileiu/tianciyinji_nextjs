@@ -415,7 +415,7 @@ export default function Home() {
                   <p className="text-sm text-zinc-500 mt-1">
                     共 {mediaUrls.length} 个文件，悬停可下载
                   </p>
-                  <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+                  <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
                     {mediaUrls.map((u: string, i: number) => (
                       <MediaCard key={u + i} url={u} />
                     ))}
