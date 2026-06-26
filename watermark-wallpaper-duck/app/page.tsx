@@ -353,16 +353,16 @@ export default function Home() {
                     </svg>
                     赞赏
                   </a>
-                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-10 hidden group-hover:block">
-                    <div className="bg-white rounded-xl p-3 shadow-lg border border-zinc-100">
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-10 hidden group-hover:block w-[180px]">
+                    <div className="bg-white rounded-xl p-4 shadow-lg border border-zinc-100">
                       <Image
                         src="/icons/reward.jpg"
                         alt="赞赏码"
                         width={160}
                         height={160}
-                        className="w-[160px] h-[160px] object-contain"
+                        className="w-full h-auto"
                       />
-                      <p className="text-center text-sm text-zinc-500 mt-2">
+                      <p className="text-center text-sm text-zinc-500 mt-3">
                         感谢您的赞赏
                       </p>
                     </div>
