@@ -52,6 +52,83 @@ const TESTIMONIALS = [
   },
 ] as const;
 
+type MediaType = "image" | "video";
+
+function getMediaType(url: string): MediaType {
+  const lower = url.toLowerCase();
+  if (/\/play\/|video_id=|\.mp4|sc=video|\/video\/|\.m3u8/.test(lower)) {
+    return "video";
+  }
+  return "image";
+}
+
+function MediaCard({ url }: { url: string }) {
+  const type = getMediaType(url);
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = url;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+      } catch {}
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-zinc-100 bg-white shadow-sm">
+      <div className="relative aspect-[3/4] bg-zinc-100">
+        {type === "video" ? (
+          <video
+            src={url}
+            controls
+            playsInline
+            preload="metadata"
+            className="absolute inset-0 h-full w-full bg-black object-contain"
+          />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={url}
+            alt="解析结果"
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        )}
+      </div>
+      <div className="flex gap-2 p-2">
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="flex-1 cursor-pointer rounded-lg border border-zinc-200 bg-white py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
+        >
+          {copied ? "已复制" : "复制链接"}
+        </button>
+        <a
+          href={url}
+          target="_blank"
+          rel="noreferrer"
+          download
+          className="flex-1 rounded-lg bg-blue-600 py-1.5 text-center text-xs font-medium text-white transition-colors hover:bg-blue-700"
+        >
+          下载
+        </a>
+      </div>
+    </div>
+  );
+}
+
 function Nav() {
   return (
     <header className="w-full border-b border-transparent py-4">
@@ -261,20 +338,36 @@ export default function Home() {
                   搭建同款站点+微信:xy020477
                 </a>
                 <span className="h-4 w-px bg-zinc-300" />
-                <a
-                  href="#"
-                  className="flex items-center hover:text-blue-600 transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    viewBox="0 0 1024 1024"
-                    fill="currentColor"
-                    aria-hidden
+                <div className="relative group">
+                  <a
+                    href="#"
+                    className="flex items-center hover:text-blue-600 transition-colors"
                   >
-                    <path d="M512 106.667A405.333 405.333 0 1 0 917.333 512 405.333 405.333 0 0 0 512 106.667z m135.04 486.4a40.533 40.533 0 0 1 0 81.066h-94.507v53.974a40.533 40.533 0 1 1-81.066 0v-53.974H376.96a40.533 40.533 0 0 1 0-81.066h94.507V525.44H376.96a40.533 40.533 0 1 1 0-81.067h77.013L348.8 339.2a40.533 40.533 0 0 1 56.533-57.173L512 388.693l104.107-104.106a39.253 39.253 0 0 1 55.68 55.68L567.04 445.013h79.573a40.533 40.533 0 1 1 0 81.067h-94.08v66.987h94.507z" />
-                  </svg>
-                  赞赏
-                </a>
+                    <svg
+                      className="w-4 h-4 mr-1"
+                      viewBox="0 0 1024 1024"
+                      fill="currentColor"
+                      aria-hidden
+                    >
+                      <path d="M512 106.667A405.333 405.333 0 1 0 917.333 512 405.333 405.333 0 0 0 512 106.667z m135.04 486.4a40.533 40.533 0 0 1 0 81.066h-94.507v53.974a40.533 40.533 0 1 1-81.066 0v-53.974H376.96a40.533 40.533 0 0 1 0-81.066h94.507V525.44H376.96a40.533 40.533 0 1 1 0-81.067h77.013L348.8 339.2a40.533 40.533 0 0 1 56.533-57.173L512 388.693l104.107-104.106a39.253 39.253 0 0 1 55.68 55.68L567.04 445.013h79.573a40.533 40.533 0 1 1 0 81.067h-94.08v66.987h94.507z" />
+                    </svg>
+                    赞赏
+                  </a>
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-10 hidden group-hover:block">
+                    <div className="bg-white rounded-xl p-3 shadow-lg border border-zinc-100">
+                      <Image
+                        src="/icons/reward.jpg"
+                        alt="赞赏码"
+                        width={160}
+                        height={160}
+                        className="w-[160px] h-[160px] object-contain"
+                      />
+                      <p className="text-center text-sm text-zinc-500 mt-2">
+                        感谢您的赞赏
+                      </p>
+                    </div>
+                  </div>
+                </div>
                 {/* <span className="h-4 w-px bg-zinc-300" /> */}
                 {/* <a
                   href="#"
@@ -299,6 +392,38 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {error && (
+          <section className="max-w-6xl mx-auto px-6 mt-6">
+            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+              {error}
+            </div>
+          </section>
+        )}
+
+        {result &&
+          (() => {
+            const mediaUrls = [
+              ...(result.downloadUrls || []),
+              ...(result.liveUrls || []),
+            ].filter(Boolean);
+            if (!mediaUrls.length) return null;
+            return (
+              <section className="max-w-6xl mx-auto px-6 mt-6">
+                <div className="rounded-2xl border border-[#e4d8ff] bg-white/70 p-6 shadow">
+                  <h3 className="text-lg font-semibold">解析结果</h3>
+                  <p className="text-sm text-zinc-500 mt-1">
+                    共 {mediaUrls.length} 个文件，悬停可下载
+                  </p>
+                  <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+                    {mediaUrls.map((u: string, i: number) => (
+                      <MediaCard key={u + i} url={u} />
+                    ))}
+                  </div>
+                </div>
+              </section>
+            );
+          })()}
 
         <section className="max-w-6xl mx-auto px-6 mt-10">
           <h2 className="text-2xl font-bold text-center">数万用户都说好</h2>
@@ -334,55 +459,6 @@ export default function Home() {
             ))}
           </div>
         </section>
-
-        {error && (
-          <section className="max-w-6xl mx-auto px-6 mt-6">
-            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-              {error}
-            </div>
-          </section>
-        )}
-
-        {result && (
-          <section className="max-w-6xl mx-auto px-6 mt-6">
-            <div className="rounded-2xl border border-[#e4d8ff] bg-white/70 p-6 shadow">
-              <h3 className="text-lg font-semibold">解析结果</h3>
-              <div className="mt-3 space-y-3">
-                {(result.downloadUrls || []).map((u: string, i: number) => (
-                  <div
-                    key={u + i}
-                    className="rounded-xl bg-[#fbf9ff] p-3 text-sm"
-                  >
-                    <a
-                      href={u}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-blue-600 break-all"
-                    >
-                      {u}
-                    </a>
-                  </div>
-                ))}
-                {(result.liveUrls || []).map((u: string, i: number) => (
-                  <div
-                    key={u + i}
-                    className="rounded-xl bg-[#fffaf0] p-3 text-sm"
-                  >
-                    预览：
-                    <a
-                      href={u}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-blue-600 break-all"
-                    >
-                      {u}
-                    </a>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
 
         <section className="max-w-6xl mx-auto px-6 mt-12 mb-24">
           <h2 className="text-2xl font-bold text-center">常见问题</h2>
