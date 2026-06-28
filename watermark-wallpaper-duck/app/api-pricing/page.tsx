@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "API接口价格 - 去水印壁纸鸭",
   description:
-    "去水印壁纸鸭 API 接口价格方案，支持公众号、抖音、小红书、快手等平台的视频/图片去水印解析。联系客服微信 xy020477 开通。",
+    "去水印壁纸鸭 API 接口价格方案，支持公众号、抖音、小红书、快手、哔哩哔哩等平台的视频/图片去水印解析。联系客服微信 xy020477 开通。",
 };
 
 type PricingRow = {
@@ -73,7 +73,7 @@ export default function ApiPricingPage() {
         <section className="max-w-6xl mx-auto px-6 pt-12">
           <h1 className="text-3xl font-bold text-center">API接口价格</h1>
           <p className="text-center text-zinc-600 mt-2">
-            提供公众号、抖音、小红书、快手等平台的视频/图片去水印解析
+            提供公众号、抖音、小红书、快手、哔哩哔哩等平台的视频/图片去水印解析
             API，按调用量计费，简单接入。
           </p>
 

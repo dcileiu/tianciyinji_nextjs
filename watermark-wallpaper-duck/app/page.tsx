@@ -56,7 +56,11 @@ type MediaType = "image" | "video";
 
 function getMediaType(url: string): MediaType {
   const lower = url.toLowerCase();
-  if (/\/play\/|video_id=|\.mp4|sc=video|\/video\/|\.m3u8/.test(lower)) {
+  if (
+    /\/play\/|video_id=|\.mp4|\.m4s|bilivideo|hdslb|sc=video|\/video\/|\.m3u8/.test(
+      lower,
+    )
+  ) {
     return "video";
   }
   return "image";
@@ -202,7 +206,7 @@ export default function Home() {
       const resp = await fetch("/api/dewatermark", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: trimmed, platform: "unknown" }),
+        body: JSON.stringify({ url: trimmed }),
       });
       const data = await resp.json();
       if (!resp.ok || data?.code !== 0)
@@ -232,7 +236,7 @@ export default function Home() {
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-10 shadow-even">
             <h1 className="text-3xl font-bold text-center">去水印壁纸鸭</h1>
             <p className="text-center text-zinc-600 mt-2">
-              专注于公众号、抖音、小红书、快手四个平台的视频/图片去水印与下载。无需登录，一键解析并保存高清内容。
+              专注于公众号、抖音、小红书、快手、哔哩哔哩等平台的视频/图片去水印与下载。无需登录，一键解析并保存高清内容。
             </p>
 
             <div className="mt-8">
@@ -295,6 +299,15 @@ export default function Home() {
                       height={24}
                     />
                     <span className="text-sm">快手</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-full shadow-sm">
+                    <Image
+                      src="/icons/bili.png"
+                      alt="哔哩哔哩"
+                      width={24}
+                      height={24}
+                    />
+                    <span className="text-sm">哔哩哔哩</span>
                   </div>
                 </div>
               </div>
@@ -469,7 +482,7 @@ export default function Home() {
             <div className="p-6 bg-white/90 rounded-2xl shadow">
               <h4 className="font-semibold">去水印壁纸鸭是什么？</h4>
               <p className="text-sm text-zinc-600 mt-2">
-                去水印壁纸鸭是一个强大的在线下载工具，让用户可以从包括抖音、小红书、快手、公众号等平台下载自己喜爱的视频、图片。
+                去水印壁纸鸭是一个强大的在线下载工具，让用户可以从包括抖音、小红书、快手、哔哩哔哩、公众号等平台下载自己喜爱的视频、图片。
               </p>
             </div>
             <div className="p-6 bg-white/90 rounded-2xl shadow">

@@ -1,40 +1,43 @@
 import { NextResponse } from 'next/server';
 
-const BACKEND_BASE_URL = (process.env.DEWATERMARK_BACKEND_URL || 'https://wallpaper.api.itianci.cn').replace(
+const BACKEND_BASE_URL = (process.env.DEWATERMARK_BACKEND_URL || 'https://wallpaper.itianci.cn').replace(
   /\/+$/,
-  ''
+  '',
 );
 
-const PLATFORM_ENDPOINT = {
-  wechat: '/api/v1/wechat/detail',
-  douyin: '/api/v1/douyin/detail',
-  xhs: '/api/v1/xhs/detail',
-  kuaishou: '/api/v1/kuaishou/detail',
-} as const;
+const EXTRACT_ENDPOINT = '/api/v1/open/media/extract';
 
-type SupportedPlatform = keyof typeof PLATFORM_ENDPOINT;
+type MediaImage = { url?: string; alt?: string };
+type MediaVideo = {
+  url?: string;
+  poster?: string;
+  source?: string;
+  referer?: string;
+  audio_url?: string;
+};
 
-function detectPlatform(url: string): SupportedPlatform | 'unknown' {
-  const text = String(url || '');
-  if (/mp\.weixin\.qq\.com\/s\//i.test(text)) return 'wechat';
-  if (/xhslink\.com\/|xiaohongshu\.com\//i.test(text)) return 'xhs';
-  if (/v\.douyin\.com\/|(?:www\.)?douyin\.com\/|(?:www\.)?iesdouyin\.com\//i.test(text)) return 'douyin';
-  if (/v\.kuaishou\.com\/|(?:[\w-]+\.)?kuaishou\.com\/|(?:[\w-]+\.)?gifshow\.com\//i.test(text)) {
-    return 'kuaishou';
-  }
-  return 'unknown';
-}
+type ExtractData = {
+  platform?: string;
+  platform_name?: string;
+  title?: string;
+  summary?: string;
+  cover_image?: string;
+  images?: MediaImage[];
+  videos?: MediaVideo[];
+};
 
-function buildRequestBody(platform: SupportedPlatform, url: string) {
-  if (platform === 'wechat') return { url };
-  if (platform === 'xhs') {
-    return {
-      url,
-      imageFormat: 'jpeg',
-      videoPreference: 'resolution',
-    };
-  }
-  return { url, videoPreference: 'resolution' };
+function collectMediaUrls(data: ExtractData) {
+  const images = (data.images ?? []).map((item) => item.url).filter((url): url is string => Boolean(url));
+  const videos = (data.videos ?? []).map((item) => item.url).filter((url): url is string => Boolean(url));
+  const downloadUrls = [...new Set([...images, ...videos])];
+  const dashTracks = (data.videos ?? [])
+    .filter((item) => item.source === 'bilibili-dash-video' && item.audio_url)
+    .map((item) => item.audio_url as string);
+
+  return {
+    downloadUrls,
+    liveUrls: [...new Set(dashTracks)],
+  };
 }
 
 export async function POST(request: Request) {
@@ -47,53 +50,65 @@ export async function POST(request: Request) {
     }
 
     const trimmedUrl = url.trim();
-    const platform = detectPlatform(trimmedUrl);
+    const target = `${BACKEND_BASE_URL}${EXTRACT_ENDPOINT}`;
+    const headers: Record<string, string> = {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': 'application/json; charset=utf-8',
+    };
 
-    if (platform === 'unknown') {
-      return NextResponse.json({ code: 1, error: '未识别到支持的平台，目前仅支持公众号、抖音、小红书、快手。' }, { status: 400 });
+    const apiKey = process.env.DEWATERMARK_API_KEY?.trim();
+    if (apiKey) {
+      headers['x-api-key'] = apiKey;
     }
-
-    const endpoint = PLATFORM_ENDPOINT[platform];
-    const target = `${BACKEND_BASE_URL}${endpoint}`;
 
     const response = await fetch(target, {
       method: 'POST',
-      headers: {
-        Accept: 'application/json, text/plain, */*',
-        'Content-Type': 'application/json; charset=utf-8',
-      },
-      body: JSON.stringify(buildRequestBody(platform, trimmedUrl)),
+      headers,
+      body: JSON.stringify({
+        input: trimmedUrl,
+        imageFormat: 'jpeg',
+        videoPreference: 'resolution',
+      }),
       cache: 'no-store',
     });
 
+    const payload = await response.json().catch(() => null);
+
     if (!response.ok) {
-      return NextResponse.json({ code: 1, error: `请求解析服务失败 (HTTP ${response.status})` }, { status: response.status });
+      const message =
+        payload?.msg || payload?.error || `请求解析服务失败 (HTTP ${response.status})`;
+      return NextResponse.json({ code: payload?.code ?? 1, error: message }, { status: response.status });
     }
 
-    const payload = await response.json();
+    if (!payload || payload.code !== 0 || !payload.data) {
+      return NextResponse.json(
+        { code: payload?.code ?? 1, error: payload?.msg || '解析接口未返回有效数据。' },
+        { status: 400 },
+      );
+    }
 
-    // 提取真正的资源列表
-    const wrapper = payload?.data || {};
-    const detail = wrapper.data || {};
-
-    const downloadUrls = detail.downloadUrls || [];
-    const liveUrls = detail.liveUrls || [];
+    const data = payload.data as ExtractData;
+    const { downloadUrls, liveUrls } = collectMediaUrls(data);
 
     if (!downloadUrls.length && !liveUrls.length) {
-      return NextResponse.json({ code: 1, error: wrapper.message || '解析接口未返回有效资源。' }, { status: 400 });
+      return NextResponse.json({ code: 1, error: payload?.msg || '解析接口未返回有效资源。' }, { status: 400 });
     }
 
     return NextResponse.json({
       code: 0,
       data: {
-        platform,
-        title: detail.title || detail.desc || '解析内容',
+        platform: data.platform,
+        platformName: data.platform_name,
+        title: data.title || data.summary || '解析内容',
         downloadUrls,
         liveUrls,
-      }
+        videos: data.videos,
+      },
     });
   } catch (error) {
-    return NextResponse.json({ code: 1, error: error instanceof Error ? error.message : '解析过程出现未知错误' }, { status: 500 });
+    return NextResponse.json(
+      { code: 1, error: error instanceof Error ? error.message : '解析过程出现未知错误' },
+      { status: 500 },
+    );
   }
 }
-
