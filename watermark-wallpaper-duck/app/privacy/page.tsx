@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: "隐私政策 - 去水印壁纸鸭",
   description:
     "去水印壁纸鸭隐私政策，说明我们如何收集、使用、存储和保护您的信息，以及您所享有的用户权利。",
+  alternates: {
+    canonical: "/privacy",
+  },
 };
 
 function Nav() {

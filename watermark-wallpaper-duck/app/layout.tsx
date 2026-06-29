@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SITE_URL } from "@/lib/site";
+import { buildJsonLd } from "@/lib/seo";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,10 +15,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title:
     "去水印壁纸鸭 - 免费在线视频图片去水印下载工具|无需登录|支持公众号、抖音、小红书、快手、哔哩哔哩等平台",
   description:
     "去水印壁纸鸭：专注于公众号、抖音、小红书、快手、哔哩哔哩等平台的视频与图片一键去水印并下载，无需登录，高质量保存。",
+  alternates: {
+    canonical: "/",
+  },
   keywords: [
     "去水印",
     "去水印壁纸鸭",
@@ -38,17 +43,27 @@ export const metadata: Metadata = {
     apple: "/icons/duck.webp",
   },
   openGraph: {
-    title: "去水印壁纸鸭 - 在线去水印工具",
+    type: "website",
+    locale: "zh_CN",
+    title:
+      "去水印壁纸鸭 - 免费在线视频图片去水印下载工具|无需登录|支持公众号、抖音、小红书、快手、哔哩哔哩等平台",
     description:
-      "支持公众号、抖音、小红书、快手、哔哩哔哩等平台，免费在线解析并下载高清无水印内容。",
+      "支持公众号、抖音、小红书、快手、哔哩哔哩等平台的视频与图片一键去水印并下载，无需登录，高质量保存。",
     url: SITE_URL,
     siteName: "去水印壁纸鸭",
+    images: [
+      {
+        url: "https://wallpaper.cdn.itianci.cn/wallpaper-wx/duck.webp",
+        alt: "去水印壁纸鸭",
+      },
+    ],
   },
   twitter: {
     title: "去水印壁纸鸭",
     description:
       "在线去水印并下载工具 — 支持抖音、小红书、快手、哔哩哔哩等平台，快速解析并保存高清内容。",
     card: "summary_large_image",
+    images: ["https://wallpaper.cdn.itianci.cn/wallpaper-wx/duck.webp"],
   },
   other: {
     // GEO 元数据，便于部分搜索引擎地域索引
@@ -64,25 +79,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": `${SITE_URL}/#organization`,
-        name: "去水印壁纸鸭",
-        url: SITE_URL,
-        logo: "https://wallpaper.cdn.itianci.cn/wallpaper-wx/duck.webp",
-      },
-      {
-        "@type": "WebSite",
-        "@id": `${SITE_URL}/#website`,
-        url: SITE_URL,
-        name: "去水印壁纸鸭",
-        publisher: { "@id": `${SITE_URL}/#organization` },
-      },
-    ],
-  };
+  const jsonLd = buildJsonLd();
 
   return (
     <html

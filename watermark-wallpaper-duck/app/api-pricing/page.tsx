@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: "API接口价格 - 去水印壁纸鸭",
   description:
     "去水印壁纸鸭 API 接口价格方案，支持公众号、抖音、小红书、快手、哔哩哔哩等平台的视频/图片去水印解析。联系客服微信 xy020477 开通。",
+  alternates: {
+    canonical: "/api-pricing",
+  },
 };
 
 type PricingRow = {

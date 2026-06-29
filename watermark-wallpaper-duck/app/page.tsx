@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import Footer from "./components/Footer";
+import { FAQ } from "@/lib/seo";
 
 function StarRating() {
   return (
@@ -480,48 +481,15 @@ export default function Home() {
             快速解答您最关心的问题
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <div className="p-6 bg-white/90 rounded-2xl shadow">
-              <h4 className="font-semibold">去水印壁纸鸭是什么？</h4>
-              <p className="text-sm text-zinc-600 mt-2">
-                去水印壁纸鸭是一个强大的在线下载工具，让用户可以从包括抖音、小红书、快手、哔哩哔哩、公众号等平台下载自己喜爱的视频、图片。
-              </p>
-            </div>
-            <div className="p-6 bg-white/90 rounded-2xl shadow">
-              <h4 className="font-semibold">为什么还存在水印？</h4>
-              <p className="text-sm text-zinc-600 mt-2">
-                水印为视频、图片本身自带的水印，本工具仅做解析和下载，无法去除原始内容中的水印。
-              </p>
-            </div>
-            <div className="p-6 bg-white/90 rounded-2xl shadow">
-              <h4 className="font-semibold">
-                如果去水印壁纸鸭无法下载视频，我的选择是什么？
-              </h4>
-              <p className="text-sm text-zinc-600 mt-2">
-                尽管支持多个平台，但有时由于源网站基础设施或政策的更改，获取视频可能会出现问题。如果出现这种情况，我们建议稍后再尝试获取视频，因为这可能是一个临时问题。然而，如果问题继续存在，建议将您的疑问与我们的支持团队联系。
-              </p>
-            </div>
-            <div className="p-6 bg-white/90 rounded-2xl shadow">
-              <h4 className="font-semibold">
-                从去水印壁纸鸭下载是否合法并且不侵犯版权？
-              </h4>
-              <p className="text-sm text-zinc-600 mt-2">
-                通常取决于您下载的视频及其版权情况。虽然去水印壁纸鸭为您提供了从各种平台检索视频的服务，但用户有责任尊重并遵守各个视频平台或内容创作者的版权政策。我们强烈建议仅将下载用于个人使用或为任何其他用途获得相应版权持有者的许可。
-              </p>
-            </div>
-            <div className="p-6 bg-white/90 rounded-2xl shadow">
-              <h4 className="font-semibold">
-                使用去水印壁纸鸭下载在线视频是否安全？
-              </h4>
-              <p className="text-sm text-zinc-600 mt-2">
-                是的，去水印壁纸鸭是一个完全安全的在线视频下载应用程序。我们提供对用户的安全性和隐私保护。
-              </p>
-            </div>
-            <div className="p-6 bg-white/90 rounded-2xl shadow">
-              <h4 className="font-semibold">下载后的视频打不开怎么办？</h4>
-              <p className="text-sm text-zinc-600 mt-2">
-                这种情况极少发生，一般是文件后缀问题，把下载后的文件后缀名改为.mp4即可播放。如果还有疑问可与我们团队进行联系。
-              </p>
-            </div>
+            {FAQ.map((item) => (
+              <div
+                key={item.question}
+                className="p-6 bg-white/90 rounded-2xl shadow"
+              >
+                <h4 className="font-semibold">{item.question}</h4>
+                <p className="text-sm text-zinc-600 mt-2">{item.answer}</p>
+              </div>
+            ))}
           </div>
         </section>
       </main>

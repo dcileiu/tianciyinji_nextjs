@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: "服务条款 - 去水印壁纸鸭",
   description:
     "去水印壁纸鸭服务条款，包含条款接受、服务说明、版权声明、用户责任、知识产权及服务限制等内容。",
+  alternates: {
+    canonical: "/terms",
+  },
 };
 
 function Nav() {
