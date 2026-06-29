@@ -19,6 +19,61 @@ export const SITE = {
   contactWeChat: "xy020477",
 } as const;
 
+/** 各平台去水印说明：用于首页内容区与 llms.txt，覆盖「X 去水印」长尾关键词 */
+export const PLATFORMS: {
+  name: string;
+  icon: string;
+  keyword: string;
+  desc: string;
+}[] = [
+  {
+    name: "抖音",
+    icon: "/icons/dy.png",
+    keyword: "抖音去水印",
+    desc: "复制抖音 App 的分享链接或口令，粘贴即可一键解析并下载无水印的抖音视频和图集，保留原始高清画质，无需安装任何软件。",
+  },
+  {
+    name: "小红书",
+    icon: "/icons/xhs.ico",
+    keyword: "小红书去水印",
+    desc: "支持小红书笔记中的视频与图片去水印下载，自动去除小红书水印与作者标识，批量保存笔记里的多张高清图片。",
+  },
+  {
+    name: "快手",
+    icon: "/icons/ks.ico",
+    keyword: "快手去水印",
+    desc: "粘贴快手作品分享链接，快速解析并下载无水印的快手短视频，画质清晰，下载速度快。",
+  },
+  {
+    name: "哔哩哔哩",
+    icon: "/icons/bili.png",
+    keyword: "哔哩哔哩去水印",
+    desc: "支持哔哩哔哩（B 站）视频解析下载，提取高清视频文件，方便离线观看与二次创作素材收集。",
+  },
+  {
+    name: "公众号",
+    icon: "/icons/wx.ico",
+    keyword: "公众号去水印",
+    desc: "粘贴微信公众号文章链接，即可提取并下载文章中的视频与图片素材，去除水印，保存原图。",
+  },
+];
+
+/** 使用步骤：用于首页「如何去水印」内容区与 llms.txt，覆盖「怎么去水印」等关键词 */
+export const HOW_TO_STEPS: { title: string; desc: string }[] = [
+  {
+    title: "复制分享链接",
+    desc: "在抖音、小红书、快手、哔哩哔哩或微信公众号中，点击分享按钮，复制视频或图片的链接（或分享口令）。",
+  },
+  {
+    title: "粘贴并开始解析",
+    desc: "将复制的链接粘贴到去水印壁纸鸭首页的输入框，点击「开始解析」，系统会实时提取无水印的原始内容。",
+  },
+  {
+    title: "下载保存到本地",
+    desc: "在解析结果中预览视频或图片，点击「下载」即可把高清无水印内容保存到手机或电脑，整个过程完全免费。",
+  },
+];
+
 /** 常见问题：页面渲染与 FAQPage 结构化数据共享同一份数据，避免漂移 */
 export const FAQ: { question: string; answer: string }[] = [
   {
@@ -53,11 +108,18 @@ export const FAQ: { question: string; answer: string }[] = [
   },
 ];
 
-/** 全站通用结构化数据（Organization / WebSite / WebApplication） */
+/**
+ * 全站通用结构化数据（Organization / WebSite）。
+ *
+ * 注意：不使用 SoftwareApplication / WebApplication / MobileApplication。
+ * 这些类型会被 Google 当作「软件应用富结果」校验，强制要求
+ * aggregateRating 或 review，以及 offers 字段。本站没有真实可验证的
+ * 评分/评论数据，按 Google 政策不应编造，故改用 Organization + WebSite，
+ * 并通过 WebSite.potentialAction 表达站点的核心能力。
+ */
 export function buildJsonLd() {
   const orgId = `${SITE.url}/#organization`;
   const siteId = `${SITE.url}/#website`;
-  const appId = `${SITE.url}/#webapp`;
 
   return {
     "@context": "https://schema.org",
@@ -67,7 +129,10 @@ export function buildJsonLd() {
         "@id": orgId,
         name: SITE.name,
         url: SITE.url,
-        logo: SITE.logo,
+        logo: {
+          "@type": "ImageObject",
+          url: SITE.logo,
+        },
         description: SITE.description,
       },
       {
@@ -77,20 +142,6 @@ export function buildJsonLd() {
         name: SITE.name,
         description: SITE.description,
         inLanguage: "zh-CN",
-        publisher: { "@id": orgId },
-      },
-      {
-        // 仅用 WebApplication，避免 SoftwareApplication 触发 Google 要求 aggregateRating/review
-        "@type": "WebApplication",
-        "@id": appId,
-        name: SITE.name,
-        url: SITE.url,
-        applicationCategory: "MultimediaApplication",
-        operatingSystem: "Web",
-        browserRequirements: "Requires JavaScript",
-        inLanguage: "zh-CN",
-        description: SITE.description,
-        featureList: SITE.features,
         publisher: { "@id": orgId },
       },
     ],
@@ -127,11 +178,15 @@ export function buildLlmsTxt() {
     "",
     "## 支持的平台",
     "",
-    ...SITE.platforms.map((p) => `- ${p}`),
+    ...PLATFORMS.map((p) => `- ${p.name}（${p.keyword}）：${p.desc}`),
     "",
     "## 核心功能",
     "",
     ...SITE.features.map((f) => `- ${f}`),
+    "",
+    "## 如何去水印（使用步骤）",
+    "",
+    ...HOW_TO_STEPS.map((s, i) => `${i + 1}. ${s.title}：${s.desc}`),
     "",
     "## 重要链接",
     "",

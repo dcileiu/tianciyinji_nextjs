@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import Footer from "./components/Footer";
-import { FAQ, buildFaqJsonLd } from "@/lib/seo";
+import { FAQ, PLATFORMS, HOW_TO_STEPS, buildFaqJsonLd } from "@/lib/seo";
 
 function StarRating() {
   return (
@@ -242,9 +242,11 @@ export default function Home() {
       <main className="flex-1 w-full">
         <section className="max-w-6xl mx-auto px-6 pt-12">
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-10 shadow-even">
-            <h1 className="text-3xl font-bold text-center">去水印壁纸鸭</h1>
-            <p className="text-center text-zinc-600 mt-2">
-              专注于公众号、抖音、小红书、快手、哔哩哔哩等平台的视频/图片去水印与下载。无需登录，一键解析并保存高清内容。
+            <h1 className="text-center text-3xl font-bold">
+              去水印壁纸鸭 - 免费在线视频图片去水印下载工具
+            </h1>
+            <p className="text-center text-zinc-600 mt-3">
+              专注于公众号、抖音、小红书、快手、哔哩哔哩等平台的视频/图片去水印与下载。无需登录、无需安装，粘贴链接即可一键解析并保存高清无水印内容。
             </p>
 
             <div className="mt-8">
@@ -481,6 +483,63 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="max-w-6xl mx-auto px-6 mt-16">
+          <h2 className="text-2xl font-bold text-center">
+            如何去水印？三步即可下载
+          </h2>
+          <p className="text-center text-zinc-600 mt-2">
+            无需下载安装任何软件，无需登录，在线即可完成抖音、小红书、快手、哔哩哔哩、公众号视频与图片的去水印下载
+          </p>
+          <ol className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            {HOW_TO_STEPS.map((step, i) => (
+              <li
+                key={step.title}
+                className="p-6 bg-white/90 rounded-2xl shadow"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold shrink-0">
+                    {i + 1}
+                  </span>
+                  <h3 className="font-semibold text-zinc-900">{step.title}</h3>
+                </div>
+                <p className="text-sm text-zinc-600 mt-3 leading-relaxed">
+                  {step.desc}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="max-w-6xl mx-auto px-6 mt-16">
+          <h2 className="text-2xl font-bold text-center">支持的平台去水印</h2>
+          <p className="text-center text-zinc-600 mt-2">
+            一个工具覆盖主流社交媒体平台，免费解析并下载高清无水印视频与图片
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            {PLATFORMS.map((platform) => (
+              <article
+                key={platform.name}
+                className="p-6 bg-white/90 rounded-2xl shadow"
+              >
+                <div className="flex items-center gap-3">
+                  <Image
+                    src={platform.icon}
+                    alt={`${platform.keyword}图标`}
+                    width={28}
+                    height={28}
+                  />
+                  <h3 className="font-semibold text-zinc-900">
+                    {platform.keyword}
+                  </h3>
+                </div>
+                <p className="text-sm text-zinc-600 mt-3 leading-relaxed">
+                  {platform.desc}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="max-w-6xl mx-auto px-6 mt-12 mb-24">
           <h2 className="text-2xl font-bold text-center">常见问题</h2>
           <p className="text-center text-zinc-600 mt-2">
@@ -492,7 +551,7 @@ export default function Home() {
                 key={item.question}
                 className="p-6 bg-white/90 rounded-2xl shadow"
               >
-                <h4 className="font-semibold">{item.question}</h4>
+                <h3 className="font-semibold">{item.question}</h3>
                 <p className="text-sm text-zinc-600 mt-2">{item.answer}</p>
               </div>
             ))}
