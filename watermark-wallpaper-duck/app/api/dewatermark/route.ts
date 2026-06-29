@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const BACKEND_BASE_URL = (process.env.DEWATERMARK_BACKEND_URL || 'https://wallpaper.itianci.cn').replace(
+const BACKEND_BASE_URL = 'https://wallpaper.api.itianci.cn'.replace(
   /\/+$/,
   '',
 );
