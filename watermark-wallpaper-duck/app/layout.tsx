@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "去水印壁纸鸭 - 免费在线视频图片去水印下载工具|无需登录",
+  title:
+    "去水印壁纸鸭 - 免费在线视频图片去水印下载工具|无需登录|支持公众号、抖音、小红书、快手、哔哩哔哩等平台",
   description:
     "去水印壁纸鸭：专注于公众号、抖音、小红书、快手、哔哩哔哩等平台的视频与图片一键去水印并下载，无需登录，高质量保存。",
   keywords: [
