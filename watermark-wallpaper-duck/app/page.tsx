@@ -54,30 +54,25 @@ const TESTIMONIALS = [
   },
 ] as const;
 
-type MediaType = "image" | "video";
+type MediaItem = {
+  type: "image" | "video";
+  url: string;
+  downloadUrl: string;
+  filename: string;
+  poster?: string;
+  label?: string;
+};
 
-function getMediaType(url: string): MediaType {
-  const lower = url.toLowerCase();
-  if (
-    /\/play\/|video_id=|\.mp4|\.m4s|bilivideo|hdslb|sc=video|\/video\/|\.m3u8/.test(
-      lower,
-    )
-  ) {
-    return "video";
-  }
-  return "image";
-}
-
-function MediaCard({ url }: { url: string }) {
-  const type = getMediaType(url);
+function MediaCard({ item }: { item: MediaItem }) {
   const [copied, setCopied] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(item.downloadUrl);
     } catch {
       const ta = document.createElement("textarea");
-      ta.value = url;
+      ta.value = item.downloadUrl;
       ta.style.position = "fixed";
       ta.style.opacity = "0";
       document.body.appendChild(ta);
@@ -91,12 +86,35 @@ function MediaCard({ url }: { url: string }) {
     setTimeout(() => setCopied(false), 1500);
   }
 
+  async function handleDownload() {
+    if (downloading) return;
+    setDownloading(true);
+    try {
+      const resp = await fetch(item.downloadUrl);
+      if (!resp.ok) throw new Error(String(resp.status));
+      const blob = await resp.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = objectUrl;
+      a.download = item.filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 5000);
+    } catch {
+      window.open(item.downloadUrl, "_blank", "noopener,noreferrer");
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   return (
     <div className="overflow-hidden rounded-xl border border-zinc-100 bg-white shadow-sm">
       <div className="relative aspect-[3/4] bg-zinc-100">
-        {type === "video" ? (
+        {item.type === "video" ? (
           <video
-            src={url}
+            src={item.url}
+            poster={item.poster}
             controls
             playsInline
             preload="metadata"
@@ -105,14 +123,17 @@ function MediaCard({ url }: { url: string }) {
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={url}
-            alt="解析结果"
+            src={item.url}
+            alt={item.label || "解析结果"}
             loading="lazy"
             referrerPolicy="no-referrer"
             className="absolute inset-0 h-full w-full object-cover"
           />
         )}
       </div>
+      {item.label && (
+        <p className="px-2 pt-2 text-xs text-zinc-500">{item.label}</p>
+      )}
       <div className="flex gap-2 p-2">
         <button
           type="button"
@@ -121,15 +142,14 @@ function MediaCard({ url }: { url: string }) {
         >
           {copied ? "已复制" : "复制链接"}
         </button>
-        <a
-          href={url}
-          target="_blank"
-          rel="noreferrer"
-          download
-          className="flex-1 rounded-lg bg-blue-600 py-1.5 text-center text-xs font-medium text-white transition-colors hover:bg-blue-700"
+        <button
+          type="button"
+          onClick={handleDownload}
+          disabled={downloading}
+          className="flex-1 cursor-pointer rounded-lg bg-blue-600 py-1.5 text-center text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          下载
-        </a>
+          {downloading ? "下载中..." : "下载"}
+        </button>
       </div>
     </div>
   );
@@ -191,8 +211,9 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{
-    downloadUrls?: string[];
-    liveUrls?: string[];
+    title?: string;
+    platform?: string;
+    items?: MediaItem[];
   } | null>(null);
 
   async function handleParse() {
@@ -426,21 +447,21 @@ export default function Home() {
 
         {result &&
           (() => {
-            const mediaUrls = [
-              ...(result.downloadUrls || []),
-              ...(result.liveUrls || []),
-            ].filter(Boolean);
-            if (!mediaUrls.length) return null;
+            const items = result.items || [];
+            if (!items.length) return null;
             return (
               <section className="max-w-6xl mx-auto px-6 mt-6">
                 <div className="rounded-2xl border border-[#e4d8ff] bg-white/70 p-6 shadow">
                   <h3 className="text-lg font-semibold">解析结果</h3>
+                  {result.title && (
+                    <p className="text-sm text-zinc-700 mt-1">{result.title}</p>
+                  )}
                   <p className="text-sm text-zinc-500 mt-1">
-                    共 {mediaUrls.length} 个文件，悬停可下载
+                    共 {items.length} 个文件，可直接预览或下载
                   </p>
                   <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
-                    {mediaUrls.map((u: string, i: number) => (
-                      <MediaCard key={u + i} url={u} />
+                    {items.map((item, i) => (
+                      <MediaCard key={item.url + i} item={item} />
                     ))}
                   </div>
                 </div>
