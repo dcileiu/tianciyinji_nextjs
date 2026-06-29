@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import Footer from "../components/Footer";
 
 export const metadata: Metadata = {
   title: "API接口价格 - 去水印壁纸鸭",
@@ -142,6 +143,8 @@ export default function ApiPricingPage() {
           </div>
         </section>
       </main>
+
+      <Footer />
     </div>
   );
 }
