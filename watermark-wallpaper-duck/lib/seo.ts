@@ -53,10 +53,7 @@ export const FAQ: { question: string; answer: string }[] = [
   },
 ];
 
-/**
- * 构建 JSON-LD 结构化数据图。
- * 同时面向传统搜索引擎（富结果）与生成式引擎（GEO，便于 AI 理解与引用）。
- */
+/** 全站通用结构化数据（Organization / WebSite / WebApplication） */
 export function buildJsonLd() {
   const orgId = `${SITE.url}/#organization`;
   const siteId = `${SITE.url}/#website`;
@@ -83,7 +80,8 @@ export function buildJsonLd() {
         publisher: { "@id": orgId },
       },
       {
-        "@type": ["WebApplication", "SoftwareApplication"],
+        // 仅用 WebApplication，避免 SoftwareApplication 触发 Google 要求 aggregateRating/review
+        "@type": "WebApplication",
         "@id": appId,
         name: SITE.name,
         url: SITE.url,
@@ -94,25 +92,25 @@ export function buildJsonLd() {
         description: SITE.description,
         featureList: SITE.features,
         publisher: { "@id": orgId },
-        offers: {
-          "@type": "Offer",
-          price: "0",
-          priceCurrency: "CNY",
-        },
-      },
-      {
-        "@type": "FAQPage",
-        "@id": `${SITE.url}/#faq`,
-        mainEntity: FAQ.map((item) => ({
-          "@type": "Question",
-          name: item.question,
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: item.answer,
-          },
-        })),
       },
     ],
+  };
+}
+
+/** 首页 FAQ 结构化数据，仅在有可见 FAQ 内容的页面使用 */
+export function buildFaqJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${SITE.url}/#faq`,
+    mainEntity: FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
   };
 }
 

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import Footer from "./components/Footer";
-import { FAQ } from "@/lib/seo";
+import { FAQ, buildFaqJsonLd } from "@/lib/seo";
 
 function StarRating() {
   return (
@@ -231,6 +231,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-grid">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildFaqJsonLd()),
+        }}
+      />
       <Nav />
 
       <main className="flex-1 w-full">
