@@ -31,7 +31,7 @@ coverImage: /content/posts/roco-assistant/1.webp
 
 再往下有 **热门攻略**、**热门精灵**，图鉴里搜不到的可以先从这里摸门道。底部 tab 是 **首页 / 攻略 / 孵蛋 / 图鉴 / 我的**，孵蛋和图鉴我打开频率最高。
 
-![洛克万能助手首页](/content/posts/roco-assistant/1.webp)
+![洛克万能助手首页](https://itianci.cn/content/posts/roco-assistant/1.webp)
 
 ## 孵蛋：别瞎猜了，身高体重一查就有数
 
@@ -41,7 +41,7 @@ coverImage: /content/posts/roco-assistant/1.webp
 
 我自己的用法是：拿到蛋先记一组数，打开小程序跑一遍，心里有个谱，再去对照蛋组和图鉴，少做无用功。
 
-![孵蛋预测：输入身高体重，查看概率列表](/content/posts/roco-assistant/2.webp)
+![孵蛋预测：输入身高体重，查看概率列表](https://itianci.cn/content/posts/roco-assistant/2.webp)
 
 ## 远行商人：不用守着上线了，想要啥预约提醒
 
@@ -51,7 +51,7 @@ coverImage: /content/posts/roco-assistant/1.webp
 
 我页面上若显示 **「已预约提醒」**，就是订阅成功了；轮次过了会提示重新预约。对我这种只能碎片时间上线的人，比记忆靠谱多了。
 
-![远行商人：轮次商品与预约微信提醒](/content/posts/roco-assistant/3.webp)
+![远行商人：轮次商品与预约微信提醒](https://itianci.cn/content/posts/roco-assistant/3.webp)
 
 ## 还有啥
 
@@ -67,7 +67,7 @@ coverImage: /content/posts/roco-assistant/1.webp
 
 《洛克王国：世界》这波热度，把老玩家都勾回来了。若你也在养蛋、扫商人，微信搜 **「洛克万能助手」**，或扫下面小程序码：
 
-![洛克万能助手小程序码](/content/posts/roco-assistant/qr.jpg)
+![洛克万能助手小程序码](https://itianci.cn/content/posts/roco-assistant/qr.jpg)
 
 有想加的功能或数据不准的地方，小程序里 **联系客服** 丢一句就行，我会按大家玩的节奏改。
 

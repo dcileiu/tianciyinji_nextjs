@@ -16,19 +16,19 @@ coverImage: /works/blog/blog-new.webp
 
 那时候觉得这就对了：Markdown 写好，`hexo g` 一把，丢到 GitHub Pages，主题换一换，域名绑上，就算有个像样的个人站了。周末改改 `_config.yml`，调调侧边栏，还挺有成就感。写文章反而成了顺手的事——毕竟生成静态页这件事，Hexo 已经替你干完了。
 
-![第一版博客 · Hexo 静态站](/content/posts/welcome/blog0-0.webp)
+![第一版博客 · Hexo 静态站](https://itianci.cn/content/posts/welcome/blog0-0.webp)
 
-![第一版博客 · 文章页](/content/posts/welcome/blog0-1.webp)
+![第一版博客 · 文章页](https://itianci.cn/content/posts/welcome/blog0-1.webp)
 
 后来写着写着，开始不满足了。
 
 我想要后台发文章，想要评论、搜索、访问量统计，想要「像正经产品一样」能登录、能改配置。于是很自然地从「静态博客」滑进了前后端项目——**第二版**来了：自己写 API、接数据库、做部署脚本，Nginx、HTTPS、PM2、Docker……一套一套往上叠。每次 push 之前心里都会紧一下：这次构建会不会挂？环境变量有没有漏？服务器磁盘又快满了吧。
 
-![第二版博客 · 前后端一体](/content/posts/welcome/blog01-1.webp)
+![第二版博客 · 前后端一体](https://itianci.cn/content/posts/welcome/blog01-1.webp)
 
-![第二版博客 · 后台与内容管理](/content/posts/welcome/blog01-2.webp)
+![第二版博客 · 后台与内容管理](https://itianci.cn/content/posts/welcome/blog01-2.webp)
 
-![第二版博客 · 另一套页面布局](/content/posts/welcome/blog01-3.webp)
+![第二版博客 · 另一套页面布局](https://itianci.cn/content/posts/welcome/blog01-3.webp)
 
 说实话，那几年并不全是浪费。至少我搞清楚了请求怎么从浏览器走到 Node，也知道了个人项目上线到底卡在哪几个环节。但对一个主要用来写字、偶尔贴点作品链接的站点来说，维护成本明显偏高了。有时候半个月没更新，登录服务器一看，还有安全补丁要装——那一刻会问自己：我到底是来博客的，还是来当运维的？
 
@@ -36,9 +36,9 @@ coverImage: /works/blog/blog-new.webp
 
 几乎每个页面都塞了动画：进出场过渡、卡片悬停反馈、列表滚动时的错落出现、背景里若有若无的漂浮元素……有些是我自己写的，有些是从各种动效库里拼出来的，但目的都一样——让站点「动起来」，打开每个页面都像在翻一本会呼吸的杂志。那时候我花在看动画调参上的时间，可能比写文章还多。截图只能留住某一帧，那种连贯的过渡和交互感，静态图是装不下的。
 
-![第三版博客 · 新一套主题与结构](/content/posts/welcome/blog-3-1.webp)
+![第三版博客 · 新一套主题与结构](https://itianci.cn/content/posts/welcome/blog-3-1.webp)
 
-![第三版博客 · 阅读与归档](/content/posts/welcome/blog-3-2.webp)
+![第三版博客 · 阅读与归档](https://itianci.cn/content/posts/welcome/blog-3-2.webp)
 
 回头看，第三版是我个人站里**视觉表达最放飞**的一版。爽也是真爽——自己点开首页，看元素一个个滑进来，会有种「这站是我的作品」的满足感。但问题也出在这里：动效叠多了，JS 体积、首屏渲染、低端机和弱网环境下的卡顿，都会反过来咬你。每次换完头两周很爽，过两个月又回到老问题：依赖多了、迁移难了、本地起一套环境要半天，还得琢磨怎么别让动画把性能拖垮。
 
@@ -48,9 +48,9 @@ coverImage: /works/blog/blog-new.webp
 
 但完全素面朝天又有点可惜。所以首页留了一个我觉得刚刚好的点缀：**粒子 Logo**。用 Canvas 把沙砾般的粒子聚成站点标识，鼠标靠近会散开再弹回去，亮暗主题下颜色也会跟着变。它不算「复杂动效」，不挡阅读，不拖路由，但站点还是有那么一点生命力——和第三版那种全屏炫技不一样，属于**克制版**的有趣。
 
-![第四版博客 · 首页](/works/blog/blog-new.webp)
+![第四版博客 · 首页](https://itianci.cn/works/blog/blog-new.webp)
 
-![第四版博客 · 内容页](/works/blog/blog-new2.webp)
+![第四版博客 · 内容页](https://itianci.cn/works/blog/blog-new2.webp)
 
 文章还是 Markdown，放在 `content/posts/` 里，和图片一起进 Git。图片走 `public/content/`，正文里直接写路径就行。构建交给 Next.js，部署侧尽量往「无服务器 / 静态托管」靠——不用我半夜起来重启进程，也不用为了一台小 VPS 单独操心备份策略。需要改样式、改页面结构，就在这个仓库里改；要发文，就新开一个 `.md` 文件，和图片放在对应目录，提交，等构建完事。
 

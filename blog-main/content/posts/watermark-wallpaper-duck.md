@@ -50,7 +50,7 @@ coverImage: /content/posts/watermark-wallpaper-duck/1.webp
 
 解析不了的会明确告诉你「这条暂时不行」，而不是给你一个打不开的空白页。B 站之类**目前还不支持**，别试了，试了也是白等。
 
-![去水印首页：粘贴分享口令或链接](/content/posts/watermark-wallpaper-duck/1.webp)
+![去水印首页：粘贴分享口令或链接](https://itianci.cn/content/posts/watermark-wallpaper-duck/1.webp)
 
 ## 「去水印壁纸鸭」具体怎么用
 
@@ -65,7 +65,7 @@ coverImage: /content/posts/watermark-wallpaper-duck/1.webp
 
 除了「去水印」这条线，我还保留了 **壁纸图集**：自己筛了一批能当手机壁纸的图，瀑布流刷着玩，看到喜欢的收藏、下载。解析和逛图集是两条路，但经常是同一拨人——刷到喜欢的 → 解析保存 → 顺手在图集里再逛两张。
 
-![壁纸图集瀑布流](/content/posts/watermark-wallpaper-duck/2.webp)
+![壁纸图集瀑布流](https://itianci.cn/content/posts/watermark-wallpaper-duck/2.webp)
 
 ## 技术上我刻意没做成「万能神器」
 
@@ -81,7 +81,7 @@ coverImage: /content/posts/watermark-wallpaper-duck/1.webp
 
 微信搜 **「去水印壁纸鸭」** 即可；也可以直接扫物料码：
 
-![去水印壁纸鸭小程序码](/content/posts/watermark-wallpaper-duck/qr.jpg)
+![去水印壁纸鸭小程序码](https://itianci.cn/content/posts/watermark-wallpaper-duck/qr.jpg)
 
 哪条链接老失败，欢迎在小程序里反馈——我按平台修，比你在评论区骂一句我能看见得快。
 

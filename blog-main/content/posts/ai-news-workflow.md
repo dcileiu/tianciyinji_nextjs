@@ -22,7 +22,7 @@ coverImage: /content/posts/ai-news-workflow/AI新闻工作流.png
 
 这记录的是我们画布上真实在跑的那套，不是概念 PPT。
 
-![n8n 工作流总览](/content/posts/ai-news-workflow/AI新闻工作流.png)
+![n8n 工作流总览](https://itianci.cn/content/posts/ai-news-workflow/AI新闻工作流.png)
 
 ## 目标：端到端无人值守
 

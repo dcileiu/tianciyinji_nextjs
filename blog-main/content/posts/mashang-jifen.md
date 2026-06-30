@@ -28,7 +28,7 @@ coverImage: /content/posts/mashang-jifen/cover.webp
 
 配色也刻意收着：浅紫渐变顶栏、白底、圆角卡片，图标和字都偏大，戴老花镜的叔伯点也不容易误触。底部就 **「首页 / 我的」** 两个 tab，不堆五个底栏把人绕晕。
 
-![麻上计分首页：大块入口，一眼知道点哪](/content/posts/mashang-jifen/2.webp)
+![麻上计分首页：大块入口，一眼知道点哪](https://itianci.cn/content/posts/mashang-jifen/2.webp)
 
 旁边那些 **今天吃什么、麻将玩法、听牌计算、猜数字、备忘录**，是打牌间隙会顺手点开的小玩意，但不挡主流程。顶部滚动条我写了一句：**为了用户体验，不加任何广告**——这句话到现在也没删，算给自己立的规矩。
 
@@ -42,7 +42,7 @@ coverImage: /content/posts/mashang-jifen/cover.webp
 
 个人页的 **战绩日历** 用红绿标正负、旁边汇总本月总分和胜率，打完扫一眼就知道手气：
 
-![个人中心：战绩日历一眼看懂输赢](/content/posts/mashang-jifen/1.webp)
+![个人中心：战绩日历一眼看懂输赢](https://itianci.cn/content/posts/mashang-jifen/1.webp)
 
 **战绩日历** 按天标分，本月总分、场次、胜率、最高最低并排展示；爱较真的还能点 **封神榜** 看长期排名。
 
@@ -58,7 +58,7 @@ coverImage: /content/posts/mashang-jifen/cover.webp
 
 这才是大家一晚上亮屏最久的界面——**计分房间**：玩家一排、分数一眼能扫完，点两下就能加减，不用在表格里找格子：
 
-![计分房间：大按钮加减分，多人同桌](/content/posts/mashang-jifen/3.webp)
+![计分房间：大按钮加减分，多人同桌](https://itianci.cn/content/posts/mashang-jifen/3.webp)
 
 计分只是过程，**打完去「我的」看输赢** 才踏实。
 
