@@ -96,7 +96,7 @@ coverImage: /content/posts/mashang-jifen/cover.webp
 
 如果你也经常组局，微信搜 **「麻上计分」**，或扫下面小程序码：
 
-![麻上计分小程序码](/content/posts/mashang-jifen/qr.webp)
+![麻上计分小程序码](https://itianci.cn/content/posts/mashang-jifen/qr.webp)
 
 ## 适合谁
 
