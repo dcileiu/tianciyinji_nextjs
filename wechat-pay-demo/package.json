@@ -1,0 +1,21 @@
+{
+  "name": "wechat-pay-demo",
+  "version": "1.0.0",
+  "description": "微信支付 H5 + Native 扫码支付独立 Demo（API v3）",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "next": "16.1.1",
+    "qrcode": "^1.5.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
