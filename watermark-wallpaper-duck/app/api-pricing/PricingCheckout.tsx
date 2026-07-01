@@ -8,18 +8,9 @@ import {
   PRICING_PLANS,
 } from "@/lib/pricing";
 
-type PaymentMode = "native" | "h5";
-
 type NativeCreateResult = {
   outTradeNo: string;
   qrDataUrl: string;
-  amountYuan: string;
-  planName: string;
-};
-
-type H5CreateResult = {
-  outTradeNo: string;
-  h5Url: string;
   amountYuan: string;
   planName: string;
 };
@@ -54,13 +45,12 @@ function isMobileDevice() {
 
 export default function PricingCheckout() {
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
-  const [mode, setMode] = useState<PaymentMode>("native");
+  const [buyingPlanId, setBuyingPlanId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [nativeResult, setNativeResult] = useState<NativeCreateResult | null>(
     null,
   );
-  const [h5Result, setH5Result] = useState<H5CreateResult | null>(null);
   const [tradeState, setTradeState] = useState("");
   const [tradeMessage, setTradeMessage] = useState("");
   const pollTimerRef = useRef<number | null>(null);
@@ -73,21 +63,9 @@ export default function PricingCheckout() {
     setSelectedPlan(null);
     setError("");
     setNativeResult(null);
-    setH5Result(null);
     setTradeState("");
     setTradeMessage("");
     setLoading(false);
-  }
-
-  function openPlan(plan: PricingPlan) {
-    if (plan.free) return;
-    setSelectedPlan(plan);
-    setMode(isMobileDevice() ? "h5" : "native");
-    setError("");
-    setNativeResult(null);
-    setH5Result(null);
-    setTradeState("");
-    setTradeMessage("");
   }
 
   async function queryOrder(outTradeNo: string) {
@@ -126,19 +104,17 @@ export default function PricingCheckout() {
     };
   }, []);
 
-  async function createNativeOrder() {
-    if (!selectedPlan) return;
+  async function createNativeOrder(plan: PricingPlan) {
     try {
       setLoading(true);
       setError("");
       setNativeResult(null);
-      setH5Result(null);
       setTradeState("");
       setTradeMessage("");
 
       const data = await postJson<NativeCreateResult>(
         "/api/payment/native-create",
-        { planId: selectedPlan.id },
+        { planId: plan.id },
       );
       setNativeResult(data);
       startPolling(data.outTradeNo);
@@ -149,37 +125,31 @@ export default function PricingCheckout() {
     }
   }
 
-  async function createH5Order() {
-    if (!selectedPlan) return;
+  async function createH5Order(plan: PricingPlan) {
     try {
-      setLoading(true);
+      setBuyingPlanId(plan.id);
       setError("");
-      setNativeResult(null);
-      setH5Result(null);
-      setTradeState("");
-      setTradeMessage("");
 
-      const data = await postJson<H5CreateResult>("/api/payment/h5-create", {
-        planId: selectedPlan.id,
+      const data = await postJson<{ h5Url: string }>("/api/payment/h5-create", {
+        planId: plan.id,
       });
-      setH5Result(data);
-
-      if (isMobileDevice()) {
-        window.location.href = data.h5Url;
-      }
+      window.location.href = data.h5Url;
     } catch (err) {
       setError(err instanceof Error ? err.message : "创建 H5 支付失败");
-    } finally {
-      setLoading(false);
+      setBuyingPlanId(null);
     }
   }
 
-  async function handlePay() {
-    if (mode === "native") {
-      await createNativeOrder();
+  async function handleBuy(plan: PricingPlan) {
+    if (plan.free) return;
+
+    if (isMobileDevice()) {
+      await createH5Order(plan);
       return;
     }
-    await createH5Order();
+
+    setSelectedPlan(plan);
+    await createNativeOrder(plan);
   }
 
   return (
@@ -232,10 +202,11 @@ export default function PricingCheckout() {
                   ) : (
                     <button
                       type="button"
-                      onClick={() => openPlan(row)}
-                      className="rounded-full bg-blue-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700"
+                      onClick={() => handleBuy(row)}
+                      disabled={buyingPlanId === row.id}
+                      className="rounded-full bg-blue-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      立即购买
+                      {buyingPlanId === row.id ? "跳转中..." : "立即购买"}
                     </button>
                   )}
                 </td>
@@ -244,6 +215,12 @@ export default function PricingCheckout() {
           </tbody>
         </table>
       </div>
+
+      {error && !selectedPlan && (
+        <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+          {error}
+        </div>
+      )}
 
       {selectedPlan && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -254,8 +231,7 @@ export default function PricingCheckout() {
                   购买 {selectedPlan.name}
                 </h3>
                 <p className="mt-1 text-sm text-zinc-500">
-                  支付金额 ¥{formatTotal(selectedPlan.total ?? 0)}，开通后请联系客服获取
-                  API Key
+                  支付金额 ¥{formatTotal(selectedPlan.total ?? 0)}，请使用微信扫一扫完成支付
                 </p>
               </div>
               <button
@@ -268,50 +244,17 @@ export default function PricingCheckout() {
               </button>
             </div>
 
-            <div className="mt-5 flex gap-2">
-              <button
-                type="button"
-                onClick={() => setMode("native")}
-                className={`flex-1 rounded-xl border px-3 py-2 text-sm font-medium transition-colors ${
-                  mode === "native"
-                    ? "border-blue-600 bg-blue-50 text-blue-700"
-                    : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"
-                }`}
-              >
-                微信扫码支付
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("h5")}
-                className={`flex-1 rounded-xl border px-3 py-2 text-sm font-medium transition-colors ${
-                  mode === "h5"
-                    ? "border-blue-600 bg-blue-50 text-blue-700"
-                    : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"
-                }`}
-              >
-                手机 H5 支付
-              </button>
-            </div>
-
             {error && (
               <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
                 {error}
               </div>
             )}
 
-            {!nativeResult && !h5Result && (
-              <button
-                type="button"
-                onClick={handlePay}
-                disabled={loading}
-                className="mt-5 w-full rounded-full bg-blue-600 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loading
-                  ? "创建订单中..."
-                  : mode === "native"
-                    ? "生成支付二维码"
-                    : "前往微信支付"}
-              </button>
+            {loading && (
+              <div className="mt-8 flex flex-col items-center py-6 text-sm text-zinc-500">
+                <div className="mb-3 h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                正在生成支付二维码...
+              </div>
             )}
 
             {nativeResult && (
@@ -344,25 +287,6 @@ export default function PricingCheckout() {
                     支付成功后请添加客服微信 xy020477，备注「API」获取密钥。
                   </p>
                 )}
-              </div>
-            )}
-
-            {h5Result && !isMobileDevice() && (
-              <div className="mt-5 space-y-3">
-                <p className="text-sm text-zinc-600">
-                  请在手机浏览器中打开以下链接完成支付：
-                </p>
-                <a
-                  href={h5Result.h5Url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block break-all rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-blue-600 hover:bg-zinc-100"
-                >
-                  {h5Result.h5Url}
-                </a>
-                <p className="text-xs text-zinc-400">
-                  订单号：{h5Result.outTradeNo}
-                </p>
               </div>
             )}
           </div>
