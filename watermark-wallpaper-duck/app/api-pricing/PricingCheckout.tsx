@@ -38,14 +38,14 @@ async function postJson<T>(url: string, body: Record<string, string>) {
   return data as T & { success: true };
 }
 
-function isMobileDevice() {
-  if (typeof navigator === "undefined") return false;
-  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-}
+// H5 支付暂未开通，开通后恢复手机端跳转逻辑
+// function isMobileDevice() {
+//   if (typeof navigator === "undefined") return false;
+//   return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+// }
 
 export default function PricingCheckout() {
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
-  const [buyingPlanId, setBuyingPlanId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [nativeResult, setNativeResult] = useState<NativeCreateResult | null>(
@@ -125,29 +125,23 @@ export default function PricingCheckout() {
     }
   }
 
-  async function createH5Order(plan: PricingPlan) {
-    try {
-      setBuyingPlanId(plan.id);
-      setError("");
-
-      const data = await postJson<{ h5Url: string }>("/api/payment/h5-create", {
-        planId: plan.id,
-      });
-      window.location.href = data.h5Url;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "创建 H5 支付失败");
-      setBuyingPlanId(null);
-    }
-  }
+  // H5 支付暂未开通
+  // async function createH5Order(plan: PricingPlan) {
+  //   try {
+  //     setBuyingPlanId(plan.id);
+  //     setError("");
+  //     const data = await postJson<{ h5Url: string }>("/api/payment/h5-create", {
+  //       planId: plan.id,
+  //     });
+  //     window.location.href = data.h5Url;
+  //   } catch (err) {
+  //     setError(err instanceof Error ? err.message : "创建 H5 支付失败");
+  //     setBuyingPlanId(null);
+  //   }
+  // }
 
   async function handleBuy(plan: PricingPlan) {
     if (plan.free) return;
-
-    if (isMobileDevice()) {
-      await createH5Order(plan);
-      return;
-    }
-
     setSelectedPlan(plan);
     await createNativeOrder(plan);
   }
@@ -203,10 +197,9 @@ export default function PricingCheckout() {
                     <button
                       type="button"
                       onClick={() => handleBuy(row)}
-                      disabled={buyingPlanId === row.id}
-                      className="rounded-full bg-blue-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="rounded-full bg-blue-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700"
                     >
-                      {buyingPlanId === row.id ? "跳转中..." : "立即购买"}
+                      立即购买
                     </button>
                   )}
                 </td>
@@ -267,6 +260,9 @@ export default function PricingCheckout() {
                 />
                 <p className="mt-3 text-sm text-zinc-600">
                   请使用微信扫一扫完成支付
+                </p>
+                <p className="mt-1 text-xs text-amber-600">
+                  手机端请使用另一台设备扫码，或联系客服微信 xy020477 购买
                 </p>
                 <p className="mt-1 text-xs text-zinc-400">
                   订单号：{nativeResult.outTradeNo}
